@@ -236,10 +236,13 @@ onMounted(async () => {
   <section v-if="profile" class="profile-card">
     <img v-if="profile.avatarUrl" :src="profile.avatarUrl" alt="" />
     <div class="profile-main"><h2>{{ profile.name }}</h2><span>{{ profile.steamId }}</span></div>
-    <a class="profile-steam" :href="profile.profileUrl || `https://steamcommunity.com/profiles/${profile.steamId}`" target="_blank"><i class="pi pi-external-link" /> Steam</a>
+    <a class="profile-steam" :href="profile.profileUrl || `https://steamcommunity.com/profiles/${profile.steamId}`" target="_blank">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" style="flex-shrink: 0;"><path d="M12 2C6.8 2 2.5 5.9 2 11l5.4 2.2c.5-.3 1-.5 1.6-.5l2.4-3.5v-.1c0-2.1 1.7-3.8 3.8-3.8s3.8 1.7 3.8 3.8-1.7 3.8-3.8 3.8h-.1L11.6 15c0 .5-.1 1-.4 1.4-.7 1.4-2.4 1.9-3.8 1.2-.7-.3-1.2-.9-1.4-1.6l-3.9-1.6C3.1 19.1 7.2 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zM8.3 16.9c.5.9 1.6 1.3 2.5.9.9-.4 1.4-1.5 1-2.5-.4-.9-1.5-1.4-2.4-1l1.3.5c.7.3 1 1.1.7 1.8-.3.7-1.1 1-1.8.7l-1.3-.4zm10.4-7.8c0-1.4-1.1-2.5-2.5-2.5s-2.5 1.1-2.5 2.5 1.1 2.5 2.5 2.5 2.5-1.1 2.5-2.5zm-4.4 0c0-1 .8-1.9 1.9-1.9 1 0 1.9.8 1.9 1.9s-.8 1.9-1.9 1.9c-1 0-1.9-.8-1.9-1.9z"/></svg>
+      <span>Steam</span>
+    </a>
     <a v-if="profile.faceitElo" :class="['elo-badge', 'profile-elo', profile.faceitNickname ? 'clickable' : '']" :href="profile.faceitNickname ? `https://www.faceit.com/ru/players/${profile.faceitNickname}` : undefined" target="_blank">
       <img :src="`/faceit/lvl${faceitLevel(profile.faceitElo)}.svg`" class="elo-level-img" :alt="`Level ${faceitLevel(profile.faceitElo)}`" />
-      <b>{{ profile.faceitElo }} ELO</b>
+      <span>{{ profile.faceitElo }} ELO</span>
     </a>
   </section>
 

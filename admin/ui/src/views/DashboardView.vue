@@ -120,8 +120,76 @@ onUnmounted(() => { clearInterval(timer); void hub.stop() })
 <template>
   <header class="page-header"><div><p class="eyebrow">VERONA NETWORK</p><h1>Серверы</h1></div><span class="muted">1 сервер · {{ status?.online ?? 0 }} игроков онлайн</span></header>
 
-  <section class="server-list">
-    <article class="server-card" :style="{ '--map-image': `url(/maps/${displayMap}.png)` }">
+  <div v-if="status" class="server-container">
+    <!-- Combined dashboard block when server is stopped -->
+    <div v-if="!status.container.running" class="server-console">
+      <article class="server-card" :style="{ '--map-image': `url(/maps/${displayMap}.png)` }">
+        <div class="server-shade" />
+        <div class="server-card-main">
+          <div class="server-card-title"><span class="server-index">01</span><div><h2>Verona #1</h2><p>{{ mode.label }} · {{ displayMapName }}</p></div></div>
+          <Tag :severity="phaseSeverity" :value="phaseLabel" :icon="status?.phase === 'starting' ? 'pi pi-spin pi-spinner' : undefined" />
+        </div>
+        <div class="server-meta">
+          <span><i class="pi pi-users" /> {{ status?.online ?? 0 }}/{{ maxPlayers }}</span>
+          <span><i class="pi pi-map" /> {{ displayMapName }}</span>
+          <button class="copy-address" type="button" title="Скопировать адрес" @click="copyAddress"><i class="pi pi-copy" /> localhost:27015</button>
+        </div>
+      </article>
+
+      <section class="panel launch-panel">
+        <div class="launch-head">
+          <div><h2>Запуск сервера</h2><p>Режим, карта и настройки применяются при старте.</p></div>
+          <Button label="Запустить сервер" icon="pi pi-play" size="large" :loading="busy" @click="action('start')" />
+        </div>
+
+        <div class="launch-block">
+          <label>Режим игры</label>
+          <SelectButton v-model="mode" :options="modes" optionLabel="label" :allowEmpty="false" />
+          <p class="muted">{{ mode.hint }}</p>
+        </div>
+
+        <div class="launch-block">
+          <div class="launch-row">
+            <label>Карта</label>
+            <SelectButton v-model="mapSource" :options="mapSources" optionLabel="label" optionValue="value" :allowEmpty="false" />
+          </div>
+          <div v-if="mapSource === 'official'" class="map-grid">
+            <button v-for="m in mode.maps" :key="m" type="button" class="map-card" :class="{ selected: map === m }" @click="map = m">
+              <img :src="`/maps/${m}.png`" :alt="mapNames[m] ?? m" loading="lazy" />
+              <span>{{ mapNames[m] ?? m }}</span>
+              <i v-if="map === m" class="pi pi-check-circle" />
+            </button>
+          </div>
+          <div v-else class="workshop-row">
+            <InputText v-model="workshopId" placeholder="ID карты из мастерской, например 3070284539" />
+            <p class="muted">Сервер сам скачает карту из Steam Workshop при запуске. ID — число из ссылки steamcommunity.com/sharedfiles/filedetails/?id=…</p>
+          </div>
+        </div>
+
+        <div class="launch-block">
+          <label>Игроки и боты</label>
+          <div class="settings-grid">
+            <div class="setting"><span>Макс. игроков: <b>{{ maxPlayers }}</b></span><Slider v-model="maxPlayers" :min="2" :max="32" /></div>
+            <div class="setting toggle"><span>Боты<small>bot_quota_mode fill — добивают до квоты</small></span><ToggleSwitch v-model="botsEnabled" /></div>
+            <div class="setting" :class="{ disabled: !botsEnabled }"><span>Количество ботов: <b>{{ botQuota }}</b></span><Slider v-model="botQuota" :min="0" :max="12" :disabled="!botsEnabled" /></div>
+            <div class="setting" :class="{ disabled: !botsEnabled }"><span>Сложность ботов</span><Select v-model="botDifficulty" :options="difficulties" optionLabel="label" optionValue="value" :disabled="!botsEnabled" /></div>
+          </div>
+        </div>
+
+        <div class="launch-block">
+          <label>Сервер</label>
+          <div class="settings-grid">
+            <div class="setting toggle"><span>VAC<small>защита от читов; несовместима с режимами ниже</small></span><ToggleSwitch v-model="vac" /></div>
+            <div class="setting toggle"><span>Огонь по своим<small>mp_friendlyfire</small></span><ToggleSwitch v-model="friendlyFire" /></div>
+            <div class="setting toggle"><span>Режим тренировки<small>sv_cheats, 60 000$, покупка везде, раунды по 60 мин, respawn</small></span><ToggleSwitch v-model="practice" /></div>
+            <div class="setting toggle"><span>Бесконечные патроны<small>sv_infinite_ammo 1, включает sv_cheats</small></span><ToggleSwitch v-model="infiniteAmmo" /></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Standalone server card when running -->
+    <article v-else class="server-card alone" :style="{ '--map-image': `url(/maps/${displayMap}.png)` }">
       <div class="server-shade" />
       <div class="server-card-main">
         <div class="server-card-title"><span class="server-index">01</span><div><h2>Verona #1</h2><p>{{ mode.label }} · {{ displayMapName }}</p></div></div>
@@ -132,62 +200,11 @@ onUnmounted(() => { clearInterval(timer); void hub.stop() })
         <span><i class="pi pi-map" /> {{ displayMapName }}</span>
         <button class="copy-address" type="button" title="Скопировать адрес" @click="copyAddress"><i class="pi pi-copy" /> localhost:27015</button>
       </div>
-      <div class="server-card-actions" v-if="status?.container.running">
+      <div class="server-card-actions">
         <Button label="Перезапустить" icon="pi pi-refresh" severity="secondary" size="small" :loading="busy" @click="action('restart')" />
         <Button label="Остановить" icon="pi pi-stop" severity="danger" size="small" outlined :loading="busy" @click="action('stop')" />
       </div>
     </article>
-  </section>
-
-  <section class="panel launch-panel" v-if="status && !status.container.running">
-    <div class="launch-head">
-      <div><h2>Запуск сервера</h2><p>Режим, карта и настройки применяются при старте.</p></div>
-      <Button label="Запустить сервер" icon="pi pi-play" size="large" :loading="busy" @click="action('start')" />
-    </div>
-
-    <div class="launch-block">
-      <label>Режим игры</label>
-      <SelectButton v-model="mode" :options="modes" optionLabel="label" :allowEmpty="false" />
-      <p class="muted">{{ mode.hint }}</p>
-    </div>
-
-    <div class="launch-block">
-      <div class="launch-row">
-        <label>Карта</label>
-        <SelectButton v-model="mapSource" :options="mapSources" optionLabel="label" optionValue="value" :allowEmpty="false" />
-      </div>
-      <div v-if="mapSource === 'official'" class="map-grid">
-        <button v-for="m in mode.maps" :key="m" type="button" class="map-card" :class="{ selected: map === m }" @click="map = m">
-          <img :src="`/maps/${m}.png`" :alt="mapNames[m] ?? m" loading="lazy" />
-          <span>{{ mapNames[m] ?? m }}</span>
-          <i v-if="map === m" class="pi pi-check-circle" />
-        </button>
-      </div>
-      <div v-else class="workshop-row">
-        <InputText v-model="workshopId" placeholder="ID карты из мастерской, например 3070284539" />
-        <p class="muted">Сервер сам скачает карту из Steam Workshop при запуске. ID — число из ссылки steamcommunity.com/sharedfiles/filedetails/?id=…</p>
-      </div>
-    </div>
-
-    <div class="launch-block">
-      <label>Игроки и боты</label>
-      <div class="settings-grid">
-        <div class="setting"><span>Макс. игроков: <b>{{ maxPlayers }}</b></span><Slider v-model="maxPlayers" :min="2" :max="32" /></div>
-        <div class="setting toggle"><span>Боты<small>bot_quota_mode fill — добивают до квоты</small></span><ToggleSwitch v-model="botsEnabled" /></div>
-        <div class="setting" :class="{ disabled: !botsEnabled }"><span>Количество ботов: <b>{{ botQuota }}</b></span><Slider v-model="botQuota" :min="0" :max="12" :disabled="!botsEnabled" /></div>
-        <div class="setting" :class="{ disabled: !botsEnabled }"><span>Сложность ботов</span><Select v-model="botDifficulty" :options="difficulties" optionLabel="label" optionValue="value" :disabled="!botsEnabled" /></div>
-      </div>
-    </div>
-
-    <div class="launch-block">
-      <label>Сервер</label>
-      <div class="settings-grid">
-        <div class="setting toggle"><span>VAC<small>защита от читов; несовместима с режимами ниже</small></span><ToggleSwitch v-model="vac" /></div>
-        <div class="setting toggle"><span>Огонь по своим<small>mp_friendlyfire</small></span><ToggleSwitch v-model="friendlyFire" /></div>
-        <div class="setting toggle"><span>Режим тренировки<small>sv_cheats, 60 000$, покупка везде, раунды по 60 мин, respawn</small></span><ToggleSwitch v-model="practice" /></div>
-        <div class="setting toggle"><span>Бесконечные патроны<small>sv_infinite_ammo 1, включает sv_cheats</small></span><ToggleSwitch v-model="infiniteAmmo" /></div>
-      </div>
-    </div>
-  </section>
+  </div>
 
 </template>
