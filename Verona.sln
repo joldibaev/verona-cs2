@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Verona", "src\ServerCore\ServerCore.csproj", "{17A92018-20A8-4A41-BEA2-6AB0EDB9A669}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Verona.Tests", "tests\ServerCore.Tests\ServerCore.Tests.csproj", "{7C021CAE-381E-4D54-AEC2-C607781566C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Verona.Admin", "admin\Verona.Admin\Verona.Admin.csproj", "{8D62B48C-7C44-4D31-BF7A-1D59BC08F4C5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17A92018-20A8-4A41-BEA2-6AB0EDB9A669}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17A92018-20A8-4A41-BEA2-6AB0EDB9A669}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17A92018-20A8-4A41-BEA2-6AB0EDB9A669}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17A92018-20A8-4A41-BEA2-6AB0EDB9A669}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C021CAE-381E-4D54-AEC2-C607781566C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C021CAE-381E-4D54-AEC2-C607781566C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C021CAE-381E-4D54-AEC2-C607781566C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C021CAE-381E-4D54-AEC2-C607781566C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D62B48C-7C44-4D31-BF7A-1D59BC08F4C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D62B48C-7C44-4D31-BF7A-1D59BC08F4C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D62B48C-7C44-4D31-BF7A-1D59BC08F4C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D62B48C-7C44-4D31-BF7A-1D59BC08F4C5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
