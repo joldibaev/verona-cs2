@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DownloadSimple,
+  Key,
   MagnifyingGlass,
   Plus,
   ShareNetwork,
@@ -17,6 +18,7 @@ import {
   type Glove,
   type Me,
   type Skin,
+  type StickerPlacement,
 } from "../api";
 import { faceitLevel } from "../faceit";
 import {
@@ -78,6 +80,29 @@ interface CatalogAgent {
   color: string;
   image: string;
 }
+interface CatalogSticker {
+  id: number;
+  name: string;
+  color: string;
+  image: string;
+  effect?: string | null;
+}
+interface CatalogKeychain {
+  id: number;
+  name: string;
+  color: string;
+  image: string;
+}
+// A fresh sticker sits centred, unworn and unrotated; only its schema id is known.
+const newSticker = (slot: number, stickerId: number): StickerPlacement => ({
+  slot,
+  stickerId,
+  wear: 0,
+  scale: 1,
+  rotation: 0,
+  offsetX: 0,
+  offsetY: 0,
+});
 interface GloveDraft {
   glove: CatalogGlove | null;
   wear: number;
@@ -188,6 +213,98 @@ function TeamSelect({
     </div>
   );
 }
+// Drag pad mapping the pointer to a normalised offset in [-1, 1] on each axis,
+// with the sticker preview rotated in place. Stands in for cybershoke's 3D drag.
+function StickerPad({
+  x,
+  y,
+  rotation,
+  image,
+  disabled,
+  onChange,
+}: {
+  x: number;
+  y: number;
+  rotation: number;
+  image?: string;
+  disabled?: boolean;
+  onChange: (x: number, y: number) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const move = (e: React.PointerEvent) => {
+    if (disabled || e.buttons === 0) return;
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const nx = Math.min(Math.max(((e.clientX - r.left) / r.width) * 2 - 1, -1), 1);
+    const ny = Math.min(Math.max(((e.clientY - r.top) / r.height) * 2 - 1, -1), 1);
+    onChange(+nx.toFixed(3), +ny.toFixed(3));
+  };
+  return (
+    <div
+      ref={ref}
+      className={`sticker-pad ${disabled ? "is-disabled" : ""}`}
+      onPointerDown={(e) => {
+        if (disabled) return;
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+        move(e);
+      }}
+      onPointerMove={move}
+    >
+      <span
+        className="sticker-pad-marker"
+        style={{
+          left: `${((x + 1) / 2) * 100}%`,
+          top: `${((y + 1) / 2) * 100}%`,
+          transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+        }}
+      >
+        {image && <img src={image} alt="" />}
+      </span>
+    </div>
+  );
+}
+// Circular control returning an angle in degrees (-180..180 from atan2).
+function RotationDial({
+  value,
+  disabled,
+  onChange,
+}: {
+  value: number;
+  disabled?: boolean;
+  onChange: (deg: number) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const move = (e: React.PointerEvent) => {
+    if (disabled || e.buttons === 0) return;
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width / 2,
+      cy = r.top + r.height / 2;
+    onChange(
+      Math.round((Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI),
+    );
+  };
+  return (
+    <div
+      ref={ref}
+      className={`rot-dial ${disabled ? "is-disabled" : ""}`}
+      onPointerDown={(e) => {
+        if (disabled) return;
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+        move(e);
+      }}
+      onPointerMove={move}
+    >
+      <span
+        className="rot-dial-handle"
+        style={{ transform: `rotate(${value}deg)` }}
+      />
+      <b>{value}°</b>
+    </div>
+  );
+}
 export default function SkinchangerView() {
   const [params] = useSearchParams(),
     [me, setMe] = useState<Me | null>(null),
@@ -197,6 +314,8 @@ export default function SkinchangerView() {
     [skinMap, setSkinMap] = useState(new Map<string, CatalogSkin[]>()),
     [gloves, setGloves] = useState<CatalogGlove[]>([]),
     [agents, setAgents] = useState<CatalogAgent[]>([]),
+    [stickerCatalog, setStickerCatalog] = useState<CatalogSticker[]>([]),
+    [keychainCatalog, setKeychainCatalog] = useState<CatalogKeychain[]>([]),
     [loadout, setLoadout] = useState<CosmeticLoadout>({
       skins: [],
       gloves: [],
@@ -212,6 +331,18 @@ export default function SkinchangerView() {
     [seed, setSeed] = useState(0),
     [statTrak, setStatTrak] = useState(false),
     [nameTag, setNameTag] = useState(""),
+    // The open weapon's stickers (up to 5, keyed by slot) and keychain are edited as a
+    // draft and persisted together with the skin in saveSkin.
+    [stickerDraft, setStickerDraft] = useState<StickerPlacement[]>([]),
+    [keychainDraft, setKeychainDraft] = useState<{ id: number; seed: number } | null>(
+      null,
+    ),
+    [activeSlot, setActiveSlot] = useState<number | null>(null),
+    // Nested picker overlaying the weapon dialog: choose a sticker for a slot or the keychain.
+    [stickerPicker, setStickerPicker] = useState<
+      { kind: "sticker"; slot: number } | { kind: "keychain" } | null
+    >(null),
+    [stickerSearch, setStickerSearch] = useState(""),
     [pickerSearch, setPickerSearch] = useState(""),
     [collectionOpen, setCollectionOpen] = useState(false),
     [collectionName, setCollectionName] = useState(""),
@@ -252,6 +383,14 @@ export default function SkinchangerView() {
     myAgents = useMemo(
       () => Object.fromEntries(loadout.agents.map((a) => [a.team, a])),
       [loadout],
+    ),
+    stickerById = useMemo(
+      () => new Map(stickerCatalog.map((s) => [s.id, s])),
+      [stickerCatalog],
+    ),
+    keychainById = useMemo(
+      () => new Map(keychainCatalog.map((k) => [k.id, k])),
+      [keychainCatalog],
     );
   const getSkin = (w: string) => {
       const x = skins[`${w}:both`] ?? skins[`${w}:ct`] ?? skins[`${w}:t`];
@@ -284,12 +423,15 @@ export default function SkinchangerView() {
       const identity = await getMe();
       if (!active) return;
       setMe(identity);
-      const [cat, cos] = await Promise.all([
+      const [cat, cos, stk] = await Promise.all([
         fetch("/skins-catalog.json").then((r) => r.json()),
         fetch("/cosmetics-catalog.json").then((r) => r.json()),
+        fetch("/stickers-catalog.json").then((r) => r.json()),
       ]);
       if (!active) return;
       setWeapons(cat.weapons);
+      setStickerCatalog(stk.stickers);
+      setKeychainCatalog(stk.keychains);
       const grouped = new Map<string, CatalogSkin[]>();
       for (const s of cat.skins) {
         const a = grouped.get(s.weapon) ?? [];
@@ -356,6 +498,13 @@ export default function SkinchangerView() {
     setSeed(set?.seed ?? 0);
     setStatTrak(set?.statTrak ?? false);
     setNameTag(set?.nameTag ?? "");
+    setStickerDraft(set?.stickers ? set.stickers.map((s) => ({ ...s })) : []);
+    setKeychainDraft(
+      set?.keychainId
+        ? { id: set.keychainId, seed: set.keychainSeed ?? 0 }
+        : null,
+    );
+    setActiveSlot(null);
   }
   function openWeapon(w: Weapon) {
     const s = w.team === "both" ? "both" : w.team;
@@ -382,11 +531,33 @@ export default function SkinchangerView() {
         seed,
         statTrak,
         nameTag: nameTag.trim() || null,
+        stickers: stickerDraft,
+        keychainId: keychainDraft?.id ?? null,
+        keychainSeed: keychainDraft?.seed ?? 0,
       }),
     });
     await load();
     setPicker(null);
     toast.success("Скин сохранён");
+  }
+  // Sticker slot helpers operating on the draft; a slot holds at most one sticker.
+  const slotSticker = (slot: number) =>
+    stickerDraft.find((s) => s.slot === slot) ?? null;
+  function applySticker(slot: number, stickerId: number) {
+    setStickerDraft((d) => [
+      ...d.filter((s) => s.slot !== slot),
+      newSticker(slot, stickerId),
+    ]);
+    setActiveSlot(slot);
+  }
+  function patchSlot(slot: number, patch: Partial<StickerPlacement>) {
+    setStickerDraft((d) =>
+      d.map((s) => (s.slot === slot ? { ...s, ...patch } : s)),
+    );
+  }
+  function removeSlot(slot: number) {
+    setStickerDraft((d) => d.filter((s) => s.slot !== slot));
+    setActiveSlot((a) => (a === slot ? null : a));
   }
   async function resetSkin() {
     if (!picker) return;
@@ -808,6 +979,142 @@ export default function SkinchangerView() {
               onChange={(e) => setSeed(+e.target.value)}
             />
           </div>
+          <div className="sticker-section">
+            <div className="cfg-slider-head">
+              <span className="cfg-title">Стикеры и брелок</span>
+            </div>
+            <div className="sticker-slots">
+              {[0, 1, 2, 3, 4].map((slot) => {
+                const s = slotSticker(slot);
+                const cat = s ? stickerById.get(s.stickerId) : null;
+                return (
+                  <button
+                    type="button"
+                    key={slot}
+                    className={`sticker-slot ${activeSlot === slot ? "active" : ""} ${s ? "filled" : ""}`}
+                    disabled={!picked}
+                    onClick={() =>
+                      s
+                        ? setActiveSlot((a) => (a === slot ? null : slot))
+                        : setStickerPicker({ kind: "sticker", slot })
+                    }
+                    title={cat?.name ?? `Слот ${slot + 1}`}
+                  >
+                    {cat ? (
+                      <img src={cat.image} alt="" />
+                    ) : (
+                      <Plus className="sticker-slot-icon" />
+                    )}
+                    {s && (
+                      <em
+                        className="sticker-slot-x"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeSlot(slot);
+                        }}
+                      >
+                        <Trash />
+                      </em>
+                    )}
+                  </button>
+                );
+              })}
+              {(() => {
+                const kc = keychainDraft
+                  ? keychainById.get(keychainDraft.id)
+                  : null;
+                return (
+                  <button
+                    type="button"
+                    className={`sticker-slot keychain ${keychainDraft ? "filled" : ""}`}
+                    disabled={!picked}
+                    onClick={() => setStickerPicker({ kind: "keychain" })}
+                    title={kc?.name ?? "Брелок"}
+                  >
+                    {kc ? (
+                      <img src={kc.image} alt="" />
+                    ) : (
+                      <Key className="sticker-slot-icon" />
+                    )}
+                    {keychainDraft && (
+                      <em
+                        className="sticker-slot-x"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setKeychainDraft(null);
+                        }}
+                      >
+                        <Trash />
+                      </em>
+                    )}
+                  </button>
+                );
+              })()}
+            </div>
+            {activeSlot !== null &&
+              slotSticker(activeSlot) &&
+              (() => {
+                const s = slotSticker(activeSlot)!;
+                const cat = stickerById.get(s.stickerId);
+                return (
+                  <div className="sticker-editor">
+                    <div className="sticker-editor-main">
+                      <StickerPad
+                        x={s.offsetX}
+                        y={s.offsetY}
+                        rotation={s.rotation}
+                        image={cat?.image}
+                        onChange={(x, y) =>
+                          patchSlot(activeSlot, { offsetX: x, offsetY: y })
+                        }
+                      />
+                      <RotationDial
+                        value={s.rotation}
+                        onChange={(deg) =>
+                          patchSlot(activeSlot, { rotation: deg })
+                        }
+                      />
+                    </div>
+                    <div className="sticker-editor-sliders">
+                      <div className="cfg-slider">
+                        <div className="cfg-slider-head">
+                          <span className="cfg-title">Износ</span>
+                          <span className="cfg-value">{s.wear.toFixed(2)}</span>
+                        </div>
+                        <input
+                          className="range-slider pattern-slider"
+                          type="range"
+                          min={0}
+                          max={1}
+                          step={0.01}
+                          value={s.wear}
+                          onChange={(e) =>
+                            patchSlot(activeSlot, { wear: +e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="cfg-slider">
+                        <div className="cfg-slider-head">
+                          <span className="cfg-title">Масштаб</span>
+                          <span className="cfg-value">{s.scale.toFixed(2)}</span>
+                        </div>
+                        <input
+                          className="range-slider pattern-slider"
+                          type="range"
+                          min={0.2}
+                          max={3}
+                          step={0.05}
+                          value={s.scale}
+                          onChange={(e) =>
+                            patchSlot(activeSlot, { scale: +e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+          </div>
           <Input
             className="cfg-search"
             value={pickerSearch}
@@ -837,6 +1144,91 @@ export default function SkinchangerView() {
                 <span>{s.name.split("| ")[1] ?? s.name}</span>
               </button>
             ))}
+        </div>
+      </Dialog>
+      <Dialog
+        open={!!stickerPicker}
+        onOpenChange={(v) => {
+          if (!v) {
+            setStickerPicker(null);
+            setStickerSearch("");
+          }
+        }}
+        title={
+          stickerPicker?.kind === "keychain" ? "Выбор брелка" : "Выбор стикера"
+        }
+        wide
+        footer={
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setStickerPicker(null);
+              setStickerSearch("");
+            }}
+          >
+            Закрыть
+          </Button>
+        }
+      >
+        <div className="skin-config">
+          <Input
+            className="cfg-search"
+            value={stickerSearch}
+            onChange={(e) => setStickerSearch(e.target.value)}
+            placeholder="Поиск по названию"
+            autoFocus
+          />
+        </div>
+        <div className="skin-grid">
+          {stickerPicker &&
+            (() => {
+              const q = stickerSearch.toLowerCase();
+              if (stickerPicker.kind === "keychain")
+                return keychainCatalog
+                  .filter((k) => k.name.toLowerCase().includes(q))
+                  .slice()
+                  .sort((a, b) => rarityRank(b.color) - rarityRank(a.color))
+                  .slice(0, 120)
+                  .map((k) => (
+                    <button
+                      key={k.id}
+                      type="button"
+                      className={`skin-card ${keychainDraft?.id === k.id ? "selected" : ""}`}
+                      style={{ "--rarity": k.color } as React.CSSProperties}
+                      onClick={() => {
+                        setKeychainDraft((kd) => ({
+                          id: k.id,
+                          seed: kd?.seed ?? 0,
+                        }));
+                        setStickerPicker(null);
+                        setStickerSearch("");
+                      }}
+                    >
+                      <img src={k.image} />
+                      <span>{k.name}</span>
+                    </button>
+                  ));
+              const slot = stickerPicker.slot;
+              return stickerCatalog
+                .filter((s) => s.name.toLowerCase().includes(q))
+                .slice(0, 120)
+                .map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className={`skin-card ${slotSticker(slot)?.stickerId === s.id ? "selected" : ""}`}
+                    style={{ "--rarity": s.color } as React.CSSProperties}
+                    onClick={() => {
+                      applySticker(slot, s.id);
+                      setStickerPicker(null);
+                      setStickerSearch("");
+                    }}
+                  >
+                    <img src={s.image} />
+                    <span>{s.name}</span>
+                  </button>
+                ));
+            })()}
         </div>
       </Dialog>
       <Dialog

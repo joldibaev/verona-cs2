@@ -39,6 +39,15 @@ export interface Player {
   banReason: string | null; banExpiresAt: string | null
 }
 
+export interface StickerPlacement {
+  slot: number
+  stickerId: number
+  wear: number
+  scale: number
+  rotation: number
+  offsetX: number
+  offsetY: number
+}
 export interface Skin {
   weapon: string
   team: 'both' | 'ct' | 't'
@@ -47,6 +56,9 @@ export interface Skin {
   seed: number
   statTrak?: boolean
   nameTag?: string | null
+  stickers?: StickerPlacement[]
+  keychainId?: number | null
+  keychainSeed?: number
 }
 export interface Glove { team: 'ct' | 't'; definitionIndex: number; paintKit: number; wear: number; seed: number }
 export interface Agent { team: 'ct' | 't'; model: string }

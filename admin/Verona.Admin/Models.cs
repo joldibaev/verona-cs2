@@ -1,9 +1,30 @@
+using System.Text.Json;
+
 namespace Verona.Admin;
 
 // SteamID64 must cross JSON as text: JavaScript numbers cannot safely represent all 64-bit IDs.
 public sealed record PlayerSnapshot(string SteamId, string Name, int Slot, string Team, string IpAddress);
 public sealed record HeartbeatRequest(string ServerId, string Map, IReadOnlyList<PlayerSnapshot> Players);
-public sealed record SkinInput(string Weapon, string Team, int PaintKit, float Wear, int Seed, bool StatTrak = false, string? NameTag = null);
+public sealed record StickerInput(int Slot, int StickerId, float Wear = 0, float Scale = 1, float Rotation = 0, float OffsetX = 0, float OffsetY = 0);
+
+// Stickers ride along in a jsonb column on the skin row so every collection copy,
+// team migration and delete carries them automatically without extra tables.
+public static class SkinJson
+{
+    public static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web);
+    public static IReadOnlyList<StickerInput>? ParseStickers(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return null;
+        var list = JsonSerializer.Deserialize<List<StickerInput>>(json, Options);
+        return list is { Count: > 0 } ? list : null;
+    }
+    public static string SerializeStickers(IReadOnlyList<StickerInput>? stickers) =>
+        JsonSerializer.Serialize(stickers ?? [], Options);
+}
+public sealed record SkinInput(
+    string Weapon, string Team, int PaintKit, float Wear, int Seed,
+    bool StatTrak = false, string? NameTag = null,
+    IReadOnlyList<StickerInput>? Stickers = null, int? KeychainId = null, int KeychainSeed = 0);
 public sealed record GloveInput(string Team, int DefinitionIndex, int PaintKit, float Wear, int Seed);
 public sealed record AgentInput(string Team, string Model);
 public sealed record PlayerLoadout(IReadOnlyList<SkinInput> Skins, IReadOnlyList<GloveInput> Gloves, IReadOnlyList<AgentInput> Agents);

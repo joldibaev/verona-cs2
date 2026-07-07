@@ -293,6 +293,14 @@ public sealed class WeaponSkinsModule
             SetTextureAttributes(item.NetworkedDynamicAttributes.Handle, skin);
             SetTextureAttributes(item.AttributeList.Handle, skin);
 
+            // Stickers and the keychain are stored on the same economy attribute lists.
+            // Every slot is written on each apply so removing a sticker (id 0) reliably
+            // clears the previous decal instead of leaving a stale one behind.
+            SetStickerAttributes(item.NetworkedDynamicAttributes.Handle, skin);
+            SetStickerAttributes(item.AttributeList.Handle, skin);
+            SetKeychainAttributes(item.NetworkedDynamicAttributes.Handle, skin);
+            SetKeychainAttributes(item.AttributeList.Handle, skin);
+
             // Assigning schema refs changes server memory, but SetStateChanged is required
             // for CounterStrikeSharp to replicate each value to connected clients.
             Utilities.SetStateChanged(weapon, "CEconEntity", "m_nFallbackPaintKit");
@@ -311,6 +319,33 @@ public sealed class WeaponSkinsModule
         _setOrAddAttribute.Invoke(attributeList, "set item texture prefab", skin.PaintKit);
         _setOrAddAttribute.Invoke(attributeList, "set item texture seed", skin.Seed);
         _setOrAddAttribute.Invoke(attributeList, "set item texture wear", skin.Wear);
+    }
+
+    private void SetStickerAttributes(nint attributeList, SkinDefinition skin)
+    {
+        // Slots 0-4 map to the five sticker positions CS2 exposes. Each slot is always
+        // written: unused slots stay at id 0 so a removed sticker does not persist.
+        for (var slot = 0; slot < 5; slot++)
+        {
+            var sticker = skin.Stickers?.FirstOrDefault(s => s.Slot == slot);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} id", sticker?.StickerId ?? 0);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} wear", sticker?.Wear ?? 0f);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} scale", sticker?.Scale ?? 1f);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} rotation", sticker?.Rotation ?? 0f);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} offset x", sticker?.OffsetX ?? 0f);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} offset y", sticker?.OffsetY ?? 0f);
+        }
+    }
+
+    private void SetKeychainAttributes(nint attributeList, SkinDefinition skin)
+    {
+        // A single keychain occupies slot 0. It cannot be repositioned by the admin UI,
+        // so x/y/z stay at 0 and only the schema id and seed vary. Id 0 clears it.
+        _setOrAddAttribute.Invoke(attributeList, "keychain slot 0 id", skin.KeychainId ?? 0);
+        _setOrAddAttribute.Invoke(attributeList, "keychain slot 0 x", 0f);
+        _setOrAddAttribute.Invoke(attributeList, "keychain slot 0 y", 0f);
+        _setOrAddAttribute.Invoke(attributeList, "keychain slot 0 z", 0f);
+        _setOrAddAttribute.Invoke(attributeList, "keychain slot 0 seed", skin.KeychainSeed);
     }
 
     // Bots are intentionally excluded because skins.json is keyed by persistent SteamID64.

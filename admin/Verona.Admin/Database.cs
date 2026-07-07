@@ -32,12 +32,18 @@ public static class Database
             seed integer NOT NULL CHECK (seed >= 0 AND seed <= 1000),
             stat_trak boolean NOT NULL DEFAULT false,
             name_tag varchar(20) NULL,
+            keychain_id integer NULL,
+            keychain_seed integer NOT NULL DEFAULT 0,
+            stickers jsonb NOT NULL DEFAULT '[]',
             updated_at timestamptz NOT NULL DEFAULT now(),
             PRIMARY KEY (steam_id, weapon, team)
         );
         ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS team varchar(4) NOT NULL DEFAULT 'both';
         ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS stat_trak boolean NOT NULL DEFAULT false;
         ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS name_tag varchar(20) NULL;
+        ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS keychain_id integer NULL;
+        ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS keychain_seed integer NOT NULL DEFAULT 0;
+        ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS stickers jsonb NOT NULL DEFAULT '[]';
         DO $$ BEGIN
             ALTER TABLE player_weapon_skins ADD CONSTRAINT player_weapon_skins_team_check CHECK (team IN ('both','ct','t'));
         EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -105,11 +111,17 @@ public static class Database
             seed integer NOT NULL,
             stat_trak boolean NOT NULL DEFAULT false,
             name_tag varchar(20) NULL,
+            keychain_id integer NULL,
+            keychain_seed integer NOT NULL DEFAULT 0,
+            stickers jsonb NOT NULL DEFAULT '[]',
             PRIMARY KEY(collection_id,weapon,team)
         );
         ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS team varchar(4) NOT NULL DEFAULT 'both';
         ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS stat_trak boolean NOT NULL DEFAULT false;
         ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS name_tag varchar(20) NULL;
+        ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS keychain_id integer NULL;
+        ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS keychain_seed integer NOT NULL DEFAULT 0;
+        ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS stickers jsonb NOT NULL DEFAULT '[]';
         DO $$ BEGIN
             ALTER TABLE skin_collection_items ADD CONSTRAINT skin_collection_items_team_check CHECK (team IN ('both','ct','t'));
         EXCEPTION WHEN duplicate_object THEN NULL; END $$;

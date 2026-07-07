@@ -109,7 +109,10 @@ public sealed class AdminApiClient : IDisposable
             {
                 _skins.UpdatePlayerLoadout(
                     steamId,
-                    loadout.Skins.Select(x => new KeyValuePair<string, SkinDefinition>($"{x.Team}:{x.Weapon}", new(x.PaintKit, x.Wear, x.Seed, x.StatTrak, x.NameTag))),
+                    loadout.Skins.Select(x => new KeyValuePair<string, SkinDefinition>($"{x.Team}:{x.Weapon}", new(
+                        x.PaintKit, x.Wear, x.Seed, x.StatTrak, x.NameTag,
+                        x.Stickers?.Select(s => new StickerDefinition(s.Slot, s.StickerId, s.Wear, s.Scale, s.Rotation, s.OffsetX, s.OffsetY)).ToArray(),
+                        x.KeychainId, x.KeychainSeed))),
                     loadout.Gloves.Select(x => new KeyValuePair<string, GloveDefinition>(x.Team, new((ushort)x.DefinitionIndex, x.PaintKit, x.Wear, x.Seed))),
                     loadout.Agents.Select(x => new KeyValuePair<string, AgentDefinition>(x.Team, new(x.Model))));
                 afterUpdate();
@@ -135,7 +138,11 @@ public sealed class AdminApiClient : IDisposable
     private sealed record Heartbeat(string ServerId, string Map, IReadOnlyList<PlayerDto> Players);
     private sealed record PlayerDto(string SteamId, string Name, int Slot, string Team, string IpAddress);
     private sealed record ServerCommandDto(long Id, string Type, string? SteamId, string? Value, string? Reason);
-    private sealed record SkinDto(string Weapon, string Team, int PaintKit, float Wear, int Seed, bool StatTrak = false, string? NameTag = null);
+    private sealed record StickerDto(int Slot, int StickerId, float Wear = 0, float Scale = 1, float Rotation = 0, float OffsetX = 0, float OffsetY = 0);
+    private sealed record SkinDto(
+        string Weapon, string Team, int PaintKit, float Wear, int Seed,
+        bool StatTrak = false, string? NameTag = null,
+        StickerDto[]? Stickers = null, int? KeychainId = null, int KeychainSeed = 0);
     private sealed record GloveDto(string Team, int DefinitionIndex, int PaintKit, float Wear, int Seed);
     private sealed record AgentDto(string Team, string Model);
     private sealed record LoadoutDto(SkinDto[] Skins, GloveDto[] Gloves, AgentDto[] Agents);
