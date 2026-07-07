@@ -25,7 +25,7 @@ import {
   Dialog,
   Input,
   Select,
-  Slider,
+  Switch,
   Textarea,
 } from "../components/ui";
 import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
@@ -78,6 +78,15 @@ interface CatalogAgent {
   color: string;
   image: string;
 }
+interface GloveDraft {
+  glove: CatalogGlove | null;
+  wear: number;
+  seed: number;
+}
+const emptyGloveDraft: Record<"ct" | "t", GloveDraft> = {
+  ct: { glove: null, wear: 0.01, seed: 0 },
+  t: { glove: null, wear: 0.01, seed: 0 },
+};
 const categories = [
   ["all", "Всё"],
   ["sfui_invpanel_filter_melee", "Ножи"],
@@ -89,6 +98,96 @@ const categories = [
   ["gloves", "Перчатки"],
   ["agents", "Агенты"],
 ];
+// CS2 rarity tiers, lowest → highest. Used to sort the picker so the rarest skins
+// surface first, mirroring the in-game inventory ordering.
+const RARITY_RANK: Record<string, number> = {
+  "#b0c3d9": 1,
+  "#5e98d9": 2,
+  "#4b69ff": 3,
+  "#8847ff": 4,
+  "#d32ce6": 5,
+  "#eb4b4b": 6,
+  "#e4ae39": 7,
+};
+const rarityRank = (color?: string) =>
+  (color && RARITY_RANK[color.toLowerCase()]) || 0;
+// Standard CS2 wear buckets; only the abbreviation is shown next to the float.
+const wearName = (wear: number) =>
+  wear < 0.07 ? "FN" : wear < 0.15 ? "MW" : wear < 0.38 ? "FT" : wear < 0.45 ? "WW" : "BS";
+type TeamScope = "both" | "ct" | "t";
+const TEAM_ICON: Record<TeamScope, string> = {
+  t: "/img/skins/t-side.svg",
+  both: "/img/skins/both-side.svg",
+  ct: "/img/skins/ct-side.svg",
+};
+// The bar always spans the full 0..1 float scale so the wear-tier colours line up
+// at their real boundaries. Regions outside the skin's allowed range are locked out,
+// which is how CS2 marketplaces show that a skin only exists in certain conditions.
+function FloatBar({
+  value,
+  min,
+  max,
+  disabled,
+  onChange,
+}: {
+  value: number;
+  min: number;
+  max: number;
+  disabled?: boolean;
+  onChange: (value: number) => void;
+}) {
+  const clamp = (v: number) => Math.min(Math.max(v, min), max);
+  return (
+    <div className={`float-bar ${disabled ? "is-disabled" : ""}`}>
+      <div className="float-track" />
+      {min > 0 && (
+        <span className="float-lock" style={{ left: 0, width: `${min * 100}%` }} />
+      )}
+      {max < 1 && (
+        <span
+          className="float-lock"
+          style={{ left: `${max * 100}%`, width: `${(1 - max) * 100}%` }}
+        />
+      )}
+      <input
+        className="range-slider float-input"
+        type="range"
+        min={0}
+        max={1}
+        step={0.0001}
+        value={value}
+        disabled={disabled}
+        onChange={(e) => onChange(clamp(+e.target.value))}
+      />
+    </div>
+  );
+}
+function TeamSelect({
+  options,
+  value,
+  onChange,
+}: {
+  options: TeamScope[];
+  value: string;
+  onChange: (team: TeamScope) => void;
+}) {
+  return (
+    <div className="team-select">
+      {options.map((team) => (
+        <button
+          type="button"
+          key={team}
+          className={`team-opt ${value === team ? "active" : ""}`}
+          onClick={() => onChange(team)}
+          title={team.toUpperCase()}
+          aria-label={team.toUpperCase()}
+        >
+          <img src={TEAM_ICON[team]} alt="" />
+        </button>
+      ))}
+    </div>
+  );
+}
 export default function SkinchangerView() {
   const [params] = useSearchParams(),
     [me, setMe] = useState<Me | null>(null),
@@ -111,6 +210,8 @@ export default function SkinchangerView() {
     [picked, setPicked] = useState<CatalogSkin | null>(null),
     [wear, setWear] = useState(0.01),
     [seed, setSeed] = useState(0),
+    [statTrak, setStatTrak] = useState(false),
+    [nameTag, setNameTag] = useState(""),
     [pickerSearch, setPickerSearch] = useState(""),
     [collectionOpen, setCollectionOpen] = useState(false),
     [collectionName, setCollectionName] = useState(""),
@@ -118,12 +219,16 @@ export default function SkinchangerView() {
     [importCode, setImportCode] = useState(""),
     [cosmetic, setCosmetic] = useState<{
       kind: "gloves" | "agents";
-      team: "ct" | "t";
     } | null>(null),
-    [pickedGlove, setPickedGlove] = useState<CatalogGlove | null>(null),
-    [pickedAgent, setPickedAgent] = useState<CatalogAgent | null>(null),
-    [cosmeticWear, setCosmeticWear] = useState(0.01),
-    [cosmeticSeed, setCosmeticSeed] = useState(0);
+    [cosmeticTeam, setCosmeticTeam] = useState<"ct" | "t">("ct"),
+    // Each side keeps its own draft so CT and T can be configured independently in a
+    // single dialog; switching the team toggle never discards the other side's pick.
+    [gloveDraft, setGloveDraft] = useState<Record<"ct" | "t", GloveDraft>>(
+      emptyGloveDraft,
+    ),
+    [agentDraft, setAgentDraft] = useState<Record<"ct" | "t", CatalogAgent | null>>(
+      { ct: null, t: null },
+    );
   const target = players.find((p) => p.steamId === targetId) ?? null,
     self = !me?.isAdmin || !target || target.steamId === me.steamId,
     root = self ? "/api/me" : `/api/players/${target!.steamId}`,
@@ -240,11 +345,8 @@ export default function SkinchangerView() {
           .toLowerCase()
           .includes(search.toLowerCase())),
   );
-  function openWeapon(w: Weapon) {
-    const s = w.team === "both" ? "both" : w.team,
-      set = skins[`${w.weapon}:${s}`];
-    setPicker(w);
-    setScope(s);
+  function loadScope(w: Weapon, team: "both" | "ct" | "t") {
+    const set = skins[`${w.weapon}:${team}`];
     setPicked(
       set
         ? (skinMap.get(w.weapon)?.find((x) => x.paint === set.paintKit) ?? null)
@@ -252,21 +354,21 @@ export default function SkinchangerView() {
     );
     setWear(set?.wear ?? 0.01);
     setSeed(set?.seed ?? 0);
+    setStatTrak(set?.statTrak ?? false);
+    setNameTag(set?.nameTag ?? "");
+  }
+  function openWeapon(w: Weapon) {
+    const s = w.team === "both" ? "both" : w.team;
+    setPicker(w);
+    setScope(s);
+    loadScope(w, s);
     setPickerSearch("");
   }
   function changeScope(s: string) {
-    const team = s as "both" | "ct" | "t";
-    setScope(team);
-    if (!picker) return;
-    const set = skins[`${picker.weapon}:${team}`];
-    setPicked(
-      set
-        ? (skinMap.get(picker.weapon)?.find((x) => x.paint === set.paintKit) ??
-            null)
-        : null,
-    );
-    setWear(set?.wear ?? 0.01);
-    setSeed(set?.seed ?? 0);
+    // Only retarget which side the save applies to — keep the skin, float, pattern,
+    // StatTrak and name tag the user is currently configuring instead of reloading
+    // the other team's stored loadout and wiping the in-progress selection.
+    setScope(s as "both" | "ct" | "t");
   }
   async function saveSkin() {
     if (!picker || !picked) return;
@@ -278,6 +380,8 @@ export default function SkinchangerView() {
         paintKit: picked.paint,
         wear,
         seed,
+        statTrak,
+        nameTag: nameTag.trim() || null,
       }),
     });
     await load();
@@ -338,55 +442,72 @@ export default function SkinchangerView() {
       toast.error("Неверный код коллекции");
     }
   }
-  function openCosmetic(kind: "gloves" | "agents", team: "ct" | "t") {
-    setCosmetic({ kind, team });
-    const g = myGloves[team],
-      a = myAgents[team];
-    setPickedGlove(
-      g
-        ? (gloves.find(
-            (x) =>
-              x.definitionIndex === g.definitionIndex &&
-              x.paintKit === g.paintKit,
-          ) ?? null)
+  function openCosmetic(kind: "gloves" | "agents", team: "ct" | "t" = "ct") {
+    setCosmetic({ kind });
+    setCosmeticTeam(team);
+    // Seed both teams' drafts from the saved loadout so the dialog opens with the
+    // current CT and T selections already in place and either can be edited.
+    setGloveDraft({
+      ct: draftFromGlove(myGloves["ct"]),
+      t: draftFromGlove(myGloves["t"]),
+    });
+    setAgentDraft({
+      ct: myAgents["ct"]
+        ? (agents.find((x) => x.model === myAgents["ct"].model) ?? null)
         : null,
-    );
-    setPickedAgent(
-      a ? (agents.find((x) => x.model === a.model) ?? null) : null,
-    );
-    setCosmeticWear(g?.wear ?? 0.01);
-    setCosmeticSeed(g?.seed ?? 0);
+      t: myAgents["t"]
+        ? (agents.find((x) => x.model === myAgents["t"].model) ?? null)
+        : null,
+    });
+  }
+  function draftFromGlove(g?: Glove): GloveDraft {
+    const glove = g
+      ? (gloves.find(
+          (x) =>
+            x.definitionIndex === g.definitionIndex && x.paintKit === g.paintKit,
+        ) ?? null)
+      : null;
+    return { glove, wear: g?.wear ?? 0.01, seed: g?.seed ?? 0 };
   }
   async function saveCosmetic() {
     if (!cosmetic) return;
-    if (cosmetic.kind === "gloves" && pickedGlove)
-      await api(`${root}/gloves/${cosmetic.team}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          team: cosmetic.team,
-          definitionIndex: pickedGlove.definitionIndex,
-          paintKit: pickedGlove.paintKit,
-          wear: cosmeticWear,
-          seed: cosmeticSeed,
-        }),
-      });
-    if (cosmetic.kind === "agents" && pickedAgent)
-      await api(`${root}/agents/${cosmetic.team}`, {
-        method: "PUT",
-        body: JSON.stringify({ team: cosmetic.team, model: pickedAgent.model }),
-      });
+    for (const team of ["ct", "t"] as const) {
+      if (cosmetic.kind === "gloves") {
+        const d = gloveDraft[team];
+        if (d.glove)
+          await api(`${root}/gloves/${team}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              team,
+              definitionIndex: d.glove.definitionIndex,
+              paintKit: d.glove.paintKit,
+              wear: d.wear,
+              seed: d.seed,
+            }),
+          });
+      } else {
+        const a = agentDraft[team];
+        if (a)
+          await api(`${root}/agents/${team}`, {
+            method: "PUT",
+            body: JSON.stringify({ team, model: a.model }),
+          });
+      }
+    }
     await load();
     setCosmetic(null);
     toast.success("Loadout сохранён");
   }
+  // Clears only the side currently shown, both on the server and in the draft, so the
+  // other team's selection is untouched and the dialog stays open for further edits.
   async function resetCosmetic() {
     if (!cosmetic) return;
-    await api(`${root}/${cosmetic.kind}/${cosmetic.team}`, {
-      method: "DELETE",
-    });
+    await api(`${root}/${cosmetic.kind}/${cosmeticTeam}`, { method: "DELETE" });
+    if (cosmetic.kind === "gloves")
+      setGloveDraft((d) => ({ ...d, [cosmeticTeam]: draftFromGlove(undefined) }));
+    else setAgentDraft((d) => ({ ...d, [cosmeticTeam]: null }));
     await load();
-    setCosmetic(null);
-    toast.success("Слот сброшен");
+    toast.success(`Слот ${cosmeticTeam.toUpperCase()} сброшен`);
   }
   return (
     <>
@@ -511,7 +632,7 @@ export default function SkinchangerView() {
           </div>
           {category === "gloves" || category === "agents" ? (
             <div className="weapon-grid">
-              {(["ct", "t"] as const).map((team) => {
+              {(["t", "ct"] as const).map((team) => {
                 const item =
                   category === "gloves" ? getGlove(team) : getAgent(team);
                 return (
@@ -524,13 +645,20 @@ export default function SkinchangerView() {
                     }
                     onClick={() => openCosmetic(category, team)}
                     key={team}
+                    type="button"
                   >
-                    {item && <img src={item.image} />}
+                    <img
+                      className={!item ? "vanilla" : ""}
+                      src={item?.image ?? TEAM_ICON[team]}
+                    />
                     <b>{team === "ct" ? "COUNTER-TERRORIST" : "TERRORIST"}</b>
                     <span>
                       {item?.name ??
                         `Выбрать ${category === "gloves" ? "перчатки" : "агента"}`}
                     </span>
+                    <em className="team-tag">
+                      <img src={TEAM_ICON[team]} alt="" />
+                    </em>
                   </button>
                 );
               })}
@@ -618,52 +746,82 @@ export default function SkinchangerView() {
           </>
         }
       >
-        <div className="picker-toolbar">
-          {picker && (
-            <Tabs value={scope} onValueChange={changeScope}>
-              <TabsList>
-                {(picker.team === "both"
-                  ? ["both", "t", "ct"]
-                  : ([picker.team] as const)
-                ).map((t) => (
-                  <TabsTrigger value={t} key={t}>
-                    {t.toUpperCase()}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          )}
+        <div className="skin-config">
+          <div className="cfg-head">
+            <label className="cfg-stattrak">
+              StatTrak™
+              <Switch
+                checked={statTrak}
+                onCheckedChange={setStatTrak}
+                disabled={!picked}
+              />
+            </label>
+            {picker && (
+              <TeamSelect
+                options={
+                  picker.team === "both"
+                    ? ["t", "both", "ct"]
+                    : [picker.team as TeamScope]
+                }
+                value={scope}
+                onChange={changeScope}
+              />
+            )}
+          </div>
           <Input
+            className="cfg-nametag"
+            value={nameTag}
+            maxLength={20}
+            onChange={(e) => setNameTag(e.target.value)}
+            placeholder="Введите именной ярлык"
+            disabled={!picked}
+          />
+          <div className="cfg-slider">
+            <div className="cfg-slider-head">
+              <span className="cfg-title">
+                Выберите float <i className="cfg-sep">•</i>{" "}
+                <b>{wearName(wear)}</b>
+              </span>
+              <span className="cfg-value">{wear.toFixed(4)}</span>
+            </div>
+            <FloatBar
+              value={wear}
+              min={picked?.minWear ?? 0}
+              max={picked?.maxWear ?? 1}
+              disabled={!picked}
+              onChange={setWear}
+            />
+          </div>
+          <div className="cfg-slider">
+            <div className="cfg-slider-head">
+              <span className="cfg-title">Выберите паттерн</span>
+              <span className="cfg-value">{seed}</span>
+            </div>
+            <input
+              className="range-slider pattern-slider"
+              type="range"
+              min={0}
+              max={1000}
+              step={1}
+              value={seed}
+              disabled={!picked}
+              onChange={(e) => setSeed(+e.target.value)}
+            />
+          </div>
+          <Input
+            className="cfg-search"
             value={pickerSearch}
             onChange={(e) => setPickerSearch(e.target.value)}
             placeholder="Поиск скина"
           />
-          <label>
-            Wear <b>{wear.toFixed(4)}</b>
-            <Slider
-              value={[wear]}
-              onValueChange={(v) => setWear(v[0])}
-              min={picked?.minWear ?? 0}
-              max={picked?.maxWear ?? 1}
-              step={0.0001}
-            />
-          </label>
-          <label>
-            Seed
-            <Input
-              type="number"
-              min={0}
-              max={1000}
-              value={seed}
-              onChange={(e) => setSeed(+e.target.value)}
-            />
-          </label>
         </div>
         <div className="skin-grid">
           {(picker ? (skinMap.get(picker.weapon) ?? []) : [])
             .filter((s) =>
               s.name.toLowerCase().includes(pickerSearch.toLowerCase()),
             )
+            .slice()
+            .sort((a, b) => rarityRank(b.color) - rarityRank(a.color))
             .map((s) => (
               <button
                 className={`skin-card ${picked?.paint === s.paint ? "selected" : ""}`}
@@ -673,6 +831,7 @@ export default function SkinchangerView() {
                   setWear(Math.min(Math.max(wear, s.minWear), s.maxWear));
                 }}
                 key={s.paint}
+                type="button"
               >
                 <img src={s.image} />
                 <span>{s.name.split("| ")[1] ?? s.name}</span>
@@ -683,7 +842,7 @@ export default function SkinchangerView() {
       <Dialog
         open={!!cosmetic}
         onOpenChange={(v) => !v && setCosmetic(null)}
-        title={`${cosmetic?.kind === "gloves" ? "Перчатки" : "Агент"} · ${cosmetic?.team.toUpperCase()}`}
+        title={cosmetic?.kind === "gloves" ? "Перчатки" : "Агенты"}
         wide
         footer={
           <>
@@ -695,7 +854,9 @@ export default function SkinchangerView() {
             </Button>
             <Button
               disabled={
-                cosmetic?.kind === "gloves" ? !pickedGlove : !pickedAgent
+                cosmetic?.kind === "gloves"
+                  ? !gloveDraft.ct.glove && !gloveDraft.t.glove
+                  : !agentDraft.ct && !agentDraft.t
               }
               onClick={saveCosmetic}
             >
@@ -704,56 +865,114 @@ export default function SkinchangerView() {
           </>
         }
       >
-        {cosmetic?.kind === "gloves" && (
-          <div className="picker-toolbar cosmetic-controls">
-            <label>
-              Wear <b>{cosmeticWear.toFixed(4)}</b>
-              <Slider
-                value={[cosmeticWear]}
-                onValueChange={(v) => setCosmeticWear(v[0])}
-                min={pickedGlove?.minWear ?? 0}
-                max={pickedGlove?.maxWear ?? 1}
-                step={0.0001}
-              />
-            </label>
-            <label>
-              Seed
-              <Input
-                type="number"
-                min={0}
-                max={1000}
-                value={cosmeticSeed}
-                onChange={(e) => setCosmeticSeed(+e.target.value)}
-              />
-            </label>
+        <div className="skin-config">
+          <div className="cfg-head">
+            <TeamSelect
+              options={["t", "ct"]}
+              value={cosmeticTeam}
+              onChange={(team) => setCosmeticTeam(team as "ct" | "t")}
+            />
+            <span className="cfg-side-hint">
+              Настраивается{" "}
+              <b>{cosmeticTeam === "ct" ? "COUNTER-TERRORIST" : "TERRORIST"}</b>
+            </span>
           </div>
-        )}
+          {cosmetic?.kind === "gloves" && (
+            <>
+              <div className="cfg-slider">
+                <div className="cfg-slider-head">
+                  <span className="cfg-title">
+                    Выберите float <i className="cfg-sep">•</i>{" "}
+                    <b>{wearName(gloveDraft[cosmeticTeam].wear)}</b>
+                  </span>
+                  <span className="cfg-value">
+                    {gloveDraft[cosmeticTeam].wear.toFixed(4)}
+                  </span>
+                </div>
+                <FloatBar
+                  value={gloveDraft[cosmeticTeam].wear}
+                  min={gloveDraft[cosmeticTeam].glove?.minWear ?? 0}
+                  max={gloveDraft[cosmeticTeam].glove?.maxWear ?? 1}
+                  disabled={!gloveDraft[cosmeticTeam].glove}
+                  onChange={(v) =>
+                    setGloveDraft((d) => ({
+                      ...d,
+                      [cosmeticTeam]: { ...d[cosmeticTeam], wear: v },
+                    }))
+                  }
+                />
+              </div>
+              <div className="cfg-slider">
+                <div className="cfg-slider-head">
+                  <span className="cfg-title">Выберите паттерн</span>
+                  <span className="cfg-value">
+                    {gloveDraft[cosmeticTeam].seed}
+                  </span>
+                </div>
+                <input
+                  className="range-slider pattern-slider"
+                  type="range"
+                  min={0}
+                  max={1000}
+                  step={1}
+                  value={gloveDraft[cosmeticTeam].seed}
+                  disabled={!gloveDraft[cosmeticTeam].glove}
+                  onChange={(e) =>
+                    setGloveDraft((d) => ({
+                      ...d,
+                      [cosmeticTeam]: {
+                        ...d[cosmeticTeam],
+                        seed: +e.target.value,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </>
+          )}
+        </div>
         <div className="skin-grid">
           {cosmetic?.kind === "gloves"
-            ? gloves.map((g) => (
-                <button
-                  className={`skin-card ${pickedGlove?.id === g.id ? "selected" : ""}`}
-                  style={{ "--rarity": g.color } as React.CSSProperties}
-                  onClick={() => {
-                    setPickedGlove(g);
-                    setCosmeticWear(
-                      Math.min(Math.max(cosmeticWear, g.minWear), g.maxWear),
-                    );
-                  }}
-                  key={g.id}
-                >
-                  <img src={g.image} />
-                  <span>{g.name}</span>
-                </button>
-              ))
+            ? gloves
+                .slice()
+                .sort((a, b) => rarityRank(b.color) - rarityRank(a.color))
+                .map((g) => (
+                  <button
+                    className={`skin-card ${gloveDraft[cosmeticTeam].glove?.id === g.id ? "selected" : ""}`}
+                    style={{ "--rarity": g.color } as React.CSSProperties}
+                    onClick={() =>
+                      setGloveDraft((d) => ({
+                        ...d,
+                        [cosmeticTeam]: {
+                          glove: g,
+                          wear: Math.min(
+                            Math.max(d[cosmeticTeam].wear, g.minWear),
+                            g.maxWear,
+                          ),
+                          seed: d[cosmeticTeam].seed,
+                        },
+                      }))
+                    }
+                    key={g.id}
+                    type="button"
+                  >
+                    <img src={g.image} />
+                    <span>{g.name}</span>
+                  </button>
+                ))
             : agents
-                .filter((a) => a.team === cosmetic?.team)
+                .filter((a) => a.team === cosmeticTeam)
+                .slice()
+                .sort((a, b) => rarityRank(b.color) - rarityRank(a.color))
                 .map((a) => (
                   <button
-                    className={`skin-card agent ${pickedAgent?.id === a.id ? "selected" : ""}`}
+                    className={`skin-card agent ${agentDraft[cosmeticTeam]?.id === a.id ? "selected" : ""}`}
                     style={{ "--rarity": a.color } as React.CSSProperties}
-                    onClick={() => setPickedAgent(a)}
+                    onClick={() =>
+                      setAgentDraft((d) => ({ ...d, [cosmeticTeam]: a }))
+                    }
                     key={a.id}
+                    type="button"
                   >
                     <img src={a.image} />
                     <span>{a.name}</span>

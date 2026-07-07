@@ -45,6 +45,8 @@ export interface Skin {
   paintKit: number
   wear: number
   seed: number
+  statTrak?: boolean
+  nameTag?: string | null
 }
 export interface Glove { team: 'ct' | 't'; definitionIndex: number; paintKit: number; wear: number; seed: number }
 export interface Agent { team: 'ct' | 't'; model: string }

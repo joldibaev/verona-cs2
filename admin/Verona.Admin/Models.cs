@@ -3,7 +3,7 @@ namespace Verona.Admin;
 // SteamID64 must cross JSON as text: JavaScript numbers cannot safely represent all 64-bit IDs.
 public sealed record PlayerSnapshot(string SteamId, string Name, int Slot, string Team, string IpAddress);
 public sealed record HeartbeatRequest(string ServerId, string Map, IReadOnlyList<PlayerSnapshot> Players);
-public sealed record SkinInput(string Weapon, string Team, int PaintKit, float Wear, int Seed);
+public sealed record SkinInput(string Weapon, string Team, int PaintKit, float Wear, int Seed, bool StatTrak = false, string? NameTag = null);
 public sealed record GloveInput(string Team, int DefinitionIndex, int PaintKit, float Wear, int Seed);
 public sealed record AgentInput(string Team, string Model);
 public sealed record PlayerLoadout(IReadOnlyList<SkinInput> Skins, IReadOnlyList<GloveInput> Gloves, IReadOnlyList<AgentInput> Agents);

@@ -269,6 +269,9 @@ public sealed class WeaponSkinsModule
             weapon.FallbackPaintKit = skin.PaintKit;
             weapon.FallbackSeed = skin.Seed;
             weapon.FallbackWear = skin.Wear;
+            // FallbackStatTrak is the displayed kill count; -1 hides the module entirely.
+            // We start every StatTrak weapon at 0 kills because the count is cosmetic here.
+            weapon.FallbackStatTrak = skin.StatTrak ? 0 : -1;
 
             // Give the modified view its own economy ID. Reusing the stock item ID lets
             // the client replace our values with its cached inventory representation.
@@ -278,6 +281,12 @@ public sealed class WeaponSkinsModule
             item.ItemIDLow = (uint)(itemId & uint.MaxValue);
             item.ItemIDHigh = (uint)(itemId >> 32);
             item.AccountID = (uint)player.SteamID;
+            // Quality 9 ("strange") is what draws the StatTrak counter; fall back to the
+            // stock quality otherwise so a cleared StatTrak flag does not linger.
+            item.EntityQuality = skin.StatTrak ? 9 : item.EntityQuality;
+            // The custom name tag is stored directly on the economy item view. An empty
+            // string leaves the weapon unnamed, matching a removed name tag.
+            item.CustomName = skin.NameTag ?? string.Empty;
 
             // Current CS2 clients read texture data from economy attribute lists. Keep
             // fallback fields as well, but update both lists through the engine function.
@@ -289,6 +298,7 @@ public sealed class WeaponSkinsModule
             Utilities.SetStateChanged(weapon, "CEconEntity", "m_nFallbackPaintKit");
             Utilities.SetStateChanged(weapon, "CEconEntity", "m_nFallbackSeed");
             Utilities.SetStateChanged(weapon, "CEconEntity", "m_flFallbackWear");
+            Utilities.SetStateChanged(weapon, "CEconEntity", "m_nFallbackStatTrak");
         }
         catch (Exception exception)
         {

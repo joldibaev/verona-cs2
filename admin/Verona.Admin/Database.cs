@@ -30,10 +30,14 @@ public static class Database
             paint_kit integer NOT NULL CHECK (paint_kit > 0),
             wear real NOT NULL CHECK (wear >= 0 AND wear <= 1),
             seed integer NOT NULL CHECK (seed >= 0 AND seed <= 1000),
+            stat_trak boolean NOT NULL DEFAULT false,
+            name_tag varchar(20) NULL,
             updated_at timestamptz NOT NULL DEFAULT now(),
             PRIMARY KEY (steam_id, weapon, team)
         );
         ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS team varchar(4) NOT NULL DEFAULT 'both';
+        ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS stat_trak boolean NOT NULL DEFAULT false;
+        ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS name_tag varchar(20) NULL;
         DO $$ BEGIN
             ALTER TABLE player_weapon_skins ADD CONSTRAINT player_weapon_skins_team_check CHECK (team IN ('both','ct','t'));
         EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -99,9 +103,13 @@ public static class Database
             paint_kit integer NOT NULL,
             wear real NOT NULL,
             seed integer NOT NULL,
+            stat_trak boolean NOT NULL DEFAULT false,
+            name_tag varchar(20) NULL,
             PRIMARY KEY(collection_id,weapon,team)
         );
         ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS team varchar(4) NOT NULL DEFAULT 'both';
+        ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS stat_trak boolean NOT NULL DEFAULT false;
+        ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS name_tag varchar(20) NULL;
         DO $$ BEGIN
             ALTER TABLE skin_collection_items ADD CONSTRAINT skin_collection_items_team_check CHECK (team IN ('both','ct','t'));
         EXCEPTION WHEN duplicate_object THEN NULL; END $$;

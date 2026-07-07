@@ -379,10 +379,10 @@ app.MapPut("/api/players/{steamId}/role", async (string steamId, RoleInput input
 app.MapGet("/api/players/{steamId}/skins", async (string steamId, NpgsqlDataSource db) =>
 {
     var skins = new List<SkinInput>();
-    await using var command = db.CreateCommand("SELECT weapon, team, paint_kit, wear, seed FROM player_weapon_skins WHERE steam_id=$1 ORDER BY weapon,team");
+    await using var command = db.CreateCommand("SELECT weapon, team, paint_kit, wear, seed, stat_trak, name_tag FROM player_weapon_skins WHERE steam_id=$1 ORDER BY weapon,team");
     command.Parameters.AddWithValue(decimal.Parse(steamId));
     await using var reader = await command.ExecuteReaderAsync();
-    while (await reader.ReadAsync()) skins.Add(new(reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetFloat(3), reader.GetInt32(4)));
+    while (await reader.ReadAsync()) skins.Add(ReadSkin(reader));
     return Results.Ok(skins);
 });
 app.MapPut("/api/players/{steamId}/skins/{weapon}", async (string steamId, string weapon, SkinInput input, NpgsqlDataSource db) =>
@@ -402,11 +402,12 @@ app.MapPut("/api/players/{steamId}/skins/{weapon}", async (string steamId, strin
         await clearKnives.ExecuteNonQueryAsync();
     }
     await using var command = db.CreateCommand("""
-        INSERT INTO player_weapon_skins(steam_id, weapon, team, paint_kit, wear, seed) VALUES ($1,$2,$3,$4,$5,$6)
-        ON CONFLICT (steam_id,weapon,team) DO UPDATE SET paint_kit=EXCLUDED.paint_kit, wear=EXCLUDED.wear, seed=EXCLUDED.seed, updated_at=now()
+        INSERT INTO player_weapon_skins(steam_id, weapon, team, paint_kit, wear, seed, stat_trak, name_tag) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+        ON CONFLICT (steam_id,weapon,team) DO UPDATE SET paint_kit=EXCLUDED.paint_kit, wear=EXCLUDED.wear, seed=EXCLUDED.seed, stat_trak=EXCLUDED.stat_trak, name_tag=EXCLUDED.name_tag, updated_at=now()
         """);
     command.Parameters.AddWithValue(decimal.Parse(steamId)); command.Parameters.AddWithValue(weapon);
     command.Parameters.AddWithValue(input.Team); command.Parameters.AddWithValue(input.PaintKit); command.Parameters.AddWithValue(input.Wear); command.Parameters.AddWithValue(input.Seed);
+    command.Parameters.AddWithValue(input.StatTrak); command.Parameters.AddWithValue(NameTagValue(input.NameTag));
     await command.ExecuteNonQueryAsync();
     await Database.Enqueue(db, new CommandInput("refresh_skins", steamId));
     return Results.NoContent();
@@ -456,7 +457,7 @@ app.MapPost("/api/me/collections", async (HttpContext context, CollectionInput i
         {
             if (!ValidSkin(skin.Weapon, skin, weaponTeams)) continue;
             await using var itemCmd = connection.CreateCommand();
-            itemCmd.CommandText = "INSERT INTO skin_collection_items(collection_id,weapon,team,paint_kit,wear,seed) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING";
+            itemCmd.CommandText = "INSERT INTO skin_collection_items(collection_id,weapon,team,paint_kit,wear,seed,stat_trak,name_tag) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT DO NOTHING";
             itemCmd.Transaction = tx;
             itemCmd.Parameters.AddWithValue(id);
             itemCmd.Parameters.AddWithValue(skin.Weapon);
@@ -464,13 +465,15 @@ app.MapPost("/api/me/collections", async (HttpContext context, CollectionInput i
             itemCmd.Parameters.AddWithValue(skin.PaintKit);
             itemCmd.Parameters.AddWithValue(skin.Wear);
             itemCmd.Parameters.AddWithValue(skin.Seed);
+            itemCmd.Parameters.AddWithValue(skin.StatTrak);
+            itemCmd.Parameters.AddWithValue(NameTagValue(skin.NameTag));
             await itemCmd.ExecuteNonQueryAsync();
         }
     }
     else
     {
         await using var copy = connection.CreateCommand();
-        copy.CommandText = "INSERT INTO skin_collection_items(collection_id,weapon,team,paint_kit,wear,seed) SELECT $1,weapon,team,paint_kit,wear,seed FROM player_weapon_skins WHERE steam_id=$2";
+        copy.CommandText = "INSERT INTO skin_collection_items(collection_id,weapon,team,paint_kit,wear,seed,stat_trak,name_tag) SELECT $1,weapon,team,paint_kit,wear,seed,stat_trak,name_tag FROM player_weapon_skins WHERE steam_id=$2";
         copy.Transaction = tx;
         copy.Parameters.AddWithValue(id);
         copy.Parameters.AddWithValue(decimal.Parse(identity.SteamId));
@@ -493,10 +496,10 @@ app.MapGet("/api/me/collections/{id:long}/skins", async (HttpContext context, lo
     check.Parameters.AddWithValue(decimal.Parse(identity.SteamId));
     if (Convert.ToInt32(await check.ExecuteScalarAsync()) == 0) return Results.NotFound();
     var skins = new List<object>();
-    await using var command = db.CreateCommand("SELECT weapon, team, paint_kit, wear, seed FROM skin_collection_items WHERE collection_id=$1 ORDER BY weapon,team");
+    await using var command = db.CreateCommand("SELECT weapon, team, paint_kit, wear, seed, stat_trak, name_tag FROM skin_collection_items WHERE collection_id=$1 ORDER BY weapon,team");
     command.Parameters.AddWithValue(id);
     await using var reader = await command.ExecuteReaderAsync();
-    while (await reader.ReadAsync()) skins.Add(new { weapon = reader.GetString(0), team = reader.GetString(1), paintKit = reader.GetInt32(2), wear = reader.GetFloat(3), seed = reader.GetInt32(4) });
+    while (await reader.ReadAsync()) skins.Add(new { weapon = reader.GetString(0), team = reader.GetString(1), paintKit = reader.GetInt32(2), wear = reader.GetFloat(3), seed = reader.GetInt32(4), statTrak = reader.GetBoolean(5), nameTag = reader.IsDBNull(6) ? null : reader.GetString(6) });
     return Results.Ok(skins);
 });
 app.MapPost("/api/me/collections/{id:long}/activate", async (HttpContext context,long id,NpgsqlDataSource db) =>
@@ -511,7 +514,7 @@ app.MapPost("/api/me/collections/{id:long}/activate", async (HttpContext context
     await using(var deactivate=connection.CreateCommand()){deactivate.CommandText="UPDATE skin_collections SET active=false WHERE steam_id=$1 AND active";deactivate.Transaction=tx;deactivate.Parameters.AddWithValue(decimal.Parse(identity.SteamId));await deactivate.ExecuteNonQueryAsync();}
     await using(var activate=connection.CreateCommand()){activate.CommandText="UPDATE skin_collections SET active=true WHERE id=$1 AND steam_id=$2";activate.Transaction=tx;activate.Parameters.AddWithValue(id);activate.Parameters.AddWithValue(decimal.Parse(identity.SteamId));await activate.ExecuteNonQueryAsync();}
     await using(var clear=connection.CreateCommand()){clear.CommandText="DELETE FROM player_weapon_skins WHERE steam_id=$1";clear.Transaction=tx;clear.Parameters.AddWithValue(decimal.Parse(identity.SteamId));await clear.ExecuteNonQueryAsync();}
-    await using(var copy=connection.CreateCommand()){copy.CommandText="INSERT INTO player_weapon_skins(steam_id,weapon,team,paint_kit,wear,seed) SELECT $1,weapon,team,paint_kit,wear,seed FROM skin_collection_items WHERE collection_id=$2";copy.Transaction=tx;copy.Parameters.AddWithValue(decimal.Parse(identity.SteamId));copy.Parameters.AddWithValue(id);await copy.ExecuteNonQueryAsync();}
+    await using(var copy=connection.CreateCommand()){copy.CommandText="INSERT INTO player_weapon_skins(steam_id,weapon,team,paint_kit,wear,seed,stat_trak,name_tag) SELECT $1,weapon,team,paint_kit,wear,seed,stat_trak,name_tag FROM skin_collection_items WHERE collection_id=$2";copy.Transaction=tx;copy.Parameters.AddWithValue(decimal.Parse(identity.SteamId));copy.Parameters.AddWithValue(id);await copy.ExecuteNonQueryAsync();}
     await using(var clear=connection.CreateCommand()){clear.CommandText="DELETE FROM player_gloves WHERE steam_id=$1";clear.Transaction=tx;clear.Parameters.AddWithValue(decimal.Parse(identity.SteamId));await clear.ExecuteNonQueryAsync();}
     await using(var clear=connection.CreateCommand()){clear.CommandText="DELETE FROM player_agents WHERE steam_id=$1";clear.Transaction=tx;clear.Parameters.AddWithValue(decimal.Parse(identity.SteamId));await clear.ExecuteNonQueryAsync();}
     await using(var copy=connection.CreateCommand()){copy.CommandText="INSERT INTO player_gloves(steam_id,team,definition_index,paint_kit,wear,seed) SELECT $1,team,definition_index,paint_kit,wear,seed FROM skin_collection_gloves WHERE collection_id=$2";copy.Transaction=tx;copy.Parameters.AddWithValue(decimal.Parse(identity.SteamId));copy.Parameters.AddWithValue(id);await copy.ExecuteNonQueryAsync();}
@@ -581,7 +584,7 @@ app.MapDelete("/api/me/collections/{id:long}", async (HttpContext context, long 
             }
             await using (var copy = connection.CreateCommand())
             {
-                copy.CommandText = "INSERT INTO player_weapon_skins(steam_id,weapon,team,paint_kit,wear,seed) SELECT $1,weapon,team,paint_kit,wear,seed FROM skin_collection_items WHERE collection_id=$2";
+                copy.CommandText = "INSERT INTO player_weapon_skins(steam_id,weapon,team,paint_kit,wear,seed,stat_trak,name_tag) SELECT $1,weapon,team,paint_kit,wear,seed,stat_trak,name_tag FROM skin_collection_items WHERE collection_id=$2";
                 copy.Transaction = tx;
                 copy.Parameters.AddWithValue(decimal.Parse(identity.SteamId));
                 copy.Parameters.AddWithValue(nextId.Value);
@@ -607,10 +610,10 @@ app.MapGet("/api/me/skins", async (HttpContext context, NpgsqlDataSource db) =>
 {
     if (context.Items["identity"] is not RequestIdentity { SteamId: { } steamId }) return Results.BadRequest();
     var skins = new List<SkinInput>();
-    await using var command = db.CreateCommand("SELECT weapon, team, paint_kit, wear, seed FROM player_weapon_skins WHERE steam_id=$1 ORDER BY weapon,team");
+    await using var command = db.CreateCommand("SELECT weapon, team, paint_kit, wear, seed, stat_trak, name_tag FROM player_weapon_skins WHERE steam_id=$1 ORDER BY weapon,team");
     command.Parameters.AddWithValue(decimal.Parse(steamId));
     await using var reader = await command.ExecuteReaderAsync();
-    while (await reader.ReadAsync()) skins.Add(new(reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetFloat(3), reader.GetInt32(4)));
+    while (await reader.ReadAsync()) skins.Add(ReadSkin(reader));
     return Results.Ok(skins);
 });
 app.MapPut("/api/me/skins/{weapon}", async (HttpContext context, string weapon, SkinInput input, NpgsqlDataSource db) =>
@@ -634,18 +637,19 @@ app.MapPut("/api/me/skins/{weapon}", async (HttpContext context, string weapon, 
         await clearCollectionKnives.ExecuteNonQueryAsync();
     }
     await using var command = db.CreateCommand("""
-        INSERT INTO player_weapon_skins(steam_id, weapon, team, paint_kit, wear, seed) VALUES ($1,$2,$3,$4,$5,$6)
-        ON CONFLICT (steam_id,weapon,team) DO UPDATE SET paint_kit=EXCLUDED.paint_kit, wear=EXCLUDED.wear, seed=EXCLUDED.seed, updated_at=now()
+        INSERT INTO player_weapon_skins(steam_id, weapon, team, paint_kit, wear, seed, stat_trak, name_tag) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+        ON CONFLICT (steam_id,weapon,team) DO UPDATE SET paint_kit=EXCLUDED.paint_kit, wear=EXCLUDED.wear, seed=EXCLUDED.seed, stat_trak=EXCLUDED.stat_trak, name_tag=EXCLUDED.name_tag, updated_at=now()
         """);
     command.Parameters.AddWithValue(decimal.Parse(steamId)); command.Parameters.AddWithValue(weapon);
     command.Parameters.AddWithValue(input.Team); command.Parameters.AddWithValue(input.PaintKit); command.Parameters.AddWithValue(input.Wear); command.Parameters.AddWithValue(input.Seed);
+    command.Parameters.AddWithValue(input.StatTrak); command.Parameters.AddWithValue(NameTagValue(input.NameTag));
     await command.ExecuteNonQueryAsync();
     await using var collection=db.CreateCommand("""
-        INSERT INTO skin_collection_items(collection_id,weapon,team,paint_kit,wear,seed)
-        SELECT id,$2,$3,$4,$5,$6 FROM skin_collections WHERE steam_id=$1 AND active
-        ON CONFLICT(collection_id,weapon,team) DO UPDATE SET paint_kit=EXCLUDED.paint_kit,wear=EXCLUDED.wear,seed=EXCLUDED.seed
+        INSERT INTO skin_collection_items(collection_id,weapon,team,paint_kit,wear,seed,stat_trak,name_tag)
+        SELECT id,$2,$3,$4,$5,$6,$7,$8 FROM skin_collections WHERE steam_id=$1 AND active
+        ON CONFLICT(collection_id,weapon,team) DO UPDATE SET paint_kit=EXCLUDED.paint_kit,wear=EXCLUDED.wear,seed=EXCLUDED.seed,stat_trak=EXCLUDED.stat_trak,name_tag=EXCLUDED.name_tag
         """);
-    collection.Parameters.AddWithValue(decimal.Parse(steamId));collection.Parameters.AddWithValue(weapon);collection.Parameters.AddWithValue(input.Team);collection.Parameters.AddWithValue(input.PaintKit);collection.Parameters.AddWithValue(input.Wear);collection.Parameters.AddWithValue(input.Seed);await collection.ExecuteNonQueryAsync();
+    collection.Parameters.AddWithValue(decimal.Parse(steamId));collection.Parameters.AddWithValue(weapon);collection.Parameters.AddWithValue(input.Team);collection.Parameters.AddWithValue(input.PaintKit);collection.Parameters.AddWithValue(input.Wear);collection.Parameters.AddWithValue(input.Seed);collection.Parameters.AddWithValue(input.StatTrak);collection.Parameters.AddWithValue(NameTagValue(input.NameTag));await collection.ExecuteNonQueryAsync();
     await Database.Enqueue(db, new CommandInput("refresh_skins", steamId));
     return Results.NoContent();
 });
@@ -785,10 +789,10 @@ app.MapGet("/api/plugin/commands", async (NpgsqlDataSource db) =>
 app.MapGet("/api/plugin/players/{steamId}/skins", async (string steamId, NpgsqlDataSource db) =>
 {
     var skins = new List<SkinInput>();
-    await using var command = db.CreateCommand("SELECT weapon,team,paint_kit,wear,seed FROM player_weapon_skins WHERE steam_id=$1");
+    await using var command = db.CreateCommand("SELECT weapon,team,paint_kit,wear,seed,stat_trak,name_tag FROM player_weapon_skins WHERE steam_id=$1");
     command.Parameters.AddWithValue(decimal.Parse(steamId));
     await using var reader = await command.ExecuteReaderAsync();
-    while (await reader.ReadAsync()) skins.Add(new(reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetFloat(3), reader.GetInt32(4)));
+    while (await reader.ReadAsync()) skins.Add(ReadSkin(reader));
     return Results.Ok(skins);
 });
 app.MapGet("/api/plugin/players/{steamId}/loadout", async (string steamId, NpgsqlDataSource db) =>
@@ -806,9 +810,19 @@ static bool ValidSkin(string weapon, SkinInput value, IReadOnlyDictionary<string
     if (!string.Equals(weapon, value.Weapon, StringComparison.OrdinalIgnoreCase)
         || value.PaintKit <= 0 || !float.IsFinite(value.Wear) || value.Wear is < 0 or > 1
         || value.Seed is < 0 or > 1000 || !ValidTeamScope(value.Team)
+        || (value.NameTag is not null && value.NameTag.Length > 20)
         || !weaponTeams.TryGetValue(weapon, out var availableTo)) return false;
     return availableTo == "both" || availableTo == value.Team;
 }
+
+// Empty name tags are stored as SQL NULL so the game plugin never applies a blank label.
+static object NameTagValue(string? nameTag) =>
+    string.IsNullOrWhiteSpace(nameTag) ? DBNull.Value : nameTag.Trim();
+
+// Every full skin row selects weapon,team,paint_kit,wear,seed,stat_trak,name_tag in that order.
+static SkinInput ReadSkin(NpgsqlDataReader reader) => new(
+    reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetFloat(3), reader.GetInt32(4),
+    reader.GetBoolean(5), reader.IsDBNull(6) ? null : reader.GetString(6));
 static bool ValidGlove(string team, GloveInput value) => ValidTeam(team) && value.Team == team
     && value.DefinitionIndex is 4725 or 5027 or 5030 or 5031 or 5032 or 5033 or 5034 or 5035 && value.PaintKit > 0
     && float.IsFinite(value.Wear) && value.Wear is >= 0 and <= 1 && value.Seed is >= 0 and <= 1000;
@@ -818,8 +832,8 @@ static bool ValidAgent(string team, AgentInput value, IReadOnlySet<string> allow
 static async Task<PlayerLoadout> ReadLoadout(NpgsqlDataSource db, string steamId)
 {
     var skins = new List<SkinInput>(); var gloves = new List<GloveInput>(); var agents = new List<AgentInput>();
-    await using (var command = db.CreateCommand("SELECT weapon,team,paint_kit,wear,seed FROM player_weapon_skins WHERE steam_id=$1 ORDER BY weapon,team"))
-    { command.Parameters.AddWithValue(decimal.Parse(steamId)); await using var reader = await command.ExecuteReaderAsync(); while (await reader.ReadAsync()) skins.Add(new(reader.GetString(0),reader.GetString(1),reader.GetInt32(2),reader.GetFloat(3),reader.GetInt32(4))); }
+    await using (var command = db.CreateCommand("SELECT weapon,team,paint_kit,wear,seed,stat_trak,name_tag FROM player_weapon_skins WHERE steam_id=$1 ORDER BY weapon,team"))
+    { command.Parameters.AddWithValue(decimal.Parse(steamId)); await using var reader = await command.ExecuteReaderAsync(); while (await reader.ReadAsync()) skins.Add(ReadSkin(reader)); }
     await using (var command = db.CreateCommand("SELECT team,definition_index,paint_kit,wear,seed FROM player_gloves WHERE steam_id=$1 ORDER BY team"))
     { command.Parameters.AddWithValue(decimal.Parse(steamId)); await using var reader = await command.ExecuteReaderAsync(); while (await reader.ReadAsync()) gloves.Add(new(reader.GetString(0),reader.GetInt32(1),reader.GetInt32(2),reader.GetFloat(3),reader.GetInt32(4))); }
     await using (var command = db.CreateCommand("SELECT team,model FROM player_agents WHERE steam_id=$1 ORDER BY team"))
