@@ -17,7 +17,7 @@ public sealed class VeronaPlugin : BasePlugin
     private AdminApiClient? _adminApi;
 
     public override string ModuleName => "Verona";
-    public override string ModuleVersion => "0.1.0";
+    public override string ModuleVersion => "0.2.0";
     public override string ModuleAuthor => "Verona contributors";
     public override string ModuleDescription => "Modular foundation for a custom CS2 server";
 

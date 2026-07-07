@@ -4,7 +4,7 @@
 
 ```text
 Browser (untrusted input)
-  -> ASP.NET Core / Vue, 127.0.0.1:8080
+  -> ASP.NET Core / React, 127.0.0.1:8080
        -> in-memory HttpOnly sessions
        -> PostgreSQL 18
        -> Docker Engine socket -> verona-server lifecycle
@@ -14,7 +14,7 @@ VeronaPlugin
        -> heartbeat / commands / player skins
 ```
 
-Browser никогда не получает доступ к PostgreSQL, Docker socket или plugin key. Vue route guards улучшают UX; реальные права проверяет middleware backend. `/api/plugin/**` отделён от browser sessions и аутентифицируется собственным ключом.
+Browser никогда не получает доступ к PostgreSQL, Docker socket или plugin key. React route guards улучшают UX; реальные права проверяет middleware backend. `/api/plugin/**` отделён от browser sessions и аутентифицируется собственным ключом.
 
 Admin имеет Docker socket и потому считается высокопривилегированным control plane. Порт намеренно публикуется только на loopback.
 
@@ -88,6 +88,10 @@ PostgreSQL хранит игроков, роли, профили, назначе
 
 Admin выбирает любого игрока из persistent списка `players`. Обычный пользователь всегда редактирует SteamID своей сессии. Удаление записи делает стандартный внешний вид авторитетным remote-состоянием.
 
+Перчатки и агенты хранятся отдельно от оружия в `player_gloves` и `player_agents`, по одному значению на CT/T. Plugin loadout snapshot возвращает оружие, перчатки и агентов атомарно с точки зрения refresh. Перчатки применяются к `EconGloves` с теми же economy texture attributes, агент меняет модель уже существующего pawn; ни одна из операций не выдаёт предметы. Активная skin collection синхронизирует все три вида косметики.
+
+Оружейный skin assignment имеет scope `both`, `ct` или `t`. Для общего оружия точное командное назначение перекрывает `both`; AK-47/Glock и другие T-only позиции принимают только `t`, M4/USP-S и другие CT-only — только `ct`. Доступность берётся из статического каталога, но независимо проверяется backend перед записью.
+
 ### Применение внутри игры
 
 На connect/spawn плагин перечитывает JSON fallback, запрашивает remote skins и через следующий frame обходит `MyWeapons`. На pickup копируются значения event и на следующем frame обрабатывается полученное оружие.
@@ -101,7 +105,7 @@ Admin выбирает любого игрока из persistent списка `p
 - `SkinCatalog` — чистая JSON validation/fallback model.
 - `AdminApiClient` — heartbeat, polling и remote skin snapshots.
 - `Verona.Admin` — auth, authorization, persistence и orchestration.
-- `admin/ui` — presentation и client-side state.
+- `admin/ui` — React presentation и client-side state; базовые controls принадлежат проекту и генерируются shadcn/ui поверх Tailwind CSS v4 и Radix UI.
 
 Игровой plugin не получает Npgsql или Docker client. Backend не знает CounterStrikeSharp entities. UI не является security boundary.
 

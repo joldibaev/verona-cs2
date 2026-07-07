@@ -26,11 +26,35 @@ public static class Database
         CREATE TABLE IF NOT EXISTS player_weapon_skins (
             steam_id numeric(20,0) NOT NULL,
             weapon varchar(64) NOT NULL,
+            team varchar(4) NOT NULL DEFAULT 'both' CHECK (team IN ('both', 'ct', 't')),
             paint_kit integer NOT NULL CHECK (paint_kit > 0),
             wear real NOT NULL CHECK (wear >= 0 AND wear <= 1),
             seed integer NOT NULL CHECK (seed >= 0 AND seed <= 1000),
             updated_at timestamptz NOT NULL DEFAULT now(),
-            PRIMARY KEY (steam_id, weapon)
+            PRIMARY KEY (steam_id, weapon, team)
+        );
+        ALTER TABLE player_weapon_skins ADD COLUMN IF NOT EXISTS team varchar(4) NOT NULL DEFAULT 'both';
+        DO $$ BEGIN
+            ALTER TABLE player_weapon_skins ADD CONSTRAINT player_weapon_skins_team_check CHECK (team IN ('both','ct','t'));
+        EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+        ALTER TABLE player_weapon_skins DROP CONSTRAINT IF EXISTS player_weapon_skins_pkey;
+        ALTER TABLE player_weapon_skins ADD CONSTRAINT player_weapon_skins_pkey PRIMARY KEY (steam_id, weapon, team);
+        CREATE TABLE IF NOT EXISTS player_gloves (
+            steam_id numeric(20,0) NOT NULL,
+            team varchar(2) NOT NULL CHECK (team IN ('ct', 't')),
+            definition_index integer NOT NULL CHECK (definition_index IN (4725,5027,5030,5031,5032,5033,5034,5035)),
+            paint_kit integer NOT NULL CHECK (paint_kit > 0),
+            wear real NOT NULL CHECK (wear >= 0 AND wear <= 1),
+            seed integer NOT NULL CHECK (seed >= 0 AND seed <= 1000),
+            updated_at timestamptz NOT NULL DEFAULT now(),
+            PRIMARY KEY (steam_id, team)
+        );
+        CREATE TABLE IF NOT EXISTS player_agents (
+            steam_id numeric(20,0) NOT NULL,
+            team varchar(2) NOT NULL CHECK (team IN ('ct', 't')),
+            model varchar(160) NOT NULL,
+            updated_at timestamptz NOT NULL DEFAULT now(),
+            PRIMARY KEY (steam_id, team)
         );
         CREATE TABLE IF NOT EXISTS bans (
             steam_id numeric(20,0) PRIMARY KEY,
@@ -71,10 +95,32 @@ public static class Database
         CREATE TABLE IF NOT EXISTS skin_collection_items (
             collection_id bigint NOT NULL REFERENCES skin_collections(id) ON DELETE CASCADE,
             weapon varchar(64) NOT NULL,
+            team varchar(4) NOT NULL DEFAULT 'both' CHECK (team IN ('both', 'ct', 't')),
             paint_kit integer NOT NULL,
             wear real NOT NULL,
             seed integer NOT NULL,
-            PRIMARY KEY(collection_id,weapon)
+            PRIMARY KEY(collection_id,weapon,team)
+        );
+        ALTER TABLE skin_collection_items ADD COLUMN IF NOT EXISTS team varchar(4) NOT NULL DEFAULT 'both';
+        DO $$ BEGIN
+            ALTER TABLE skin_collection_items ADD CONSTRAINT skin_collection_items_team_check CHECK (team IN ('both','ct','t'));
+        EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+        ALTER TABLE skin_collection_items DROP CONSTRAINT IF EXISTS skin_collection_items_pkey;
+        ALTER TABLE skin_collection_items ADD CONSTRAINT skin_collection_items_pkey PRIMARY KEY (collection_id,weapon,team);
+        CREATE TABLE IF NOT EXISTS skin_collection_gloves (
+            collection_id bigint NOT NULL REFERENCES skin_collections(id) ON DELETE CASCADE,
+            team varchar(2) NOT NULL CHECK (team IN ('ct', 't')),
+            definition_index integer NOT NULL CHECK (definition_index IN (4725,5027,5030,5031,5032,5033,5034,5035)),
+            paint_kit integer NOT NULL CHECK (paint_kit > 0),
+            wear real NOT NULL CHECK (wear >= 0 AND wear <= 1),
+            seed integer NOT NULL CHECK (seed >= 0 AND seed <= 1000),
+            PRIMARY KEY(collection_id, team)
+        );
+        CREATE TABLE IF NOT EXISTS skin_collection_agents (
+            collection_id bigint NOT NULL REFERENCES skin_collections(id) ON DELETE CASCADE,
+            team varchar(2) NOT NULL CHECK (team IN ('ct', 't')),
+            model varchar(160) NOT NULL,
+            PRIMARY KEY(collection_id, team)
         );
         INSERT INTO server_settings(key, value) VALUES ('map', 'de_dust2') ON CONFLICT DO NOTHING;
         """;

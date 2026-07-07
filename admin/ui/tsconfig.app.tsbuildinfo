@@ -1,1 +1,0 @@
-{"root":["./src/api.ts","./src/env.d.ts","./src/faceit.ts","./src/main.ts","./src/router.ts","./src/app.vue","./src/views/dashboardview.vue","./src/views/loginview.vue","./src/views/playersview.vue","./src/views/skinchangerview.vue"],"version":"6.0.3"}

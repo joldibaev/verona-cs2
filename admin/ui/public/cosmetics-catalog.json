@@ -1,0 +1,1450 @@
+{
+  "gloves": [
+    {
+      "id": "skin-e757fd7191f9",
+      "name": "Hand Wraps | Spruce DDPAT",
+      "definitionIndex": 5032,
+      "paintKit": 10010,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_u13ve5WSDu2jCIrujqNjsH_InuUaQQmDJd2Fu4NshO7kIGyYeu24Affg98UxCX_iXhJ5i465bwHT-N7rXbV3WG0"
+    },
+    {
+      "id": "skin-7646a28247e0",
+      "name": "Hand Wraps | Desert Shamagh",
+      "definitionIndex": 5032,
+      "paintKit": 10081,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uh3svNgTBa7mggpty6RlYDtKRTILFd-XccfGb5d6lSmwdS1Zrzr4Q3Ygo5Ayiur23lL5idr5eZQBapzqPDRignHY-U058QHLOHnE0oCUw1MCg"
+    },
+    {
+      "id": "skin-71c8a21234d4",
+      "name": "Hand Wraps | Badlands",
+      "definitionIndex": 5032,
+      "paintKit": 10036,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uh3svNgTBa8hxwptDi6mY70LhTLN1F4ToxyQuIK5EPqkobkZrjm5lGI2NoTni-vhnwd5iZp4-YHAqJxq6DRhlzIL_Rjthe3KNwq"
+    },
+    {
+      "id": "skin-e728cedb22fe",
+      "name": "Hand Wraps | CAUTION!",
+      "definitionIndex": 5032,
+      "paintKit": 10084,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uJzsfVhSjuqqh4mpimMlYHGLSLANkI-CcBxQeIMtEHsl4CyNOjm4QDa3dgTniWvjnhJ7Hk54bsEV_Ak-KWE3BaBb-Pt8HWajg"
+    },
+    {
+      "id": "skin-03513562b183",
+      "name": "Hand Wraps | Duct Tape",
+      "definitionIndex": 5032,
+      "paintKit": 10055,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uJzsfVhSjuqqhkysCmRm5_8HifOOV5kFJF5R7IIskW_kIXnNriz7w3eg4hMzCX-2nxP6SZo4u0LBKAi-aXV2V7fcepqgxTHW6A"
+    },
+    {
+      "id": "skin-a4133c8cedcb",
+      "name": "Hand Wraps | Cobalt Skulls",
+      "definitionIndex": 5032,
+      "paintKit": 10053,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uJzsfVhSjuqqhsmsS-MmbD7LT7CAUV7T84sBohW60fg1srnZb6zsw2Ng41MmST43C1L7is9574CBKIh_q2Big_IMOdutcNRd_iuU13QD7PQAmaY"
+    },
+    {
+      "id": "skin-438616f5a678",
+      "name": "Hand Wraps | Overprint",
+      "definitionIndex": 5032,
+      "paintKit": 10054,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uJzsfVhSjuqqhsmsS-MmbD-JCTKO0JiU8EfF7tP53_ky4O_c_Ti4wTe3t4Uy3j6jSxM5ic-4usBA6Mj-qTejAzJMbc14MRWd_v0SE-PRlxR734mHNkv"
+    },
+    {
+      "id": "skin-cde47366da64",
+      "name": "Hand Wraps | Giraffe",
+      "definitionIndex": 5032,
+      "paintKit": 10082,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uJzsfVhSjuqqhsmsS-MmbD-KDnGOFB1Zc4pEr9OrBm6w9bgM-Pi4wLe34tNnCT3jCxJ53s_6rsBUqQkq63V2wnBZOJo55YdZKHw2FL19Wg"
+    },
+    {
+      "id": "skin-51c5ce405526",
+      "name": "Hand Wraps | Arboreal",
+      "definitionIndex": 5032,
+      "paintKit": 10056,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uJzsfVhSjuqqhsmsS-MmbD-My7CMGlzW88vKrtT5Uj8jIblMbnksQfb2IlAzXqojCpP6ylp67kLAKBz_6aFjFnCN-I66ZQHdv-5DUPZjQpqjqQ"
+    },
+    {
+      "id": "skin-fb30d56f4210",
+      "name": "Hand Wraps | Leather",
+      "definitionIndex": 5032,
+      "paintKit": 10009,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uJzsfVhSjuqqhEutDWR1NiodnmUPFNxX5B3TOFcuhfqktPvYe_h4AHWjolNnHn3iC1Puiw-sL0cEf1y0Sy-Ca0"
+    },
+    {
+      "id": "skin-be5a5c9a12c2",
+      "name": "Hand Wraps | Constrictor",
+      "definitionIndex": 5032,
+      "paintKit": 10083,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_uJzsfVhSjuqqg4psjaAiYTwLxTILFd-XccfGb5d6lSmlYDiY-_r7gzc2IJGmX6t3CMb6iY5te0BBKt0-qDVhwyXYrU_6MQDIuHnE0r2o5Rb7g"
+    },
+    {
+      "id": "skin-1f6ac4772c2b",
+      "name": "Hand Wraps | Slaughter",
+      "definitionIndex": 5032,
+      "paintKit": 10021,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4vx603vRA_Olpfu-TVJ7uK9V6xsLvSEHGaA_vxztN56QyimkhUzti-6lob-KT-Jb1UjX5t0ROIN5xW9l9e2ZOmw5QWLi41Fmy6r3Sgb7C1o5etUBfcgqbqX0V-0bsdMFQ"
+    },
+    {
+      "id": "skin-d8671b33d6d9",
+      "name": "Moto Gloves | Eclipse",
+      "definitionIndex": 5033,
+      "paintKit": 10024,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJsuB6RiqMlxEmsDa6lob-KT-JaQMpDpFzFOdY4EO8lIDnMLjr5ALZjN1Dnyj7iyhAvXo55ucKWadx87qX0V_LSR8vSA"
+    },
+    {
+      "id": "skin-6bd9ed91c37e",
+      "name": "Moto Gloves | Turtle",
+      "definitionIndex": 5033,
+      "paintKit": 10050,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJsuB6RiqMkg8itjO6lZ34LyzCAVp5Xco0W7VftBjqxILkZbvi4FfYitpEynj6jSgc5i4_tegLV_F0q6SFhwDJMuUjoc5UdYAe6j0"
+    },
+    {
+      "id": "skin-38236b83de3c",
+      "name": "Moto Gloves | Blood Pressure",
+      "definitionIndex": 5033,
+      "paintKit": 10079,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJs-B7TSa9kxQlti-6iIr9HifOOV5kFJp2TeYOsxWxm9OyM7zl5AKIio0XyyiojiJA6C866-YFV6oi_6GBhwHfcepqnQk3Qfo"
+    },
+    {
+      "id": "skin-a35568f027a4",
+      "name": "Moto Gloves | Finish Line",
+      "definitionIndex": 5033,
+      "paintKit": 10077,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJs-lsTCK2hyIhvzyCpY31NC74OUR1X8wfGb5d6lSmkNW1Y-m0sgTciIxCz376i3lN63lu67wHV6Fx-qaCi1nAZbJr4MQBIeHnE0rhxc4-zg"
+    },
+    {
+      "id": "skin-509033032197",
+      "name": "Moto Gloves | POW!",
+      "definitionIndex": 5033,
+      "paintKit": 10049,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJs-lmTCaMlxIovgKJk4jxNWXBPAZ2CpYmTOAO4UWwltOxP-3qswPdgopMzXiviSwavytpsO4FUvEh5OSJ2LE4Jnt4"
+    },
+    {
+      "id": "skin-5cbc5bc584a3",
+      "name": "Moto Gloves | 3rd Commando Company",
+      "definitionIndex": 5033,
+      "paintKit": 10080,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJs-5kQii9kRIYuC6OpYPwJiPTcAZyDMd2F-YIu0a4ktTjP--35Vfb3oMTyy_-iCtM7Hpq5elTBaYirKTJz1aWk_tQEIo"
+    },
+    {
+      "id": "skin-a363d8de9765",
+      "name": "Moto Gloves | Spearmint",
+      "definitionIndex": 5033,
+      "paintKit": 10026,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJvehnWxanhxQmvTqJn7D1KCzPKhgnW5UmRO4DsxXrlYbhPurmtAXai98UzS73in5I6S5p4OsAU_Zx-KHWkUifZsxBQgc2"
+    },
+    {
+      "id": "skin-b3e2c06aad05",
+      "name": "Moto Gloves | Boom!",
+      "definitionIndex": 5033,
+      "paintKit": 10027,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJve5nQBaxmhIqjDGMnYftb3ufaQNxA5MiEeVb5kW5ldPiZuPj5lOKjt9BxCutiSlO5ys5sL1UUPU7uvqAf72SBgc"
+    },
+    {
+      "id": "skin-0ab789f2f54c",
+      "name": "Moto Gloves | Smoke Out",
+      "definitionIndex": 5033,
+      "paintKit": 10078,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJo-xmRCyMmRQguynLztircXjCaAAkDZp0TO4OsRW8xtznP-7mswXYj4wTnyysiHkc5n5p5PFCD_SXL_AlqA"
+    },
+    {
+      "id": "skin-510d868c343b",
+      "name": "Moto Gloves | Cool Mint",
+      "definitionIndex": 5033,
+      "paintKit": 10028,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJpPNgTie0mRgYsTGQn7D1KCzPKhgiXMZwRuNe5xS5wYLvY-K3s1GN344Wz3ioiypK6X1p4e1WUKZ0q6WCkUifZln3nIr8"
+    },
+    {
+      "id": "skin-bfd054b9c87b",
+      "name": "Moto Gloves | Polygon",
+      "definitionIndex": 5033,
+      "paintKit": 10052,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJpPNgSDu6kSIlvyiApYPwJiPTcA92A5QlFu4N4ES4ktblMrvg5lSN34hEmHitinhLvHo64uhUUvVwqPDJz1aWhdr_Brk"
+    },
+    {
+      "id": "skin-27fbe222018d",
+      "name": "Moto Gloves | Transport",
+      "definitionIndex": 5033,
+      "paintKit": 10051,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu4r7_lb1QgTykpPf-i5U-fe9V6liNP-BDX6TzetJqeRlQyakqh4mvjK6lob-KT-JbwZzCsR0RrYK4ETrwIbkYe_l4gSM2YNEniv73XxKvyhj4u0DVKMi_rqX0V9cNOIfoA"
+    },
+    {
+      "id": "skin-b8f492474850",
+      "name": "Driver Gloves | Brocade Crane",
+      "definitionIndex": 5031,
+      "paintKit": 1399,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1c4_24bZtpMvmFC3Wvw_x5s-BtShawhxwptgKXn4vGLSLANkI-XMN2Qu4OsEG6lYK2M-OwtgPf2IMRzXio3yMY7yhptbxRAKIkq_bVhhaBb-OYO4AFQA"
+    },
+    {
+      "id": "skin-d9b9add3d4ae",
+      "name": "Driver Gloves | Brocade Flowers",
+      "definitionIndex": 5031,
+      "paintKit": 1400,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1c4_24bZtpMvmFC3Wvw_x5s-BtSha1mRIwti-6iIr9HifOOV5kFJJ5TeMK5xTsltSyM-m07wLW2Y4Uy32ohiJKuy9r4L1UWKAj-qGF3gzfcepq2gO2jDs"
+    },
+    {
+      "id": "skin-f9ff211df27d",
+      "name": "Driver Gloves | Dragon Fists",
+      "definitionIndex": 5031,
+      "paintKit": 1401,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1c4_24bZtpMvmFC3Wvxfx3t-5ncDqwlBEijC-AnrD1KCzPKhgkCZdwTeIL4ES5wdXjPrm251Pdi98QzST3jy0d6nxp4e5QAKsk_q3RkUifZohUdPsK"
+    },
+    {
+      "id": "skin-2d7a4c354277",
+      "name": "Driver Gloves | Garden",
+      "definitionIndex": 5031,
+      "paintKit": 1402,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1c4_24bZtpMvmFC3WvxON0ou5gSyyhkBkYtTGKjYrrMhTTO1d8Zc4pEr9OrES-w9exZuzrsgyLi4lEzij2in9KvHpj6u9XU6J2_aGDjwzCY709t8YdZKHwRXCqB8U"
+    },
+    {
+      "id": "skin-25977544c37d",
+      "name": "Driver Gloves | Hand Sweaters",
+      "definitionIndex": 5031,
+      "paintKit": 1439,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1c4_24bZtpMvmFC3WvyuB_pN5oXS6qmRgYtC-An4HGLSLANkI-CZJzROEM4xa7lYbgM7i07lOP3okXmCn4iypM7idt4udXU6p0rqHS3haBb-PCGCVNWw"
+    },
+    {
+      "id": "skin-c79f644ef9e1",
+      "name": "Driver Gloves | Plum Quill",
+      "definitionIndex": 5031,
+      "paintKit": 1412,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1c4_24bZtpMvmFC3Wvzv1iouhqRxajgA83vzi6lob-KT-JawEjXMZyQuQMs0Xpl4fvMrvn4FOI2N5Dnn78jnxI5yZj5-tXWfEs8rqX0V_DSgKUxA"
+    },
+    {
+      "id": "skin-f31ff8147493",
+      "name": "Driver Gloves | Seigaiha",
+      "definitionIndex": 5031,
+      "paintKit": 1404,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1c4_24bZtpMvmFC3Wv0u13vO1mXxa-kAkmvzGMmbD7LT7CAVp5Xco0W-dZuhe6wNDuP-q05g2NiYlFmSn5iS1N7yxj4LxUWPJx-6yCiFqUNOIjoc5UtEcI9GU"
+    },
+    {
+      "id": "skin-b1dcd2af898f",
+      "name": "Driver Gloves | Wave Chaser",
+      "definitionIndex": 5031,
+      "paintKit": 1398,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1c4_24bZtpMvmFC3Wv0ud6u95tXSi0mhMYpDWMjorGLSLANkI-ApsmQrFbtkPux4bgMuvg7gzWjI0Xnyz-23lI6i5s4bpWUqMl-6PQ2xaBb-Mdlpgj5g"
+    },
+    {
+      "id": "skin-e8384ee7aa31",
+      "name": "Driver Gloves | Lunar Weave",
+      "definitionIndex": 5031,
+      "paintKit": 10013,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5tvLPGQBVicyOl-pK8xTizrzER1t2rczNj9JSqRZg92CZZ2RrRetBi7kYDhZeLl7wDajo9C02yg2YX5gL0s"
+    },
+    {
+      "id": "skin-30ad2640a228",
+      "name": "Driver Gloves | Snow Leopard",
+      "definitionIndex": 5031,
+      "paintKit": 10070,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5tnIfeGD3Wv1uZ_pORWQyC0nQlp4TnUw9f6J3PCOw4oW8ZxRuEOshK8l9fgZbnqswHX3owXmSisjCIfuzErvbiEoDwfJQ"
+    },
+    {
+      "id": "skin-5410329f8334",
+      "name": "Driver Gloves | Queen Jaguar",
+      "definitionIndex": 5031,
+      "paintKit": 10071,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5tnIfeGD3Wv2Ot6vO5-cCW6khUz_WSHm4qteC2XOg4jDcN0EOZbthDsxoDnN7m24laI3d8QnCv6hn5PvHx1o7FVsUpsiR4"
+    },
+    {
+      "id": "skin-6875abfca574",
+      "name": "Driver Gloves | Convoy",
+      "definitionIndex": 5031,
+      "paintKit": 10015,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5tgKfyaGmaC2NF6ueZhW2e1wER0smuGyd__dn6VOwd1A5JwQOFY5hi8ktKzNryx5wyPiYwTxX74kGoXue1G57tl"
+    },
+    {
+      "id": "skin-7b51c8bd957b",
+      "name": "Driver Gloves | Imperial Plaid",
+      "definitionIndex": 5031,
+      "paintKit": 10042,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5t9LPGaCliA1PxmvORWQyC0nQlp4W-Hw9-ocy2fbwB2X8YkFucCtRe4xNzhYrjl4Fff39lMyn78iiJLuzErvbgqDAMwGQ"
+    },
+    {
+      "id": "skin-941014ee5a6e",
+      "name": "Driver Gloves | Crimson Weave",
+      "definitionIndex": 5031,
+      "paintKit": 10016,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5t_JfSsAm6Xyfo4trVoSnGxlh9x5DmEzt6rJS2RagYiA5siQ-MLthW9xtDlM7uxtFCNgpUFk3thcTnRAg"
+    },
+    {
+      "id": "skin-3344646c8178",
+      "name": "Driver Gloves | Rezan the Red",
+      "definitionIndex": 5031,
+      "paintKit": 10069,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5t_JeqSAFicyOl-pK9sHnrhxx5wsm2Ezo39cXufbVdzD8ZzReILtRfqm9OyMbzjtlfdio5A02yg2fWAU4q4"
+    },
+    {
+      "id": "skin-ead101bfb2c9",
+      "name": "Driver Gloves | King Snake",
+      "definitionIndex": 5031,
+      "paintKit": 10041,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5t-LvGYC3SbyOBJp-lgWyyMmRQguynLz4r6Iy7EbFchApNyR-dbtEbuw4XkN7jq7gHdjtoQzi37hiwYvytvt_FCD_Ql24JgJg"
+    },
+    {
+      "id": "skin-52a9a70cdd76",
+      "name": "Driver Gloves | Diamondback",
+      "definitionIndex": 5031,
+      "paintKit": 10040,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5t-LvGYC3SbyOBJqeRlQyakqhEutDWR1N77ICqXZw4iApJ1ReRb5Bi-k4fjYb7mtgPdgooXyyusiS9A7Shv674cEf1yI93CpRI"
+    },
+    {
+      "id": "skin-56be8a3a2bb8",
+      "name": "Driver Gloves | Overtake",
+      "definitionIndex": 5031,
+      "paintKit": 10043,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5t-NPmHDW-VxdF0vOBqRBa8hxwptDi6lob-KT-JOwYkXppzQO4OsRbqltfiMOvm41TYi44XySqqj35OvS4_57oKA6cl_LqX0V9d-bhOMA"
+    },
+    {
+      "id": "skin-31ec4a2f49a1",
+      "name": "Driver Gloves | Black Tie",
+      "definitionIndex": 5031,
+      "paintKit": 10072,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5t-NPmHDW-VxdF0vOBqRBaknRQztgKJk4jxNWXBbwdxDcZwFrFY40XrktLgNr7q4AKM2owQmX6ojSpMuCo_tulQB6ss5OSJ2E_SKQx-"
+    },
+    {
+      "id": "skin-5e8f5f1fecb1",
+      "name": "Driver Gloves | Racing Green",
+      "definitionIndex": 5031,
+      "paintKit": 10044,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5T441rsfhr9kYDl7h1I4_utY5t-NPmHDW-VxdFxouRsQRa0hxg-jDGMnYftb3mXblQnWJclRuNYtETux9DlYr-wtVaK2IsTmCT-jC4Y6ihjtr0FUaA7uvqAQikoKDk"
+    },
+    {
+      "id": "skin-7b77498783da",
+      "name": "Specialist Gloves | Lime Polycam",
+      "definitionIndex": 5034,
+      "paintKit": 1413,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V6NhL-aWMXSAxO1_se1gXD2MlB80py-EmZvGJjnCO1hPVssnHaMUtRTqwNK2Nrzr71aLi4sUzS_8iCJMuic54eoFVvVw-fGGiwySY7Q1t45DeqjW0uKN1w"
+    },
+    {
+      "id": "skin-1f8f2cadf55b",
+      "name": "Specialist Gloves | Cloud Chaser",
+      "definitionIndex": 5034,
+      "paintKit": 1440,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V6NhL-aWMXSAxO1_se1gXD2MkQ8mtDKLpY31NC74Ml93UtZuQe4L40bsl9HgM-Lr5lffgtgWnCT63H5O6XxqtehUVaIl-vCDjwiXMKp9v8dT8uAEag"
+    },
+    {
+      "id": "skin-6d087aad2621",
+      "name": "Specialist Gloves | Blackbook",
+      "definitionIndex": 5034,
+      "paintKit": 1414,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V6NhL-aWMXSAxO1_se1gXD2Mkg8mtTuMjobGIyfGPV1PVssnHaMUthC9l9e2Mei25wTajN5EziT_2CodvSxs5ugBWKp2rvDX2Q6QMOc8tI5DeqjzpbB7FA"
+    },
+    {
+      "id": "skin-cc0d5dff95fc",
+      "name": "Specialist Gloves | Chocolate Chesterfield",
+      "definitionIndex": 5034,
+      "paintKit": 1415,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V6NhL-aWMXSAxO1_se1gXD2MhAguvymAnrD7LSrENWl8U8UoAfkNu0Ttx4CxP-zr4wDbjN4XmX79j3xM7SdisbkLBPB0q6LWiwnHM7Zs_9Bdc2KEwswI"
+    },
+    {
+      "id": "skin-da1393aefb9c",
+      "name": "Specialist Gloves | Pillow Punchers",
+      "definitionIndex": 5034,
+      "paintKit": 1438,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V6NhL-aWMXSAxO1_se1gXD2MhAguvymAnrDuKSLTO2l8U8UoAfkK5BKxkNyyZu7r4VGP3Y8UzSX_iC4av3trtbtWV_Vxq6SEh1mVN7c9_9Bdc6ulT-fJ"
+    },
+    {
+      "id": "skin-aba169232063",
+      "name": "Specialist Gloves | Sunburst",
+      "definitionIndex": 5034,
+      "paintKit": 1416,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V6NhL-aWMXSAxO1_se1gXD2MhggpsSiXiZvGMy7DAVp5Xco0W-VesRKwxtLvMbm07gLbiI1GmX33hywd7Hk45ewEAPIiqfXW2Q7FMLIjoc5U0NHpGGE"
+    },
+    {
+      "id": "skin-6977cd7028dd",
+      "name": "Specialist Gloves | Big Swell",
+      "definitionIndex": 5034,
+      "paintKit": 1437,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V6NhL-aWMXSAxO1_se1gXD2MghwxtgKHlpr8HifOOV5kFJJyFOVZuhC8l9XjNL-3tgHcg41HzHr4hntBuntpse0LUvZwr_bX3QjfcepqIIhMOUI"
+    },
+    {
+      "id": "skin-fabc9079a914",
+      "name": "Specialist Gloves | Forest DDPAT",
+      "definitionIndex": 5034,
+      "paintKit": 10030,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJtOV5Tj2Mkg8itjO6mY70LhTLN1F4TowkQrFYshHsxNKyPu_ntQfYid9By3j-ii9I6StqsOlUV6Aj-aCF2guTL_RjtifunYRS"
+    },
+    {
+      "id": "skin-844038d20265",
+      "name": "Specialist Gloves | Emerald Web",
+      "definitionIndex": 5034,
+      "paintKit": 10034,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJtexsXSi_kSIwtj-6lob-KT-Jbw4kA8d4QOBb5hnqmoHuMLmx4AWK341Bnyr93CxN6itjsb1XUfAgqLqX0V92--w69A"
+    },
+    {
+      "id": "skin-25bbf8e641c1",
+      "name": "Specialist Gloves | Fade",
+      "definitionIndex": 5034,
+      "paintKit": 10063,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJtuBtSha_nBovp3PQy42sdX6eagIjW5AlQOVetBXuk92xNLvg4gOMjd5AmC2ointB53w__a9cBqntWBk3"
+    },
+    {
+      "id": "skin-b98ee789cd59",
+      "name": "Specialist Gloves | Field Agent",
+      "definitionIndex": 5034,
+      "paintKit": 10068,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJtuNgcCW6khUz_TiHydigcXyXawRxX5QmQLQIsxC9kYfgN--w5QCLi4IRzyz42yofvCZ1o7FVbJfAqIA"
+    },
+    {
+      "id": "skin-b6c2f9e4afaa",
+      "name": "Specialist Gloves | Buckshot",
+      "definitionIndex": 5034,
+      "paintKit": 10062,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJtu57Sjqnqh81vCqLpYPwJiPTcFQhAsd5TOcDsxLqwN22ZrjqslDZg4gXnCj2jnlA7Sg54udWB_dz-qbJz1aWpqUo0Nk"
+    },
+    {
+      "id": "skin-5766610447f3",
+      "name": "Specialist Gloves | Crimson Kimono",
+      "definitionIndex": 5034,
+      "paintKit": 10033,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJu-hkQCe8qhkusjCKlIvqHjnCOml8U8UoAfkItBLswdbuNbjr5FHdjNkUzSv73C1K5y46tu4EUvAg-6bU3FrBMOE4_9BdcyhkRns5"
+    },
+    {
+      "id": "skin-cc333ec05de7",
+      "name": "Specialist Gloves | Marble Fade",
+      "definitionIndex": 5034,
+      "paintKit": 10065,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJveB7TSW2qhsmtzi6lob-KT-JOlUhC8Z2QOUDsxa6xIe0N7nk5ALWjolMm3793SxAvX0_5-sBUaNz-rqX0V-xn3he8w"
+    },
+    {
+      "id": "skin-d0749a0d812b",
+      "name": "Specialist Gloves | Foundation",
+      "definitionIndex": 5034,
+      "paintKit": 10035,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJv_NoQS62qgovuimApYPwJiPTcFMgWJVwFLIPthDpkt3vN7ux5QTWitkTm3r5iiMc7nw6sukBBfV38vDJz1aWnrr9eTA"
+    },
+    {
+      "id": "skin-fa577b9fd717",
+      "name": "Specialist Gloves | Lt. Commander",
+      "definitionIndex": 5034,
+      "paintKit": 10066,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJouhqRDqygiIksjCKpYPwJiPTcFJzApV0F-cL5kHuk9CxP7u3sgDYgo1BzX76jixM7Cw-selXBacn-PHJz1aWiwi0X-Y"
+    },
+    {
+      "id": "skin-be400920aea9",
+      "name": "Specialist Gloves | Tiger Strike",
+      "definitionIndex": 5034,
+      "paintKit": 10067,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJpOhuSjuMmg8mvTqApYPwJiPTcAYkDMZ3EOUJ4Ra9w4W2NOyx4wGNjYtDy3763H4bvCY6t-sFUap3_KDJz1aW0GG4fIQ"
+    },
+    {
+      "id": "skin-560640de154c",
+      "name": "Specialist Gloves | Crimson Web",
+      "definitionIndex": 5034,
+      "paintKit": 10061,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJp-RrXBahkBkYvzSCkpu3JyiSbAQkC8d1E7YJtEXtkIazMruz4lOP3dpGmCyt23hA731v4LkKAL1lpPOyoS0Ibw"
+    },
+    {
+      "id": "skin-3b7b8a6e12a6",
+      "name": "Specialist Gloves | Mogul",
+      "definitionIndex": 5034,
+      "paintKit": 10064,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk71ruQBH4jYLf-i5U-fe9V7d9JfOaD2uZ0vpJp-hnWyyhnRg_jDGMnYftb3qWagQlX8EjF7YIuhK9m9XiNO2x7gOPjY5HzHj7iiwcv3xi4-pQAPc7uvqAbB4ER4o"
+    },
+    {
+      "id": "skin-0f6327fef452",
+      "name": "Sport Gloves | Violet Beadwork",
+      "definitionIndex": 5030,
+      "paintKit": 1405,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk6P6hfqFSM-CcHHOvw-t3tPZmXSKMkRQmvjKLnpzGMT7VLlp1Zc4pEr9OrBWxxofvNOLitQKPid5Hznr-3C9JvHtu4uxTVKMlqaPQilrAM7Fr6cQdZKHwBJ-GjQo"
+    },
+    {
+      "id": "skin-c747da872a60",
+      "name": "Sport Gloves | Frosty",
+      "definitionIndex": 5030,
+      "paintKit": 1406,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk6P6hfqFSM-CcHHOvwu97v95-RienkA8YvzSCkpu3dXqfbA5zW5N0F-dcu0K8ldDnMuPk4wHdjN9EniWthn4av31v4eoHWL1lpPOyBkNpPQ"
+    },
+    {
+      "id": "skin-4a3cb425ea4e",
+      "name": "Sport Gloves | Blaze",
+      "definitionIndex": 5030,
+      "paintKit": 1407,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk6P6hfqFSM-CcHHOvx-J3veR6cCahlBMgtgKJk4jxNWWXblAgDJUiTeJZtBHpktDuY7m2sQPf2YNAxXn5iysf6Cc_67oGA6Ah5OSJ2AmILwG6"
+    },
+    {
+      "id": "skin-1cd6adc6787e",
+      "name": "Sport Gloves | Creme Pinstripe",
+      "definitionIndex": 5030,
+      "paintKit": 1408,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk6P6hfqFSM-CcHHOv0ed4o_V7Rjm2qh8rsj6OpYPwJiPTcAdzW5V2E-4IsBnswNHuZbznsQfXg4NCny_4hnhOvS04suoDVvZx86zJz1aWnYsnB-o"
+    },
+    {
+      "id": "skin-01ecc031f210",
+      "name": "Sport Gloves | Red Racer",
+      "definitionIndex": 5030,
+      "paintKit": 1409,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk6P6hfqFSM-CcHHOv0-91tfNWXSy3qhEutDWR1I77dC7GbQ4kWZNwEOJY5xLtwYHuN7yz7lPe2YgTniz2jn5Nv3lj5O0cEf1yHxfMKhM"
+    },
+    {
+      "id": "skin-635fbb080d7c",
+      "name": "Sport Gloves | Ultra Violent",
+      "definitionIndex": 5030,
+      "paintKit": 1410,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk6P6hfqFSM-CcHHOv1et1uN5uXSi3nBgppwKHiIb-KT_4Ml93UtZuTOcLtUW8lNDvZL634FfYi4pCyiX5iXka6Htr4uhQVqt3_vfRiAzDZap9v8fuC2Vr0A"
+    },
+    {
+      "id": "skin-9ff0ea2301d4",
+      "name": "Sport Gloves | Occult",
+      "definitionIndex": 5030,
+      "paintKit": 1417,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk6P6hfqFSM-CcHHOv1-t6puR9cDu2kSIrujqNjsGody2XPQVzWZslEe5euxS_lYC0Yu7l4wLfj99MmCv4jXka6Slp6-4ET-N7rUuG7GIq"
+    },
+    {
+      "id": "skin-b06ecb36172b",
+      "name": "Sport Gloves | Omega",
+      "definitionIndex": 5030,
+      "paintKit": 10047,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H_KfD2Sb_vlzsuNgQS6MjBgrvzKSpYPwJiPTcFAkC5UiRrRZ5BO9ktDnM-q37wCMjN5GxCqvhngb6Chj6u0CVvAj-6fJz1aW3nluLgw"
+    },
+    {
+      "id": "skin-c1ae7186f829",
+      "name": "Sport Gloves | Vice",
+      "definitionIndex": 5030,
+      "paintKit": 10048,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H_KfG2Kv0ed4u95lRi67gVNx4T-Bw434IHyVb1QlAsd1FOUDthG4xNznMu3m4QXXg90Wzn_33C1I8G81tLaDi_rK"
+    },
+    {
+      "id": "skin-b05ee2bf4f0d",
+      "name": "Sport Gloves | Hedge Maze",
+      "definitionIndex": 5030,
+      "paintKit": 10038,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H_eBC2Ke_uJ_t-l9AX21whwi4Gndnov9JH_FblMlCJYjRbFZtkWww4HnNbjr7wWN39gUmH7gznQeohQBtY8"
+    },
+    {
+      "id": "skin-35e39e9a94b1",
+      "name": "Sport Gloves | Scarlet Shamagh",
+      "definitionIndex": 5030,
+      "paintKit": 10075,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H_icG2mU0vp5v_VhcDu2kSIrujqNjsGqIC-SalIhW8B2Q7MNs0G9x4W0NeKwtALa3ohEyi2oiCpI5yZo4OcFT-N7rZxgqiT0"
+    },
+    {
+      "id": "skin-b75169b00be8",
+      "name": "Sport Gloves | Big Game",
+      "definitionIndex": 5030,
+      "paintKit": 10074,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H_iGAHOV09F6ueZhW2fil0tx4T7RnouodXjCaAMjWJshQOAOsEG8l9bgMrvr5QfXjotHyyWtkGoXucEGPk8i"
+    },
+    {
+      "id": "skin-9918998292c5",
+      "name": "Sport Gloves | Nocts",
+      "definitionIndex": 5030,
+      "paintKit": 10076,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H_qSCXKR09F6ueZhW2fqlBly4GWGm9ivcXjFPFImWJQhEeRc5EXqkNGyMOzm51fY3dlAxCr9kGoXuaq1SOh9"
+    },
+    {
+      "id": "skin-562a47f22d9c",
+      "name": "Sport Gloves | Superconductor",
+      "definitionIndex": 5030,
+      "paintKit": 10018,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H_yaCW-E_ux6peRWQyC0nQlp4jjRyt-vJX6QblMgApt0R-5c5hLsktO2Nu_h4QaLg4MXyCmr2ClP7jErvbiwB_ADaw"
+    },
+    {
+      "id": "skin-96fe89fd41f9",
+      "name": "Sport Gloves | Arid",
+      "definitionIndex": 5030,
+      "paintKit": 10019,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H_2aAm6EwPxvj-1gSCGn20h3sTvVyoqheX2TbA9zDcFwQOQLtBnpw4bvM-rm4ACMiY5Cnn_63CNXrnE8hMDc76M"
+    },
+    {
+      "id": "skin-e2344261c5cb",
+      "name": "Sport Gloves | Amphibious",
+      "definitionIndex": 5030,
+      "paintKit": 10045,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H-CcB3Sfz9Fwou5ucCu_gBgYpDWMjorGLSLANkI-W5R4E7JZtxbskNWxZeLi4QPejdgTmSn62iwbvyw957kDAqog_fXWjBaBb-Pahe96zA"
+    },
+    {
+      "id": "skin-24bd5ece81d7",
+      "name": "Sport Gloves | Bronze Morph",
+      "definitionIndex": 5030,
+      "paintKit": 10046,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H-CcB3Sfz9Fwou5ucDu2kSIgoTiAlLD1KCzPKhghDJBzTLMCukW6kNblNe-2tlGKj45GyCWrii8f73k95e4HA_AjrvbSkUifZkDjXxpJ"
+    },
+    {
+      "id": "skin-e506270deff6",
+      "name": "Sport Gloves | Pandora's Box",
+      "definitionIndex": 5030,
+      "paintKit": 10037,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H-CGHHecxNF6ueZhW2exk01w4j7cmYn4eHPCbAMhApdwTOIN5BPsx9yyYu605FTeid0Uy3j3kGoXueKyz5wo"
+    },
+    {
+      "id": "skin-41eeda7bb735",
+      "name": "Sport Gloves | Slingshot",
+      "definitionIndex": 5030,
+      "paintKit": 10073,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tk5UvzWCL2kpn2-DFk_OKherB0H-OfB2mX0uZ5pN5lRi67gVN24DzSw479dnuTbAckWcElRbJctkW9ktPlNu2w51Dc2oNAmCWo2ioa8G81tMaI-Tzs"
+    },
+    {
+      "id": "skin-c9241d03e33b",
+      "name": "Bloodhound Gloves | Charred",
+      "definitionIndex": 5027,
+      "paintKit": 10006,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOnJrv8iZT4OegbJtqLP-FC3Svw-J5v-VhQDy9kSIlvzyGkbDqKCfRO0RPVssnHaMUsES-k9HjNrixsgbd3YIRni7-inlO5i5t6-pRAqIs_aOFjg_JZbU5sI5Deqh-Veq-pA"
+    },
+    {
+      "id": "skin-cd619968abb9",
+      "name": "Bloodhound Gloves | Guerrilla",
+      "definitionIndex": 5027,
+      "paintKit": 10039,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOnJrv8iZT4OegbJtqLP-FC3Svw-J5v-VhQDy9kSIgpjiXiIb1LSr4Ml93UtZuR7QKthCwl4fkNuqw4lPXgosRzi78inwdvyk45e5UUqQkq_aDi1rEZap9v8fy7GQdug"
+    },
+    {
+      "id": "skin-4e17d497a43e",
+      "name": "Bloodhound Gloves | Bronzed",
+      "definitionIndex": 5027,
+      "paintKit": 10008,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOnJrv8iZT4OegbJtqLP-FC3Svw-J5v-VhQDy9kSIqtimEloPwIhTLN1F4Tox2Q7UJ4RLrltDkMuyz4ASIg4kUxCr5jy8fvC46sLtWWaojqKze2giTL_Rjtvi23tdj"
+    },
+    {
+      "id": "skin-de7d4238a5c9",
+      "name": "Bloodhound Gloves | Snakebite",
+      "definitionIndex": 5027,
+      "paintKit": 10007,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOnJrv8iZT4OegbJtqLP-FC3Svw-J5v-VhQDy9kSI0vTyOn5zyKCX4PERxSdEfGb5d6lSmxIfuMezmtFfb39lAxCivh3hI6Chi4eYGWfAt8vXTiw_EM7Q_t5NWIeHnE0qrynbE1A"
+    },
+    {
+      "id": "skin-a371f5d8dddc",
+      "name": "Broken Fang Gloves | Needle Point",
+      "definitionIndex": 4725,
+      "paintKit": 10087,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOnITv9idV6fOgb5tqLP-FC3Svzv5zouB9Ria9xE0YtTGKiI71HifOOV5kFJQlQbUL4RHukofjY-227wDaidpHnCqs3H5K6So95ekLVKck__bW3Q_fcepqSI673wM"
+    },
+    {
+      "id": "skin-82516a2fa315",
+      "name": "Broken Fang Gloves | Jade",
+      "definitionIndex": 4725,
+      "paintKit": 10085,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOnITv9idV6fOgb5tqLP-FC3Svzv5zouB9Ria9xE0YvjiRm4PwIhTALFN1VP0sHLBS9g65w9exM-Pl5gaKidkRziX22yNIv306571QA6pwrKGDiluTZLxs5ZdXOr_5GlzOqAIa"
+    },
+    {
+      "id": "skin-ac0c22b15c7c",
+      "name": "Broken Fang Gloves | Yellow-banded",
+      "definitionIndex": 4725,
+      "paintKit": 10086,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOnITv9idV6fOgb5tqLP-FC3Svzv5zouB9Ria9xE0YozKMiYD3Hi3VMVFPWM4hFrxl-0XkzougWLa7sF2alYpAyX__iClA5ntstuoEUqUirKeG2w3IYrZo4JRSLa2vRRvdWhwJsa98BNe077TKBCc"
+    },
+    {
+      "id": "skin-27555a08b61e",
+      "name": "Broken Fang Gloves | Unhinged",
+      "definitionIndex": 4725,
+      "paintKit": 10088,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOnITv9idV6fOgb5tqLP-FC3Svzv5zouB9Ria9xE0YoDOEkYrqKiLJAVR8W8ErKrtT5Uj8jNfuN-2wtgeNioNDxS7_jS4av31j5L4CVqV0rvLTigzCNeE5tZkCJqm5DUPZGadTirc"
+    },
+    {
+      "id": "skin-76266354fa03",
+      "name": "Hydra Gloves | Emerald",
+      "definitionIndex": 5035,
+      "paintKit": 10057,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOlo_k7yNk6P6hfqF-H_KfAWiUyeFjvuVWRzC3hxwYsTGEmYTGJjnCO1hPVssnHaMU4EG6ktGyPryz5A3fiIwUyin3h3lJ5nlq5-xQVPIk-6HWjVmQOeFptI5DeqjsQUewWg"
+    },
+    {
+      "id": "skin-e8fa9ecb2fbe",
+      "name": "Hydra Gloves | Case Hardened",
+      "definitionIndex": 5035,
+      "paintKit": 10060,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOlo_k7yNk6P6hfqF-H_KfAWiUyeFjvuVWRzC3hxwYsDyWn7DxIDnDO1h1Xv0sHLBS9g7ul9zmMbi35FHYgolMmSj9jS8fvC5jte9RAqctqKCC2QHBYrU64MMCOr_5GlPhveuZ"
+    },
+    {
+      "id": "skin-530add68f13a",
+      "name": "Hydra Gloves | Mangrove",
+      "definitionIndex": 5035,
+      "paintKit": 10058,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOlo_k7yNk6P6hfqF-H_KfAWiUyeFjvuVWRzC3hxwYtC-An4HGLS7GKl51SP0tEKRS3UL6w5ekWLa7sF2alY9MzyX92ixAvCs-sutWWKd08qDRh17CZOI86JcBcffyH0iGUR9asfh8BNe0yN2QCJM"
+    },
+    {
+      "id": "skin-fb73d424e4dd",
+      "name": "Hydra Gloves | Rattler",
+      "definitionIndex": 5035,
+      "paintKit": 10059,
+      "minWear": 0.06,
+      "maxWear": 0.8,
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Tg_13jRBnOlo_k7yNk6P6hfqF-H_KfAWiUyeFjvuVWRzC3hxwYoDOEkYrqKiLJAVRiW9EzKrtT5Uj8jNOyZb_i5QHcg40Unyz-ji5LvX1v6-kEV_Ek8vCFjguUYOU_tJVWd6y5DUPZHBGjgbE"
+    }
+  ],
+  "agents": [
+    {
+      "id": "agent-4613",
+      "name": "Bloody Darryl The Strapped | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_varf5.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WWlKAhtLhqHXDilxgm4z7dztesJH2SbgApCMchFrQNsRSxw4XhYeK0swbYlcsbmucxTysR"
+    },
+    {
+      "id": "agent-4619",
+      "name": "'Blueberries' Buckshot | NSWC SEAL",
+      "team": "ct",
+      "model": "agents/models/ctm_st6/ctm_st6_variantj.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6XRk-fO8YaVjNPrdXWLElL5ytbBsTXrqzUxzsWmHzN-gI3-TbwQmC5pzQLELsUbrx9bmP_SiuVJe8Pfo4Q"
+    },
+    {
+      "id": "agent-4680",
+      "name": "'Two Times' McCoy | TACP Cavalry",
+      "team": "ct",
+      "model": "agents/models/ctm_st6/ctm_st6_variantl.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6XRk-fO8YaVjNPzdCGbJxb1zs-JvGCrql0h3tm7cyov_JS-XblImDcAhQe8OtBK4k4bgZPSiuVIHzmbjrQ"
+    },
+    {
+      "id": "agent-4711",
+      "name": "Cmdr. Mae 'Dead Cold' Jamison | SWAT",
+      "team": "ct",
+      "model": "agents/models/ctm_swat/ctm_swat_variante.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6iNP0OSveq1sLuSWQDGVlbx34-Q8HC3nk012tWzTzY79JHiQOgYpW8B3EeYN40HtxtzlNuz8p1uJLMIs6sE"
+    },
+    {
+      "id": "agent-4712",
+      "name": "1st Lieutenant Farlow | SWAT",
+      "team": "ct",
+      "model": "agents/models/ctm_swat/ctm_swat_variantf.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6iNP0OSveq1sLuSVQGLFx7h0tbU6GHG1lERz62WEm9j6cimebgB0WZd4Ee4Ks0a-lNbjZrj8p1uJLRQDiME"
+    },
+    {
+      "id": "agent-4713",
+      "name": "John 'Van Healen' Kask | SWAT",
+      "team": "ct",
+      "model": "agents/models/ctm_swat/ctm_swat_variantg.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6iNP0OSveq1sLuSUQDLIle0jtOM-SXm2xBkjsW_dyImhc3iWOgcmAsR0TLVe4BjrkIWzN-P8p1uJ4p5BSY8"
+    },
+    {
+      "id": "agent-4714",
+      "name": "Bio-Haz Specialist | SWAT",
+      "team": "ct",
+      "model": "agents/models/ctm_swat/ctm_swat_varianth.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6iNP0OSveq1sLuSbQDPGkO0i4bE4THq1xRh3sjuEz9muJX7EZlIiC8RyQbIPsBPtk9fmNrj8p1uJwRLd8H0"
+    },
+    {
+      "id": "agent-4715",
+      "name": "Sergeant Bombson | SWAT",
+      "team": "ct",
+      "model": "agents/models/ctm_swat/ctm_swat_varianti.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6iNP0OSveq1sLuSaQD6Umbp15-RtHX21kxl-sG-Gy9f6ci2XPA8lDMAiTbJc5BfuwNXgYbn8p1uJ3rbO8bk"
+    },
+    {
+      "id": "agent-4716",
+      "name": "Chem-Haz Specialist | SWAT",
+      "team": "ct",
+      "model": "agents/models/ctm_swat/ctm_swat_variantj.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6iNP0OSveq1sLuSZQGKRmOpyseJsF3rkzR4ht2_TwtugcH7DbAQgW5VyFLIDuxnqmtPiNb78p1uJZinYneA"
+    },
+    {
+      "id": "agent-4718",
+      "name": "Rezan the Redshirt | Sabre",
+      "team": "t",
+      "model": "agents/models/tm_balkan/tm_balkan_variantk.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZTh8Sla4c24abZkIf6HBSnClrkg5eBoGSvikU915G_dyo2vcimTOFAoX8cmR7MDsBS_m4G2Zui2-UWA3FkeyBmz"
+    },
+    {
+      "id": "agent-4726",
+      "name": "Sir Bloody Miami Darryl | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_varf.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WWj-gn47Q-GH7qxkhwsWjWyN6pJynGZld0CJR3QOdbtRa4lIGxY7_g7wfAy9USZdxTISw"
+    },
+    {
+      "id": "agent-4727",
+      "name": "Safecracker Voltzmann | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_varg.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WXj7536LVoFivmkEghsWXQmd37IniRPwUoCMFwEeAItxCwkdXvNr624wXAy9USEc8H9qQ"
+    },
+    {
+      "id": "agent-4728",
+      "name": "Little Kev | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_varh.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WYj74g6LVvGyznlB8itm7XyY2od3LBOA4jWcByEe4J40S_kYfmYurm41fAy9USidzQq1U"
+    },
+    {
+      "id": "agent-4730",
+      "name": "Getaway Sally | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_varj.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3Waj-0h4LM5H3jjzR9-4zmHzIuucXOWaAEkCsR5FrFcsEG5wNGzNeng71TAy9UScc7Ksy8"
+    },
+    {
+      "id": "agent-4732",
+      "name": "Number K | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_vari.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WZj7wuseM-GnG2lh4h5m2EmderdX7DaA9zW8N2QuBbtBG-mty2N-i0tADAy9USaSI87As"
+    },
+    {
+      "id": "agent-4733",
+      "name": "Sir Bloody Silent Darryl | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_varf1.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WWkKAv5OVoGyjilkR14mzcmdz4JHiXaQQiDZAkTO5euxW-loC1Zbm25wSPlcsbmmtPiU71"
+    },
+    {
+      "id": "agent-4734",
+      "name": "Sir Bloody Skullhead Darryl | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_varf2.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WWk6Ajs7FtHni2lh5_smmDnNj8I3yVOFJyW5J5FLRYtxO6l9GxZu7h4AeIlcsbmjPHDP8B"
+    },
+    {
+      "id": "agent-4735",
+      "name": "Sir Bloody Darryl Royale | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_varf3.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WWkqAg6ec5THznk05-4jvXntz7JHjBOwYkDZAhQrZfskXuw9HiN-m3tAfclcsbmmRuIYiQ"
+    },
+    {
+      "id": "agent-4736",
+      "name": "Sir Bloody Loudmouth Darryl | The Professionals",
+      "team": "t",
+      "model": "agents/models/tm_professional/tm_professional_varf4.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYby8iRe_OGnZ6psLM-FD3WWlaAlsrk9G3C1xkl-5T_Vyo6odSmWPFRzC5FyEONfuhK9lYG2Nem04gPclcsbmsgBcrK7"
+    },
+    {
+      "id": "agent-4749",
+      "name": "Sous-Lieutenant Medic | Gendarmerie Nationale",
+      "team": "ct",
+      "model": "agents/models/ctm_gendarmerie/ctm_gendarmerie_varianta.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nn-Cxf7uCjbbZkJc-FD3WZwOBisa9qTnjhxBwk5D-Ano79cXnGbgYmDJJ2FO4MtxK-l9HnZb_h5Qba3d5N02yg2UOShGfb"
+    },
+    {
+      "id": "agent-4750",
+      "name": "Chem-Haz Capitaine | Gendarmerie Nationale",
+      "team": "ct",
+      "model": "agents/models/ctm_gendarmerie/ctm_gendarmerie_variantb.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nn-Cxf7uCjbbZkJc-FD3WZwOBisq9tGnnhkxt0sTjcwtyrcnqXO1AgDZJyQbEMsxbqwIayZrnhswHfg4gU02yg2bd7mpZ0"
+    },
+    {
+      "id": "agent-4751",
+      "name": "Chef d'Escadron Rouchard | Gendarmerie Nationale",
+      "team": "ct",
+      "model": "agents/models/ctm_gendarmerie/ctm_gendarmerie_variantc.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nn-Cxf7uCjbbZkJc-FD3WZwOBis69vSijgx01-4WvUytireS2SalVyDpoiR-MN4Rfsw4HnMem2tgbc3d5B02yg2bQY5H89"
+    },
+    {
+      "id": "agent-4752",
+      "name": "Aspirant | Gendarmerie Nationale",
+      "team": "ct",
+      "model": "agents/models/ctm_gendarmerie/ctm_gendarmerie_variantd.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nn-Cxf7uCjbbZkJc-FD3WZwOBitK8-HH22w0Ul42mAw4r_eSnBPQB0DZp0FOBY4RPsw4a2PrzhtgDdjt5D02yg2f2sw1lc"
+    },
+    {
+      "id": "agent-4753",
+      "name": "Officer Jacques Beltram | Gendarmerie Nationale",
+      "team": "ct",
+      "model": "agents/models/ctm_gendarmerie/ctm_gendarmerie_variante.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nn-Cxf7uCjbbZkJc-FD3WZwOBita87GCuxzBwl5jjVyNyveXvCbgQhCsN3EOACsBOwktGyYrnn5FOI3okT02yg2Q7tnUpK"
+    },
+    {
+      "id": "agent-4756",
+      "name": "Lieutenant 'Tree Hugger' Farlow | SWAT",
+      "team": "ct",
+      "model": "agents/models/ctm_swat/ctm_swat_variantk.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6iNP0OSveq1sLuSYQDDAk75w4bU7FivkkBsj52vWz9f8cCqTbVN0W5R1ELJYukWxkdXmZOr8p1uJJ_LT_Tg"
+    },
+    {
+      "id": "agent-4757",
+      "name": "Cmdr. Davida 'Goggles' Fernandez | SEAL Frogman",
+      "team": "ct",
+      "model": "agents/models/ctm_diver/ctm_diver_varianta.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nk9DRe_c24abZkIf6HDymVwLhz4rJsHH6xzEQk5zyDydaudi6XZwJxDJUkRrIItULpw4W1Ybvk-UWA3FCleMc7"
+    },
+    {
+      "id": "agent-4771",
+      "name": "Cmdr. Frank 'Wet Sox' Baroud | SEAL Frogman",
+      "team": "ct",
+      "model": "agents/models/ctm_diver/ctm_diver_variantb.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nk9DRe_c24abZkIf6HDCmSkrh35uRvHXG1lkp_6zjUzY2gcimRP1N2XJJxTOYKuhDsxNC2YePi-UWA3IGWyCLX"
+    },
+    {
+      "id": "agent-4772",
+      "name": "Lieutenant Rex Krikey | SEAL Frogman",
+      "team": "ct",
+      "model": "agents/models/ctm_diver/ctm_diver_variantc.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nk9DRe_c24abZkIf6HDSmUxbd05bIxH3vqzRgj4GXTm4qtJXPGbg8oXpt2QeVYs0TpkdDmMuPq-UWA3P4QMOVd"
+    },
+    {
+      "id": "agent-4773",
+      "name": "Elite Trapper Solman | Guerrilla Warfare",
+      "team": "t",
+      "model": "agents/models/tm_jungle_raider/tm_jungle_raider_varianta.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZz18yVX6s28aa1pJeKsGGaCyO94pOAnSSjqwkUi5W-ByYz4cnyVZlIgDJciQu8LsxXumta0Nrjh4gTf2NpGnzK-0H1TOhLF6Q"
+    },
+    {
+      "id": "agent-4774",
+      "name": "Crasswater The Forgotten | Guerrilla Warfare",
+      "team": "t",
+      "model": "agents/models/tm_jungle_raider/tm_jungle_raider_variantb.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZz18yVX6s28aa1pJeKsGGaCyO94pOMnTH-3kU8m5D6Gz4qodX2SbAdxCJUlROAD5kS7w4WyYuyz4QOMj94QmzK-0H2dcvV-Fg"
+    },
+    {
+      "id": "agent-4775",
+      "name": "Arno The Overgrown | Guerrilla Warfare",
+      "team": "t",
+      "model": "agents/models/tm_jungle_raider/tm_jungle_raider_variantc.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZz18yVX6s28aa1pJeKsGGaCyO94pOInTSrkwRlx6z7Xwtn9In6eZwQnDsd5TOYDsxi9xNe2N7-0slHe2NlDmzK-0H38E8rQtQ"
+    },
+    {
+      "id": "agent-4776",
+      "name": "Col. Mangos Dabisi | Guerrilla Warfare",
+      "team": "t",
+      "model": "agents/models/tm_jungle_raider/tm_jungle_raider_variantd.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZz18yVX6s28aa1pJeKsGGaCyO94pOUnSXy3w0gjt2rVy42rcirFO1UgDpElTOYDtRexxtS1Ybmw4gzb3YlAyjK-0H0x0ZHEbw"
+    },
+    {
+      "id": "agent-4777",
+      "name": "Vypa Sista of the Revolution | Guerrilla Warfare",
+      "team": "t",
+      "model": "agents/models/tm_jungle_raider/tm_jungle_raider_variante.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZz18yVX6s28aa1pJeKsGGaCyO94pOQnGH3rzRt_4miDmNb8dinBPwF2ApJ2FuRe5hW4xNfjZbzk5gDajI8QzTK-0H0XsiWpag"
+    },
+    {
+      "id": "agent-4778",
+      "name": "Trapper Aggressor | Guerrilla Warfare",
+      "team": "t",
+      "model": "agents/models/tm_jungle_raider/tm_jungle_raider_variantf.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZz18yVX6s28aa1pJeKsGGaCyO94pOcnS3u1xEp042mAz9n_IinBPQckCpAkR7UC40TtltKxMu3h4gWLjI9AzzK-0H3_4J31MA"
+    },
+    {
+      "id": "agent-4780",
+      "name": "'Medium Rare' Crasswater | Guerrilla Warfare",
+      "team": "t",
+      "model": "agents/models/tm_jungle_raider/tm_jungle_raider_variantb2.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZz18yVX6s28aa1pJeKsGGaCyO94pOM7AXGwwBxz5G2Gy9qqdy_GaARyDcF2FrUK50LuwICzM-3i4wzZj4NFyn_gznQeAuFLUp4"
+    },
+    {
+      "id": "agent-4781",
+      "name": "Trapper | Guerrilla Warfare",
+      "team": "t",
+      "model": "agents/models/tm_jungle_raider/tm_jungle_raider_variantf2.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZz18yVX6s28aa1pJeKsGGaCyO94pOc7ASi2zRwj5TuEz9yreHLBbAInW5YlEbQNsxCxkdXgNe-25gTaj9lNznngznQecRJv7X0"
+    },
+    {
+      "id": "agent-5105",
+      "name": "Ground Rebel  | Elite Crew",
+      "team": "t",
+      "model": "agents/models/tm_leet/tm_leet_variantg.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZrl-DZk-fO8YaVjNPfdVmHAxOgj4uNtGyqxxRki52jSyoqseHiRalRyWcdzE-APuxK8xNbmYvSiuVLQnSKAnQ"
+    },
+    {
+      "id": "agent-5106",
+      "name": "Osiris | Elite Crew",
+      "team": "t",
+      "model": "agents/models/tm_leet/tm_leet_varianth.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZrl-DZk-fO8YaVjNPjdDDXEk7p35uAxTHDqxRh25DuDzI2sdC7BOwZ1W5BwRe4O4BfsktKxZPSiuVIisGC3vg"
+    },
+    {
+      "id": "agent-5107",
+      "name": "Prof. Shahmat | Elite Crew",
+      "team": "t",
+      "model": "agents/models/tm_leet/tm_leet_varianti.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZrl-DZk-fO8YaVjNPndCDCTk74k4LA5GX_mxR4mtWSDmYz9cy6ROAQoCMB1E-AK5BG9wNziNPSiuVKTaodKjw"
+    },
+    {
+      "id": "agent-5108",
+      "name": "The Elite Mr. Muhlik | Elite Crew",
+      "team": "t",
+      "model": "agents/models/tm_leet/tm_leet_variantf.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZrl-DZk-fO8YaVjNPbdDTORmbsl5LQ-F3DlwE1y6jnWytqucnmfawMmWJEkFuQJskKwmoexM_SiuVLDZa0BGw"
+    },
+    {
+      "id": "agent-5109",
+      "name": "Jungle Rebel | Elite Crew",
+      "team": "t",
+      "model": "agents/models/tm_leet/tm_leet_variantj.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZrl-DZk-fO8YaVjNPrdWDWRlrch5LU6H3-wzEoj5Dncn9evcXuTOAZyW5p4QuJc50TqwdPlPvSiuVKlREwxsg"
+    },
+    {
+      "id": "agent-5205",
+      "name": "Soldier | Phoenix",
+      "team": "t",
+      "model": "agents/models/tm_phoenix/tm_phoenix_varianth.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYbo8idV5uqRfqV_KfGdGm_elrd05uUwSn-wxB5_52zRyd39cHuWOgEmW5R3QbQM5xi4mtayMunq5hue1dxmxRjA3w"
+    },
+    {
+      "id": "agent-5206",
+      "name": "Enforcer | Phoenix",
+      "team": "t",
+      "model": "agents/models/tm_phoenix/tm_phoenix_variantf.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYbo8idV5uqRfqV_KfGdGmHexbZ3tLM9G3jhzRt-5WqEydaqdS-QPAMjX8NxFLRY5hftx9XkNOm35xue1dyPr1iSWw"
+    },
+    {
+      "id": "agent-5207",
+      "name": "Slingshot | Phoenix",
+      "team": "t",
+      "model": "agents/models/tm_phoenix/tm_phoenix_variantg.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYbo8idV5uqRfqV_KfGdGmDelb8n4LAwHHqxxU8jtjndztf7dC_EOFQnCpV3QrUCshG4wYHjNeu25hue1dzy4v_RuA"
+    },
+    {
+      "id": "agent-5208",
+      "name": "Street Soldier | Phoenix",
+      "team": "t",
+      "model": "agents/models/tm_phoenix/tm_phoenix_varianti.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oYbo8idV5uqRfqV_KfGdGm7ex78n4LU_GSrmzBxx4Dncntn_InmWPwcmCccjTO8L50awwdC2N-uwsxue1dwGHFtFrw"
+    },
+    {
+      "id": "agent-5305",
+      "name": "Operator | FBI SWAT",
+      "team": "ct",
+      "model": "agents/models/ctm_fbi/ctm_fbi_variantf.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nm_ytk-fO8YaVjNPbdCjfAkbcl5LM6S3jkxUsj42TQzdf7JH_Caw5zDMMlEOAIt0Hqk9bmY_SiuVKnm4HYYQ"
+    },
+    {
+      "id": "agent-5306",
+      "name": "Markus Delrow | FBI HRT",
+      "team": "ct",
+      "model": "agents/models/ctm_fbi/ctm_fbi_variantg.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nm_ytk-fO8YaVjNPfdWT7Dx7dy5OJtGnDhkE5xtj6Hyd6veXjEbVUnW8YiRrVeuhTtk4fvY_SiuVKEkIDFLQ"
+    },
+    {
+      "id": "agent-5307",
+      "name": "Michael Syfers  | FBI Sniper",
+      "team": "ct",
+      "model": "agents/models/ctm_fbi/ctm_fbi_varianth.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nm_ytk-fO8YaVjNPjdXjWRkegi57FoHyrglkh-62ndz4yrIimfOFRxCZQmQeQOsEK9wNfnYvSiuVJ9Bmql3Q"
+    },
+    {
+      "id": "agent-5308",
+      "name": "Special Agent Ava | FBI",
+      "team": "ct",
+      "model": "agents/models/ctm_fbi/ctm_fbi_variantb.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nm_ytk-fO8YaVjNPLdXz6TkLdw5LY4Hnmwl0wktj7dn4r9I3OWPFApC5F1QeAO5xi4lIDiM_SiuVKk3V4ZcQ"
+    },
+    {
+      "id": "agent-5400",
+      "name": "3rd Commando Company | KSK",
+      "team": "ct",
+      "model": "agents/models/ctm_st6/ctm_st6_variantk.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6XRk-fO8YaVjNPvdWTbJwOsm4rI4GnDjx0t3sWWHw934IH_BO1UnWZd1EO8K5kK4l4fgMvSiuVLu5GcAvQ"
+    },
+    {
+      "id": "agent-5401",
+      "name": "Seal Team 6 Soldier | NSWC SEAL",
+      "team": "ct",
+      "model": "agents/models/ctm_st6/ctm_st6_variante.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6XRk-fO8YaVjNPXdXDHBxLZz4bI-Fn-yxhwhsjyDyNepcSjEbgQmApclFOMNthbslNKyPvSiuVLpMkmXWg"
+    },
+    {
+      "id": "agent-5402",
+      "name": "Buckshot | NSWC SEAL",
+      "team": "ct",
+      "model": "agents/models/ctm_st6/ctm_st6_variantg.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6XRk-fO8YaVjNPfdCzfBx7gl5LQ-GnrkkR4l4DyDzIv8cnKXaQ4jXsQjEOcJ4RHuxNTuMPSiuVIYxifJkQ"
+    },
+    {
+      "id": "agent-5403",
+      "name": "'Two Times' McCoy | USAF TACP",
+      "team": "ct",
+      "model": "agents/models/ctm_st6/ctm_st6_variantm.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6XRk-fO8YaVjNP3dDDLHl7kks7U4Gi2xkUoj42XXntypcHyQO1J0DsZzFuAJsBW4kNPlN_SiuVKK_o8s4A"
+    },
+    {
+      "id": "agent-5404",
+      "name": "Lt. Commander Ricksaw | NSWC SEAL",
+      "team": "ct",
+      "model": "agents/models/ctm_st6/ctm_st6_varianti.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6XRk-fO8YaVjNPndVz-Ul74hsbNoHi21kUly6mrQzNagcijBPQEnCsciTOdY4Rm6m4XvN_SiuVLIl2LQXw"
+    },
+    {
+      "id": "agent-5405",
+      "name": "Primeiro Tenente | Brazilian 1st Battalion",
+      "team": "ct",
+      "model": "agents/models/ctm_st6/ctm_st6_variantn.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz6XRk-fO8YaVjNP7dV2bFlesvtbM_Sn7gx010tTncmdn7ICqePQ4mWMB5EeALtRS7w4XuP_SiuVLSDPMGxQ"
+    },
+    {
+      "id": "agent-5500",
+      "name": "Dragomir | Sabre",
+      "team": "t",
+      "model": "agents/models/tm_balkan/tm_balkan_variantf.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZTh8Sla4c24abZkIf6HCCnExbdz5uIxF3jiwUp1sD-Gyon6cniQb1dyWMQjTbQMs0G9w4KzZLi0-UWA3DCqT-14"
+    },
+    {
+      "id": "agent-5501",
+      "name": "Maximus | Sabre",
+      "team": "t",
+      "model": "agents/models/tm_balkan/tm_balkan_varianti.vmdl",
+      "color": "#8847ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZTh8Sla4c24abZkIf6HBynEl7wg5bc4Tnm1k0V34GSGntupdCnCbwEiW8ElTOMCsUTtm4XmNOng-UWA3F74ACBx"
+    },
+    {
+      "id": "agent-5502",
+      "name": "Rezan The Ready | Sabre",
+      "team": "t",
+      "model": "agents/models/tm_balkan/tm_balkan_variantg.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZTh8Sla4c24abZkIf6HCSnCk79w47BqGSvjxEt3tjuDmYyocy2UbgRzXJIiEeULsRXqmtCxYrm2-UWA3FAo97Sl"
+    },
+    {
+      "id": "agent-5503",
+      "name": "Blackwolf | Sabre",
+      "team": "t",
+      "model": "agents/models/tm_balkan/tm_balkan_variantj.vmdl",
+      "color": "#d32ce6",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZTh8Sla4c24abZkIf6HBCnIxLxw5uI9HXHklh4m4TjXw4qsIHPFOFByCMAmTbQJ4Ua4kdfhN7u3-UWA3G22ywJ7"
+    },
+    {
+      "id": "agent-5504",
+      "name": "'The Doctor' Romanov | Sabre",
+      "team": "t",
+      "model": "agents/models/tm_balkan/tm_balkan_varianth.vmdl",
+      "color": "#eb4b4b",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZTh8Sla4c24abZkIf6HBinGlu0k4bU7Givnk01352yByd_6IHLGZgElDpchEbNZtxewx9zhNr_m-UWA3HK9C48i"
+    },
+    {
+      "id": "agent-5505",
+      "name": "Dragomir | Sabre Footsoldier",
+      "team": "t",
+      "model": "agents/models/tm_balkan/tm_balkan_variantl.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fgn8oZTh8Sla4c24abZkIf6HAimWlb9w57hoGHrmlB9_4j-Gm439d3rCPAEiDZNwQrUD40K9m9GzNu-0-UWA3CLCQ0Kd"
+    },
+    {
+      "id": "agent-5601",
+      "name": "B Squadron Officer | SAS",
+      "team": "ct",
+      "model": "agents/models/ctm_sas/ctm_sas_variantf.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz_DFk-fO8YaVjNPbdXmTGk-hw4rlvGSzjx0tz6jnWwo2odHnDblIjCcZwFu4NsBexkYexMvSiuVIb0S_y2g"
+    },
+    {
+      "id": "agent-5602",
+      "name": "D Squadron Officer | NZSAS",
+      "team": "ct",
+      "model": "agents/models/ctm_sas/ctm_sas_variantg.vmdl",
+      "color": "#4b69ff",
+      "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIa-2lmxU-LR0dnuNm6E8Vl45Iv181z1fh7lk6nz_DFk-fO8YaVjNPfdWDDDxeokseNoTX-1k0R-smSDz4qqcHieZlUhA5QkRuIMu0KwwdDmYfSiuVJoTILK3g"
+    }
+  ]
+}

@@ -40,5 +40,11 @@ for (const group of Map.groupBy(knives, item => item.weapon.id).values()) {
   catalog.skins.push(...uniquePaints.values())
 }
 
+const teamByWeapon = new Map(allSkins
+  .filter(item => item.weapon?.id?.startsWith('weapon_'))
+  .map(item => [item.weapon.id, item.team?.id === 'terrorists' ? 't'
+    : item.team?.id === 'counter-terrorists' ? 'ct' : 'both']))
+catalog.weapons = catalog.weapons.map(item => ({ ...item, team: teamByWeapon.get(item.weapon) ?? 'both' }))
+
 await writeFile(catalogPath, JSON.stringify(catalog))
 console.log(`Catalog updated: ${catalog.weapons.filter(x => x.category === knifeCategory).length} knives`)

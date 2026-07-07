@@ -41,6 +41,8 @@ public sealed class WeaponSkinsModule
     private readonly string _configurationPath;
     private readonly MemoryFunctionVoid<nint, string, float> _setOrAddAttribute;
     private readonly ConcurrentDictionary<ulong, IReadOnlyDictionary<string, SkinDefinition>> _remoteSkins = new();
+    private readonly ConcurrentDictionary<ulong, IReadOnlyDictionary<string, GloveDefinition>> _remoteGloves = new();
+    private readonly ConcurrentDictionary<ulong, IReadOnlyDictionary<string, AgentDefinition>> _remoteAgents = new();
     private SkinCatalog _catalog = SkinCatalog.Empty;
     private ulong _nextItemId = 65_578;
 
@@ -79,7 +81,10 @@ public sealed class WeaponSkinsModule
             return;
         }
 
-        var weaponServices = player!.PlayerPawn.Value?.WeaponServices;
+        ApplyAgent(player!);
+        ApplyGloves(player);
+
+        var weaponServices = player.PlayerPawn.Value?.WeaponServices;
         if (weaponServices is null)
         {
             return;
@@ -95,6 +100,7 @@ public sealed class WeaponSkinsModule
                 Apply(player, weapon);
             }
         }
+
     }
 
     public void ApplyNamed(CCSPlayerController? player, string eventWeaponName)
@@ -128,6 +134,70 @@ public sealed class WeaponSkinsModule
         _remoteSkins[steamId] = skins.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
     }
 
+    public void UpdatePlayerLoadout(
+        ulong steamId,
+        IEnumerable<KeyValuePair<string, SkinDefinition>> skins,
+        IEnumerable<KeyValuePair<string, GloveDefinition>> gloves,
+        IEnumerable<KeyValuePair<string, AgentDefinition>> agents)
+    {
+        _remoteSkins[steamId] = skins.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+        _remoteGloves[steamId] = gloves.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+        _remoteAgents[steamId] = agents.ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private void ApplyGloves(CCSPlayerController player)
+    {
+        var team = TeamKey(player);
+        var pawn = player.PlayerPawn.Value;
+        if (team is null || pawn is not { IsValid: true }
+            || !_remoteGloves.TryGetValue(player.SteamID, out var values)
+            || !values.TryGetValue(team, out var glove)) return;
+
+        try
+        {
+            var item = pawn.EconGloves;
+            item.ItemDefinitionIndex = glove.DefinitionIndex;
+            item.EntityQuality = 3;
+            var itemId = _nextItemId++;
+            item.ItemID = itemId;
+            item.ItemIDLow = (uint)(itemId & uint.MaxValue);
+            item.ItemIDHigh = (uint)(itemId >> 32);
+            item.AccountID = (uint)player.SteamID;
+            SetTextureAttributes(item.NetworkedDynamicAttributes.Handle, new(glove.PaintKit, glove.Wear, glove.Seed));
+            SetTextureAttributes(item.AttributeList.Handle, new(glove.PaintKit, glove.Wear, glove.Seed));
+            item.Initialized = true;
+
+            // Toggling the first/third-person bodygroup forces the client to rebuild
+            // glove models and avoids the stock gloves overlapping the selected pair.
+            pawn.AcceptInput("SetBodygroup", value: "first_or_third_person,0");
+            Server.NextFrame(() =>
+            {
+                if (pawn.IsValid) pawn.AcceptInput("SetBodygroup", value: "first_or_third_person,1");
+            });
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Could not apply gloves for SteamID64 {SteamId} ({Team})", player.SteamID, team);
+        }
+    }
+
+    private void ApplyAgent(CCSPlayerController player)
+    {
+        var team = TeamKey(player);
+        var pawn = player.PlayerPawn.Value;
+        if (team is null || pawn is not { IsValid: true }
+            || !_remoteAgents.TryGetValue(player.SteamID, out var values)
+            || !values.TryGetValue(team, out var agent)) return;
+        try
+        {
+            pawn.SetModel(agent.Model);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Could not apply agent model {Model} for SteamID64 {SteamId}", agent.Model, player.SteamID);
+        }
+    }
+
     private void Apply(CCSPlayerController player, CBasePlayerWeapon weapon)
     {
         var weaponName = weapon.GetWeaponName();
@@ -142,7 +212,14 @@ public sealed class WeaponSkinsModule
         {
             // Once the API answered for a player, PostgreSQL is authoritative—even an
             // empty response intentionally means that no skin is configured.
-            if (remote.TryGetValue(weaponName, out skin))
+            var team = TeamKey(player);
+            var exactKey = team is null ? null : $"{team}:{weaponName}";
+            var sharedKey = $"both:{weaponName}";
+            if (exactKey is not null && remote.TryGetValue(exactKey, out skin))
+            {
+                configuredWeaponName = weaponName;
+            }
+            else if (remote.TryGetValue(sharedKey, out skin))
             {
                 configuredWeaponName = weaponName;
             }
@@ -151,10 +228,15 @@ public sealed class WeaponSkinsModule
                 // A stock CT/T knife reports weapon_knife(_t), while the selected
                 // model is stored under its canonical classname. Only one knife
                 // entry is allowed by the loadout's primary key semantics.
-                var knife = remote.FirstOrDefault(x => KnifeDefinitionIndexes.ContainsKey(x.Key));
+                var knife = remote.FirstOrDefault(x => exactKey is not null
+                    && x.Key.StartsWith($"{team}:", StringComparison.OrdinalIgnoreCase)
+                    && KnifeDefinitionIndexes.ContainsKey(x.Key[(x.Key.IndexOf(':') + 1)..]));
+                if (string.IsNullOrEmpty(knife.Key))
+                    knife = remote.FirstOrDefault(x => x.Key.StartsWith("both:", StringComparison.OrdinalIgnoreCase)
+                        && KnifeDefinitionIndexes.ContainsKey(x.Key[(x.Key.IndexOf(':') + 1)..]));
                 if (!string.IsNullOrEmpty(knife.Key))
                 {
-                    configuredWeaponName = knife.Key;
+                    configuredWeaponName = knife.Key[(knife.Key.IndexOf(':') + 1)..];
                     skin = knife.Value;
                 }
             }
@@ -233,4 +315,11 @@ public sealed class WeaponSkinsModule
     private static bool IsKnifeName(string? name) =>
         name?.Contains("knife", StringComparison.OrdinalIgnoreCase) == true
         || name?.Contains("bayonet", StringComparison.OrdinalIgnoreCase) == true;
+
+    private static string? TeamKey(CCSPlayerController player) => player.TeamNum switch
+    {
+        2 => "t",
+        3 => "ct",
+        _ => null
+    };
 }

@@ -41,7 +41,11 @@ export interface Player {
 
 export interface Skin {
   weapon: string
+  team: 'both' | 'ct' | 't'
   paintKit: number
   wear: number
   seed: number
 }
+export interface Glove { team: 'ct' | 't'; definitionIndex: number; paintKit: number; wear: number; seed: number }
+export interface Agent { team: 'ct' | 't'; model: string }
+export interface CosmeticLoadout { skins: Skin[]; gloves: Glove[]; agents: Agent[] }
