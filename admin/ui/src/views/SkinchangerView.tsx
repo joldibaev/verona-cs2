@@ -30,7 +30,6 @@ import {
   Switch,
   Textarea,
 } from "../components/ui";
-import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 interface Weapon {
   weapon: string;
   name: string;
@@ -112,16 +111,10 @@ const emptyGloveDraft: Record<"ct" | "t", GloveDraft> = {
   ct: { glove: null, wear: 0.01, seed: 0 },
   t: { glove: null, wear: 0.01, seed: 0 },
 };
-const categories = [
-  ["all", "Всё"],
-  ["sfui_invpanel_filter_melee", "Ножи"],
-  ["csgo_inventory_weapon_category_pistols", "Пистолеты"],
-  ["csgo_inventory_weapon_category_rifles", "Винтовки"],
-  ["csgo_inventory_weapon_category_smgs", "SMG"],
-  ["csgo_inventory_weapon_category_heavy", "Тяжёлое"],
-  ["loadoutslot_equipment", "Zeus"],
-  ["gloves", "Перчатки"],
-  ["agents", "Агенты"],
+const loadoutGroups = [
+  { id: "pistols", label: "Пистолеты", categories: ["csgo_inventory_weapon_category_pistols"] },
+  { id: "mid", label: "Среднее", categories: ["csgo_inventory_weapon_category_smgs", "csgo_inventory_weapon_category_heavy"] },
+  { id: "rifles", label: "Винтовки", categories: ["csgo_inventory_weapon_category_rifles"] },
 ];
 // CS2 rarity tiers, lowest → highest. Used to sort the picker so the rarest skins
 // surface first, mirroring the in-game inventory ordering.
@@ -323,6 +316,29 @@ function LazyImage({ src, alt }: { src: string; alt?: string }) {
   return <img src={loadedSrc} alt={alt} loading="lazy" />;
 }
 
+function WeaponLoadoutCard({
+  weapon,
+  skin,
+  onOpen,
+}: {
+  weapon: Weapon;
+  skin: CatalogSkin | null;
+  onOpen: (weapon: Weapon) => void;
+}) {
+  return (
+    <button
+      className="weapon-card loadout-slot"
+      style={{ "--rarity": skin?.color ?? "#30343d" } as React.CSSProperties}
+      onClick={() => onOpen(weapon)}
+      type="button"
+    >
+      <img className={!skin ? "vanilla" : ""} src={skin?.image ?? weapon.image} />
+      <b>{weapon.name}</b>
+      <span>{skin?.name.split("| ")[1] ?? "Добавить скин"}</span>
+    </button>
+  );
+}
+
 interface VirtualGridProps<T> {
   items: T[];
   renderItem: (item: T) => ReactNode;
@@ -415,8 +431,8 @@ export default function SkinchangerView() {
       agents: [],
     }),
     [collections, setCollections] = useState<Collection[]>([]),
-    [category, setCategory] = useState("all"),
     [search, setSearch] = useState(""),
+    [activeTeam, setActiveTeam] = useState<"ct" | "t">("t"),
     [picker, setPicker] = useState<Weapon | null>(null),
     [scope, setScope] = useState<"both" | "ct" | "t">("both"),
     [picked, setPicked] = useState<CatalogSkin | null>(null),
@@ -444,7 +460,7 @@ export default function SkinchangerView() {
     [cosmetic, setCosmetic] = useState<{
       kind: "gloves" | "agents";
     } | null>(null),
-    [cosmeticTeam, setCosmeticTeam] = useState<"ct" | "t">("ct"),
+    [cosmeticTeam, setCosmeticTeam] = useState<TeamScope>("t"),
     // Each side keeps its own draft so CT and T can be configured independently in a
     // single dialog; switching the team toggle never discards the other side's pick.
     [gloveDraft, setGloveDraft] = useState<Record<"ct" | "t", GloveDraft>>(
@@ -485,8 +501,9 @@ export default function SkinchangerView() {
       () => new Map(keychainCatalog.map((k) => [k.id, k])),
       [keychainCatalog],
     );
-  const getSkin = (w: string) => {
-      const x = skins[`${w}:both`] ?? skins[`${w}:ct`] ?? skins[`${w}:t`];
+  const cosmeticDisplayTeam: "ct" | "t" = cosmeticTeam === "both" ? activeTeam : cosmeticTeam;
+  const getSkin = (w: string, team: "ct" | "t" = activeTeam) => {
+      const x = skins[`${w}:${team}`];
       return x
         ? (skinMap.get(w)?.find((s) => s.paint === x.paintKit) ?? null)
         : null;
@@ -573,10 +590,10 @@ export default function SkinchangerView() {
   }
   const visible = weapons.filter(
     (w) =>
-      (category === "all" || w.category === category) &&
+      (w.team === "both" || w.team === activeTeam) &&
       (!search ||
         w.name.toLowerCase().includes(search.toLowerCase()) ||
-        (getSkin(w.weapon)?.name ?? "")
+        (getSkin(w.weapon, activeTeam)?.name ?? "")
           .toLowerCase()
           .includes(search.toLowerCase())),
   );
@@ -600,7 +617,7 @@ export default function SkinchangerView() {
     setActiveSlot(null);
   }
   function openWeapon(w: Weapon) {
-    const s = w.team === "both" ? "both" : w.team;
+    const s = w.team === "both" ? activeTeam : w.team;
     setPicker(w);
     setScope(s);
     loadScope(w, s);
@@ -610,7 +627,9 @@ export default function SkinchangerView() {
     // Only retarget which side the save applies to — keep the skin, float, pattern,
     // StatTrak and name tag the user is currently configuring instead of reloading
     // the other team's stored loadout and wiping the in-progress selection.
-    setScope(s as "both" | "ct" | "t");
+    const next = s as TeamScope;
+    setScope(next);
+    if (picker && next !== "both") loadScope(picker, next);
   }
   async function saveSkin() {
     if (!picker || !picked) return;
@@ -706,7 +725,7 @@ export default function SkinchangerView() {
       toast.error("Неверный код коллекции");
     }
   }
-  function openCosmetic(kind: "gloves" | "agents", team: "ct" | "t" = "ct") {
+  function openCosmetic(kind: "gloves" | "agents", team: "ct" | "t" = activeTeam) {
     setCosmetic({ kind });
     setCosmeticTeam(team);
     // Seed both teams' drafts from the saved loadout so the dialog opens with the
@@ -733,9 +752,18 @@ export default function SkinchangerView() {
       : null;
     return { glove, wear: g?.wear ?? 0.01, seed: g?.seed ?? 0 };
   }
+  function updateGloveDraft(update: (draft: GloveDraft) => GloveDraft) {
+    const teams: ("ct" | "t")[] = cosmeticTeam === "both" ? ["t", "ct"] : [cosmeticTeam];
+    setGloveDraft((draft) => {
+      const next = { ...draft };
+      for (const team of teams) next[team] = update(draft[team]);
+      return next;
+    });
+  }
   async function saveCosmetic() {
     if (!cosmetic) return;
-    for (const team of ["ct", "t"] as const) {
+    const teams: ("ct" | "t")[] = cosmeticTeam === "both" ? ["t", "ct"] : [cosmeticTeam];
+    await Promise.all(teams.map(async (team) => {
       if (cosmetic.kind === "gloves") {
         const d = gloveDraft[team];
         if (d.glove)
@@ -757,7 +785,7 @@ export default function SkinchangerView() {
             body: JSON.stringify({ team, model: a.model }),
           });
       }
-    }
+    }));
     await load();
     setCosmetic(null);
     toast.success("Loadout сохранён");
@@ -766,10 +794,17 @@ export default function SkinchangerView() {
   // other team's selection is untouched and the dialog stays open for further edits.
   async function resetCosmetic() {
     if (!cosmetic) return;
-    await api(`${root}/${cosmetic.kind}/${cosmeticTeam}`, { method: "DELETE" });
+    const teams: ("ct" | "t")[] = cosmeticTeam === "both" ? ["t", "ct"] : [cosmeticTeam];
+    await Promise.all(teams.map((team) => api(`${root}/${cosmetic.kind}/${team}`, { method: "DELETE" })));
     if (cosmetic.kind === "gloves")
-      setGloveDraft((d) => ({ ...d, [cosmeticTeam]: draftFromGlove(undefined) }));
-    else setAgentDraft((d) => ({ ...d, [cosmeticTeam]: null }));
+      setGloveDraft((draft) => ({
+        ct: teams.includes("ct") ? draftFromGlove(undefined) : draft.ct,
+        t: teams.includes("t") ? draftFromGlove(undefined) : draft.t,
+      }));
+    else setAgentDraft((draft) => ({
+      ct: teams.includes("ct") ? null : draft.ct,
+      t: teams.includes("t") ? null : draft.t,
+    }));
     await load();
     toast.success(`Слот ${cosmeticTeam.toUpperCase()} сброшен`);
   }
@@ -875,16 +910,19 @@ export default function SkinchangerView() {
           </aside>
         )}
         <section className="loadout-main">
+          <div className="loadout-team-bar">
+            <div>
+              <span>СТОРОНА LOADOUT</span>
+              <b>{activeTeam === "t" ? "TERRORIST" : "COUNTER-TERRORIST"}</b>
+            </div>
+            <TeamSelect
+              options={["t", "ct"]}
+              value={activeTeam}
+              onChange={(team) => setActiveTeam(team as "ct" | "t")}
+            />
+          </div>
           <div className="skin-toolbar">
-            <Tabs value={category} onValueChange={setCategory}>
-              <TabsList className="h-auto flex-wrap justify-start">
-                {categories.map(([id, label]) => (
-                  <TabsTrigger key={id} value={id}>
-                    {label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
+            <span className="arsenal-caption">АРСЕНАЛ КОМАНДЫ</span>
             <label className="search">
               <MagnifyingGlass />
               <Input
@@ -894,66 +932,67 @@ export default function SkinchangerView() {
               />
             </label>
           </div>
-          {category === "gloves" || category === "agents" ? (
-            <div className="weapon-grid">
-              {(["t", "ct"] as const).map((team) => {
-                const item =
-                  category === "gloves" ? getGlove(team) : getAgent(team);
-                return (
-                  <button
-                    className="weapon-card"
-                    style={
-                      {
-                        "--rarity": item?.color ?? "#30343d",
-                      } as React.CSSProperties
-                    }
-                    onClick={() => openCosmetic(category, team)}
-                    key={team}
-                    type="button"
-                  >
-                    <img
-                      className={!item ? "vanilla" : ""}
-                      src={item?.image ?? TEAM_ICON[team]}
-                    />
-                    <b>{team === "ct" ? "COUNTER-TERRORIST" : "TERRORIST"}</b>
-                    <span>
-                      {item?.name ??
-                        `Выбрать ${category === "gloves" ? "перчатки" : "агента"}`}
-                    </span>
-                    <em className="team-tag">
-                      <img src={TEAM_ICON[team]} alt="" />
-                    </em>
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="weapon-grid">
-              {visible.map((w) => {
-                const skin = getSkin(w.weapon);
-                return (
-                  <button
-                    className="weapon-card"
-                    style={
-                      {
-                        "--rarity": skin?.color ?? "#30343d",
-                      } as React.CSSProperties
-                    }
-                    onClick={() => openWeapon(w)}
-                    key={w.weapon}
-                  >
-                    <img
-                      className={!skin ? "vanilla" : ""}
-                      src={skin?.image ?? w.image}
-                    />
-                    <b>{w.name}</b>
-                    <span>{skin?.name.split("| ")[1] ?? "Добавить скин"}</span>
-                    <em>{w.team.toUpperCase()}</em>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          <div className="cs2-loadout-board">
+              <aside className="cosmetic-rail" aria-label="Экипировка команды">
+                {(["agents", "gloves"] as const).map((kind) => {
+                  const item = kind === "gloves" ? getGlove(activeTeam) : getAgent(activeTeam);
+                  return (
+                    <button
+                      className="rail-slot"
+                      style={{ "--rarity": item?.color ?? "#30343d" } as React.CSSProperties}
+                      onClick={() => openCosmetic(kind, activeTeam)}
+                      type="button"
+                      key={kind}
+                    >
+                      <img className={!item ? "vanilla" : ""} src={item?.image ?? TEAM_ICON[activeTeam]} />
+                      <span>{kind === "gloves" ? "Перчатки" : "Агент"}</span>
+                      <b>{item?.name ?? "Не выбран"}</b>
+                    </button>
+                  );
+                })}
+                {weapons
+                  .filter((weapon) => weapon.category === "loadoutslot_equipment" && (weapon.team === "both" || weapon.team === activeTeam))
+                  .map((weapon) => {
+                    const skin = getSkin(weapon.weapon, activeTeam);
+                    return (
+                      <button
+                        className="rail-slot rail-zeus"
+                        style={{ "--rarity": skin?.color ?? "#30343d" } as React.CSSProperties}
+                        onClick={() => openWeapon(weapon)}
+                        type="button"
+                        key={weapon.weapon}
+                      >
+                        <img className={!skin ? "vanilla" : ""} src={skin?.image ?? weapon.image} />
+                        <span>Экипировка</span>
+                        <b>{skin?.name.split("| ")[1] ?? weapon.name}</b>
+                      </button>
+                    );
+                  })}
+              </aside>
+              <div className="arsenal-columns">
+                {loadoutGroups.map((group) => {
+                  const items = visible.filter((weapon) => group.categories.includes(weapon.category));
+                  return (
+                    <section className="arsenal-group" key={group.id}>
+                      <header><span>{group.label}</span><b>{items.length}</b></header>
+                      <div className="arsenal-grid">
+                        {items.map((weapon) => (
+                          <WeaponLoadoutCard key={weapon.weapon} weapon={weapon} skin={getSkin(weapon.weapon, activeTeam)} onOpen={openWeapon} />
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+              <section className="knife-rack">
+                <header><span>Ножи</span><b>Модель и отделка</b></header>
+                <div className="knife-strip">
+                  {visible.filter((weapon) => weapon.category === "sfui_invpanel_filter_melee").map((weapon) => (
+                    <WeaponLoadoutCard key={weapon.weapon} weapon={weapon} skin={getSkin(weapon.weapon, activeTeam)} onOpen={openWeapon} />
+                  ))}
+                </div>
+              </section>
+          </div>
         </section>
       </div>
       <Dialog
@@ -1360,13 +1399,13 @@ export default function SkinchangerView() {
         <div className="skin-config">
           <div className="cfg-head">
             <TeamSelect
-              options={["t", "ct"]}
+              options={cosmetic?.kind === "gloves" ? ["t", "both", "ct"] : ["t", "ct"]}
               value={cosmeticTeam}
-              onChange={(team) => setCosmeticTeam(team as "ct" | "t")}
+              onChange={setCosmeticTeam}
             />
             <span className="cfg-side-hint">
               Настраивается{" "}
-              <b>{cosmeticTeam === "ct" ? "COUNTER-TERRORIST" : "TERRORIST"}</b>
+              <b>{cosmeticTeam === "both" ? "ОБЕ КОМАНДЫ" : cosmeticTeam === "ct" ? "COUNTER-TERRORIST" : "TERRORIST"}</b>
             </span>
           </div>
           {cosmetic?.kind === "gloves" && (
@@ -1375,22 +1414,19 @@ export default function SkinchangerView() {
                 <div className="cfg-slider-head">
                   <span className="cfg-title">
                     Выберите float <i className="cfg-sep">•</i>{" "}
-                    <b>{wearName(gloveDraft[cosmeticTeam].wear)}</b>
+                    <b>{wearName(gloveDraft[cosmeticDisplayTeam].wear)}</b>
                   </span>
                   <span className="cfg-value">
-                    {gloveDraft[cosmeticTeam].wear.toFixed(4)}
+                    {gloveDraft[cosmeticDisplayTeam].wear.toFixed(4)}
                   </span>
                 </div>
                 <FloatBar
-                  value={gloveDraft[cosmeticTeam].wear}
-                  min={gloveDraft[cosmeticTeam].glove?.minWear ?? 0}
-                  max={gloveDraft[cosmeticTeam].glove?.maxWear ?? 1}
-                  disabled={!gloveDraft[cosmeticTeam].glove}
+                  value={gloveDraft[cosmeticDisplayTeam].wear}
+                  min={gloveDraft[cosmeticDisplayTeam].glove?.minWear ?? 0}
+                  max={gloveDraft[cosmeticDisplayTeam].glove?.maxWear ?? 1}
+                  disabled={!gloveDraft[cosmeticDisplayTeam].glove}
                   onChange={(v) =>
-                    setGloveDraft((d) => ({
-                      ...d,
-                      [cosmeticTeam]: { ...d[cosmeticTeam], wear: v },
-                    }))
+                    updateGloveDraft((draft) => ({ ...draft, wear: v }))
                   }
                 />
               </div>
@@ -1398,7 +1434,7 @@ export default function SkinchangerView() {
                 <div className="cfg-slider-head">
                   <span className="cfg-title">Выберите паттерн</span>
                   <span className="cfg-value">
-                    {gloveDraft[cosmeticTeam].seed}
+                    {gloveDraft[cosmeticDisplayTeam].seed}
                   </span>
                 </div>
                 <input
@@ -1407,16 +1443,10 @@ export default function SkinchangerView() {
                   min={0}
                   max={1000}
                   step={1}
-                  value={gloveDraft[cosmeticTeam].seed}
-                  disabled={!gloveDraft[cosmeticTeam].glove}
+                  value={gloveDraft[cosmeticDisplayTeam].seed}
+                  disabled={!gloveDraft[cosmeticDisplayTeam].glove}
                   onChange={(e) =>
-                    setGloveDraft((d) => ({
-                      ...d,
-                      [cosmeticTeam]: {
-                        ...d[cosmeticTeam],
-                        seed: +e.target.value,
-                      },
-                    }))
+                    updateGloveDraft((draft) => ({ ...draft, seed: +e.target.value }))
                   }
                 />
               </div>
@@ -1430,19 +1460,16 @@ export default function SkinchangerView() {
                 .sort((a, b) => rarityRank(b.color) - rarityRank(a.color))
                 .map((g) => (
                   <button
-                    className={`skin-card ${gloveDraft[cosmeticTeam].glove?.id === g.id ? "selected" : ""}`}
+                    className={`skin-card ${gloveDraft[cosmeticDisplayTeam].glove?.id === g.id ? "selected" : ""}`}
                     style={{ "--rarity": g.color } as React.CSSProperties}
                     onClick={() =>
-                      setGloveDraft((d) => ({
-                        ...d,
-                        [cosmeticTeam]: {
+                      updateGloveDraft((draft) => ({
                           glove: g,
                           wear: Math.min(
-                            Math.max(d[cosmeticTeam].wear, g.minWear),
+                            Math.max(draft.wear, g.minWear),
                             g.maxWear,
                           ),
-                          seed: d[cosmeticTeam].seed,
-                        },
+                          seed: draft.seed,
                       }))
                     }
                     key={g.id}
@@ -1453,15 +1480,15 @@ export default function SkinchangerView() {
                   </button>
                 ))
             : agents
-                .filter((a) => a.team === cosmeticTeam)
+                .filter((a) => a.team === cosmeticDisplayTeam)
                 .slice()
                 .sort((a, b) => rarityRank(b.color) - rarityRank(a.color))
                 .map((a) => (
                   <button
-                    className={`skin-card agent ${agentDraft[cosmeticTeam]?.id === a.id ? "selected" : ""}`}
+                    className={`skin-card agent ${agentDraft[cosmeticDisplayTeam]?.id === a.id ? "selected" : ""}`}
                     style={{ "--rarity": a.color } as React.CSSProperties}
                     onClick={() =>
-                      setAgentDraft((d) => ({ ...d, [cosmeticTeam]: a }))
+                      setAgentDraft((d) => ({ ...d, [cosmeticDisplayTeam]: a }))
                     }
                     key={a.id}
                     type="button"

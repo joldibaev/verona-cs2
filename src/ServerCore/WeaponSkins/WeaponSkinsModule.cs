@@ -214,12 +214,7 @@ public sealed class WeaponSkinsModule
             // empty response intentionally means that no skin is configured.
             var team = TeamKey(player);
             var exactKey = team is null ? null : $"{team}:{weaponName}";
-            var sharedKey = $"both:{weaponName}";
             if (exactKey is not null && remote.TryGetValue(exactKey, out skin))
-            {
-                configuredWeaponName = weaponName;
-            }
-            else if (remote.TryGetValue(sharedKey, out skin))
             {
                 configuredWeaponName = weaponName;
             }
@@ -231,9 +226,6 @@ public sealed class WeaponSkinsModule
                 var knife = remote.FirstOrDefault(x => exactKey is not null
                     && x.Key.StartsWith($"{team}:", StringComparison.OrdinalIgnoreCase)
                     && KnifeDefinitionIndexes.ContainsKey(x.Key[(x.Key.IndexOf(':') + 1)..]));
-                if (string.IsNullOrEmpty(knife.Key))
-                    knife = remote.FirstOrDefault(x => x.Key.StartsWith("both:", StringComparison.OrdinalIgnoreCase)
-                        && KnifeDefinitionIndexes.ContainsKey(x.Key[(x.Key.IndexOf(':') + 1)..]));
                 if (!string.IsNullOrEmpty(knife.Key))
                 {
                     configuredWeaponName = knife.Key[(knife.Key.IndexOf(':') + 1)..];
