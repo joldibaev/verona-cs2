@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   DownloadSimple,
+  Eraser,
   Key,
   MagnifyingGlass,
+  MouseSimple,
   Plus,
   ShareNetwork,
   Trash,
@@ -10,6 +12,17 @@ import {
 import { SteamIcon as SteamLogo } from "../components/brand-icons";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "../components/ui/alert-dialog";
 import {
   api,
   getMe,
@@ -91,7 +104,12 @@ export default function SkinchangerView() {
     ),
     [agentDraft, setAgentDraft] = useState<Record<"ct" | "t", CatalogAgent | null>>(
       { ct: null, t: null },
-    );
+    ),
+    [savingSelection, setSavingSelection] = useState(false),
+    [confirmation, setConfirmation] = useState<
+      { kind: "reset" } | { kind: "delete"; collection: Collection } | null
+    >(null),
+    [confirming, setConfirming] = useState(false);
   const target = players.find((p) => p.steamId === targetId) ?? null,
     self = !me?.isAdmin || !target || target.steamId === me.steamId,
     root = self ? "/api/me" : `/api/players/${target!.steamId}`,
@@ -254,26 +272,31 @@ export default function SkinchangerView() {
     setScope(next);
     if (picker && next !== "both") loadScope(picker, next);
   }
-  async function saveSkin() {
-    if (!picker || !picked) return;
-    await api(`${root}/skins/${picker.weapon}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        weapon: picker.weapon,
-        team: scope,
-        paintKit: picked.paint,
-        wear,
-        seed,
-        statTrak,
-        nameTag: nameTag.trim() || null,
-        stickers: stickerDraft,
-        keychainId: keychainDraft?.id ?? null,
-        keychainSeed: keychainDraft?.seed ?? 0,
-      }),
-    });
-    await load();
-    setPicker(null);
-    toast.success("Скин сохранён");
+  async function saveSkin(selected = picked, selectedWear = wear) {
+    if (!picker || !selected || savingSelection) return;
+    setSavingSelection(true);
+    try {
+      await api(`${root}/skins/${picker.weapon}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          weapon: picker.weapon,
+          team: scope,
+          paintKit: selected.paint,
+          wear: selectedWear,
+          seed,
+          statTrak,
+          nameTag: nameTag.trim() || null,
+          stickers: stickerDraft,
+          keychainId: keychainDraft?.id ?? null,
+          keychainSeed: keychainDraft?.seed ?? 0,
+        }),
+      });
+      await load();
+      setPicker(null);
+      toast.success("Скин сохранён");
+    } finally {
+      setSavingSelection(false);
+    }
   }
   // Sticker slot helpers operating on the draft; a slot holds at most one sticker.
   const slotSticker = (slot: number) =>
@@ -317,9 +340,31 @@ export default function SkinchangerView() {
     await Promise.all([loadCollections(), load()]);
   }
   async function remove(c: Collection) {
-    if (!confirm(`Удалить коллекцию «${c.name}»?`)) return;
+    if (collections.length <= 1) return;
     await api(`/api/me/collections/${c.id}`, { method: "DELETE" });
     await Promise.all([loadCollections(), load()]);
+  }
+  async function resetAllSkins() {
+    await api("/api/me/skins", { method: "DELETE" });
+    await Promise.all([loadCollections(), load()]);
+    toast.success("Экипировка сброшена");
+  }
+  async function executeConfirmation() {
+    if (!confirmation || confirming) return;
+    setConfirming(true);
+    try {
+      if (confirmation.kind === "reset") await resetAllSkins();
+      else await remove(confirmation.collection);
+      setConfirmation(null);
+    } catch {
+      toast.error(
+        confirmation.kind === "reset"
+          ? "Не удалось сбросить экипировку"
+          : "Не удалось удалить коллекцию",
+      );
+    } finally {
+      setConfirming(false);
+    }
   }
   async function share(c: Collection) {
     const list = await api<Skin[]>(`/api/me/collections/${c.id}/skins`);
@@ -383,35 +428,44 @@ export default function SkinchangerView() {
       return next;
     });
   }
-  async function saveCosmetic() {
-    if (!cosmetic) return;
+  async function saveCosmetic(quickPick?: {
+    glove?: CatalogGlove;
+    agent?: CatalogAgent;
+  }) {
+    if (!cosmetic || savingSelection) return;
+    setSavingSelection(true);
     const teams: ("ct" | "t")[] = cosmeticTeam === "both" ? ["t", "ct"] : [cosmeticTeam];
-    await Promise.all(teams.map(async (team) => {
-      if (cosmetic.kind === "gloves") {
-        const d = gloveDraft[team];
-        if (d.glove)
-          await api(`${root}/gloves/${team}`, {
-            method: "PUT",
-            body: JSON.stringify({
-              team,
-              definitionIndex: d.glove.definitionIndex,
-              paintKit: d.glove.paintKit,
-              wear: d.wear,
-              seed: d.seed,
-            }),
-          });
-      } else {
-        const a = agentDraft[team];
-        if (a)
-          await api(`${root}/agents/${team}`, {
-            method: "PUT",
-            body: JSON.stringify({ team, model: a.model }),
-          });
-      }
-    }));
-    await load();
-    setCosmetic(null);
-    toast.success("Loadout сохранён");
+    try {
+      await Promise.all(teams.map(async (team) => {
+        if (cosmetic.kind === "gloves") {
+          const d = gloveDraft[team];
+          const glove = quickPick?.glove ?? d.glove;
+          if (glove)
+            await api(`${root}/gloves/${team}`, {
+              method: "PUT",
+              body: JSON.stringify({
+                team,
+                definitionIndex: glove.definitionIndex,
+                paintKit: glove.paintKit,
+                wear: Math.min(Math.max(d.wear, glove.minWear), glove.maxWear),
+                seed: d.seed,
+              }),
+            });
+        } else {
+          const agent = quickPick?.agent ?? agentDraft[team];
+          if (agent)
+            await api(`${root}/agents/${team}`, {
+              method: "PUT",
+              body: JSON.stringify({ team, model: agent.model }),
+            });
+        }
+      }));
+      await load();
+      setCosmetic(null);
+      toast.success("Loadout сохранён");
+    } finally {
+      setSavingSelection(false);
+    }
   }
   // Clears only the side currently shown, both on the server and in the draft, so the
   // other team's selection is untouched and the dialog stays open for further edits.
@@ -505,17 +559,19 @@ export default function SkinchangerView() {
                   >
                     <ShareNetwork />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    aria-label={`Удалить коллекцию ${c.name}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void remove(c);
-                    }}
-                  >
-                    <Trash />
-                  </Button>
+                  {collections.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      aria-label={`Удалить коллекцию ${c.name}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmation({ kind: "delete", collection: c });
+                      }}
+                    >
+                      <Trash />
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
@@ -530,6 +586,18 @@ export default function SkinchangerView() {
                 <DownloadSimple /> Импорт
               </Button>
             </div>
+            <Button
+              variant="danger"
+              className="mt-2 w-full justify-start bg-transparent px-2 text-destructive hover:bg-destructive/10"
+              disabled={
+                loadout.skins.length === 0 &&
+                loadout.gloves.length === 0 &&
+                loadout.agents.length === 0
+              }
+              onClick={() => setConfirmation({ kind: "reset" })}
+            >
+              <Eraser /> Сбросить
+            </Button>
           </aside>
         )}
         <section className="loadout-main">
@@ -666,7 +734,10 @@ export default function SkinchangerView() {
             <Button variant="ghost" onClick={() => setPicker(null)}>
               Отмена
             </Button>
-            <Button disabled={!picked} onClick={saveSkin}>
+            <Button
+              disabled={!picked || savingSelection}
+              onClick={() => void saveSkin()}
+            >
               Сохранить
             </Button>
           </>
@@ -877,6 +948,10 @@ export default function SkinchangerView() {
             placeholder="Поиск скина"
           />
         </div>
+        <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <MouseSimple size={14} />
+          <span>Двойной клик: выбрать и сохранить</span>
+        </div>
         <div className="skin-grid">
           {(picker ? (skinMap.get(picker.weapon) ?? []) : [])
             .filter((s) =>
@@ -891,6 +966,15 @@ export default function SkinchangerView() {
                 onClick={() => {
                   setPicked(s);
                   setWear(Math.min(Math.max(wear, s.minWear), s.maxWear));
+                }}
+                onDoubleClick={() => {
+                  const selectedWear = Math.min(
+                    Math.max(wear, s.minWear),
+                    s.maxWear,
+                  );
+                  setPicked(s);
+                  setWear(selectedWear);
+                  void saveSkin(s, selectedWear);
                 }}
                 key={s.paint}
                 type="button"
@@ -1008,11 +1092,12 @@ export default function SkinchangerView() {
             </Button>
             <Button
               disabled={
-                cosmetic?.kind === "gloves"
+                savingSelection ||
+                (cosmetic?.kind === "gloves"
                   ? !gloveDraft.ct.glove && !gloveDraft.t.glove
-                  : !agentDraft.ct && !agentDraft.t
+                  : !agentDraft.ct && !agentDraft.t)
               }
-              onClick={saveCosmetic}
+              onClick={() => void saveCosmetic()}
             >
               Сохранить
             </Button>
@@ -1076,6 +1161,10 @@ export default function SkinchangerView() {
             </>
           )}
         </div>
+        <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <MouseSimple size={14} />
+          <span>Двойной клик: выбрать и сохранить</span>
+        </div>
         <div className="skin-grid">
           {cosmetic?.kind === "gloves"
             ? gloves
@@ -1095,6 +1184,17 @@ export default function SkinchangerView() {
                           seed: draft.seed,
                       }))
                     }
+                    onDoubleClick={() => {
+                      updateGloveDraft((draft) => ({
+                        glove: g,
+                        wear: Math.min(
+                          Math.max(draft.wear, g.minWear),
+                          g.maxWear,
+                        ),
+                        seed: draft.seed,
+                      }));
+                      void saveCosmetic({ glove: g });
+                    }}
                     key={g.id}
                     type="button"
                   >
@@ -1113,6 +1213,13 @@ export default function SkinchangerView() {
                     onClick={() =>
                       setAgentDraft((d) => ({ ...d, [cosmeticDisplayTeam]: a }))
                     }
+                    onDoubleClick={() => {
+                      setAgentDraft((d) => ({
+                        ...d,
+                        [cosmeticDisplayTeam]: a,
+                      }));
+                      void saveCosmetic({ agent: a });
+                    }}
                     key={a.id}
                     type="button"
                   >
@@ -1122,6 +1229,47 @@ export default function SkinchangerView() {
                 ))}
         </div>
       </Dialog>
+      <AlertDialog
+        open={confirmation !== null}
+        onOpenChange={(open) => {
+          if (!open && !confirming) setConfirmation(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogMedia className="bg-destructive/10 text-destructive">
+              {confirmation?.kind === "delete" ? <Trash /> : <Eraser />}
+            </AlertDialogMedia>
+            <AlertDialogTitle>
+              {confirmation?.kind === "delete"
+                ? "Удалить коллекцию?"
+                : "Сбросить экипировку?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmation?.kind === "delete"
+                ? `Коллекция «${confirmation.collection.name}» будет удалена без возможности восстановления.`
+                : "Будут удалены все скины, перчатки и агенты из текущего loadout и активной коллекции."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={confirming}>Отмена</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={confirming}
+              onClick={(event) => {
+                event.preventDefault();
+                void executeConfirmation();
+              }}
+            >
+              {confirming
+                ? "Подождите..."
+                : confirmation?.kind === "delete"
+                  ? "Удалить"
+                  : "Сбросить"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

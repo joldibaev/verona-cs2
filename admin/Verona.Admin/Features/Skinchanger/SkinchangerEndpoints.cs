@@ -144,17 +144,27 @@ public static class SkinchangerEndpoints
             if (context.Items["identity"] is not RequestIdentity identity) return Results.BadRequest();
             await using var connection = await db.OpenConnectionAsync();
             await using var tx = await connection.BeginTransactionAsync();
-            bool isActive = false;
+            var isActive = false;
+            var collectionCount = 0;
+            var ownsCollection = false;
             await using (var check = connection.CreateCommand())
             {
-                check.CommandText = "SELECT active FROM skin_collections WHERE id=$1 AND steam_id=$2";
+                // Lock every collection for this player in a stable order so concurrent
+                // deletes cannot both observe two collections and remove the last pair.
+                check.CommandText = "SELECT id,active FROM skin_collections WHERE steam_id=$1 ORDER BY id FOR UPDATE";
                 check.Transaction = tx;
-                check.Parameters.AddWithValue(id);
                 check.Parameters.AddWithValue(decimal.Parse(identity.SteamId));
-                var res = await check.ExecuteScalarAsync();
-                if (res == null) return Results.NotFound();
-                isActive = (bool)res;
+                await using var reader = await check.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    collectionCount++;
+                    if (reader.GetInt64(0) != id) continue;
+                    ownsCollection = true;
+                    isActive = reader.GetBoolean(1);
+                }
             }
+            if (!ownsCollection) return Results.NotFound();
+            if (collectionCount <= 1) return Results.Conflict(new { error = "Последнюю коллекцию нельзя удалить." });
             await using (var delete = connection.CreateCommand())
             {
                 delete.CommandText = "DELETE FROM skin_collections WHERE id=$1 AND steam_id=$2";
@@ -237,7 +247,88 @@ public static class SkinchangerEndpoints
         app.MapPut("/api/me/skins/{weapon}", async (HttpContext context, string weapon, SkinInput input, NpgsqlDataSource db) =>
         {
             if (context.Items["identity"] is not RequestIdentity { SteamId: { } steamId }) return Results.BadRequest();
-            if (!ValidSkin(weapon, input, weaponTeam…803 tokens truncated…gents/{team}", async (HttpContext context, string team, AgentInput input, NpgsqlDataSource db) =>
+            if (!ValidSkin(weapon, input, weaponTeams)) return Results.BadRequest();
+            await SaveWeaponSkin(db, steamId, weapon, input, syncActiveCollection: true);
+            await Database.Enqueue(db, new CommandInput("refresh_skins", steamId));
+            return Results.NoContent();
+        });
+        app.MapDelete("/api/me/skins/{weapon}/{team}", async (HttpContext context, string weapon, string team, NpgsqlDataSource db) =>
+        {
+            if (context.Items["identity"] is not RequestIdentity identity || !ValidTeamScope(team)) return Results.BadRequest();
+            await using var connection = await db.OpenConnectionAsync();
+            await using var tx = await connection.BeginTransactionAsync();
+            var owner = decimal.Parse(identity.SteamId);
+            var teams = TeamTargets(team).ToArray();
+            await using (var delete = connection.CreateCommand())
+            {
+                delete.CommandText = "DELETE FROM player_weapon_skins WHERE steam_id=$1 AND weapon=$2 AND team=ANY($3)";
+                delete.Transaction = tx;
+                delete.Parameters.AddWithValue(owner);
+                delete.Parameters.AddWithValue(weapon);
+                delete.Parameters.AddWithValue(teams);
+                await delete.ExecuteNonQueryAsync();
+            }
+            await using (var syncCollection = connection.CreateCommand())
+            {
+                syncCollection.CommandText = "DELETE FROM skin_collection_items WHERE weapon=$2 AND team=ANY($3) AND collection_id IN(SELECT id FROM skin_collections WHERE steam_id=$1 AND active)";
+                syncCollection.Transaction = tx;
+                syncCollection.Parameters.AddWithValue(owner);
+                syncCollection.Parameters.AddWithValue(weapon);
+                syncCollection.Parameters.AddWithValue(teams);
+                await syncCollection.ExecuteNonQueryAsync();
+            }
+            await tx.CommitAsync();
+            await Database.Enqueue(db, new CommandInput("refresh_skins", identity.SteamId));
+            return Results.NoContent();
+        });
+        app.MapDelete("/api/me/skins", async (HttpContext context, NpgsqlDataSource db) =>
+        {
+            if (context.Items["identity"] is not RequestIdentity identity) return Results.BadRequest();
+            await using var connection = await db.OpenConnectionAsync();
+            await using var tx = await connection.BeginTransactionAsync();
+            var owner = decimal.Parse(identity.SteamId);
+            foreach (var sql in new[]
+            {
+                "DELETE FROM player_weapon_skins WHERE steam_id=$1",
+                "DELETE FROM player_gloves WHERE steam_id=$1",
+                "DELETE FROM player_agents WHERE steam_id=$1",
+                "DELETE FROM skin_collection_items WHERE collection_id IN(SELECT id FROM skin_collections WHERE steam_id=$1 AND active)",
+                "DELETE FROM skin_collection_gloves WHERE collection_id IN(SELECT id FROM skin_collections WHERE steam_id=$1 AND active)",
+                "DELETE FROM skin_collection_agents WHERE collection_id IN(SELECT id FROM skin_collections WHERE steam_id=$1 AND active)"
+            })
+            {
+                await using var clear = connection.CreateCommand();
+                clear.CommandText = sql;
+                clear.Transaction = tx;
+                clear.Parameters.AddWithValue(owner);
+                await clear.ExecuteNonQueryAsync();
+            }
+            await tx.CommitAsync();
+            await Database.Enqueue(db, new CommandInput("refresh_skins", identity.SteamId));
+            return Results.NoContent();
+        });
+        app.MapGet("/api/me/cosmetics", async (HttpContext context, NpgsqlDataSource db) =>
+        {
+            if (context.Items["identity"] is not RequestIdentity identity) return Results.BadRequest();
+            return Results.Ok(await ReadLoadout(db, identity.SteamId));
+        });
+        app.MapPut("/api/me/gloves/{team}", async (HttpContext context, string team, GloveInput input, NpgsqlDataSource db) =>
+        {
+            if (context.Items["identity"] is not RequestIdentity identity || !ValidGlove(team, input)) return Results.BadRequest();
+            await SaveGlove(db, identity.SteamId, team, input);
+            await SyncActiveCollectionGlove(db, identity.SteamId, team, input);
+            await Database.Enqueue(db, new CommandInput("refresh_skins", identity.SteamId));
+            return Results.NoContent();
+        });
+        app.MapDelete("/api/me/gloves/{team}", async (HttpContext context, string team, NpgsqlDataSource db) =>
+        {
+            if (context.Items["identity"] is not RequestIdentity identity || !ValidTeam(team)) return Results.BadRequest();
+            await DeleteCosmetic(db, "player_gloves", identity.SteamId, team);
+            await DeleteActiveCollectionCosmetic(db, "skin_collection_gloves", identity.SteamId, team);
+            await Database.Enqueue(db, new CommandInput("refresh_skins", identity.SteamId));
+            return Results.NoContent();
+        });
+        app.MapPut("/api/me/agents/{team}", async (HttpContext context, string team, AgentInput input, NpgsqlDataSource db) =>
         {
             if (context.Items["identity"] is not RequestIdentity identity || !ValidAgent(team, input, agentModels)) return Results.BadRequest();
             await SaveAgent(db, identity.SteamId, team, input.Model);
