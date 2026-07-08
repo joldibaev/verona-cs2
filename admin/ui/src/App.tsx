@@ -38,7 +38,7 @@ function Shell() {
       active = false;
     };
   }, [location.pathname]);
-  if (!loaded) return <div className="page-loader">VERONA // CONNECTING</div>;
+  if (!loaded) return <div className="page-loader">VERONA CS2 // CONNECTING</div>;
   if (!me) return <Navigate to="/login" replace />;
   const links = me.isAdmin
     ? ([
@@ -58,7 +58,7 @@ function Shell() {
         <div className="topbar-inner">
           <NavLink to="/" className="wordmark">
             <b>V</b>
-            <span>VERONA</span>
+            <span>VERONA CS2</span>
             <i />
           </NavLink>
           <nav>
@@ -130,7 +130,7 @@ function Shell() {
 export default function App() {
   const location = useLocation();
   return (
-    <Suspense fallback={<div className="page-loader">VERONA // LOADING</div>}>
+    <Suspense fallback={<div className="page-loader">VERONA CS2 // LOADING</div>}>
       {location.pathname === "/login" ? <LoginView /> : <Shell />}
     </Suspense>
   );

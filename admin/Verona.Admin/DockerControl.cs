@@ -7,7 +7,7 @@ public sealed class DockerControl : IDisposable
 {
     // Never accept this name from HTTP input. Docker socket access is effectively
     // host-level authority, so the adapter exposes operations for one fixed container.
-    private const string ContainerName = "verona-server";
+    private const string ContainerName = "verona-cs2-server";
     private readonly HttpClient _client;
 
     public DockerControl()

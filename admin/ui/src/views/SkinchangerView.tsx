@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   DownloadSimple,
   Key,
@@ -305,6 +305,99 @@ function RotationDial({
     </div>
   );
 }
+
+function LazyImage({ src, alt }: { src: string; alt?: string }) {
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoadedSrc(src);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [src]);
+
+  if (!loadedSrc) {
+    return <div style={{ height: "74px", width: "100%", background: "#1a1d24", borderRadius: "6px" }} />;
+  }
+
+  return <img src={loadedSrc} alt={alt} loading="lazy" />;
+}
+
+interface VirtualGridProps<T> {
+  items: T[];
+  renderItem: (item: T) => ReactNode;
+  rowHeight?: number;
+  itemWidth?: number;
+  gap?: number;
+  stickerPicker: any;
+}
+
+function VirtualGrid<T>({
+  items,
+  renderItem,
+  rowHeight = 132,
+  itemWidth = 145,
+  gap = 8,
+  stickerPicker,
+}: VirtualGridProps<T>) {
+  const gridRef = useRef<HTMLDivElement | null>(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(600);
+  const [containerWidth, setContainerWidth] = useState(800);
+
+  useEffect(() => {
+    const gridEl = gridRef.current;
+    if (!gridEl) return;
+
+    const scrollParent = gridEl.parentElement;
+    if (!scrollParent) return;
+
+    const handleScroll = () => {
+      setScrollTop(scrollParent.scrollTop);
+    };
+
+    const handleResize = () => {
+      setContainerHeight(scrollParent.clientHeight);
+      setContainerWidth(scrollParent.clientWidth);
+    };
+
+    scrollParent.addEventListener("scroll", handleScroll);
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(scrollParent);
+
+    handleScroll();
+    handleResize();
+
+    return () => {
+      scrollParent.removeEventListener("scroll", handleScroll);
+      resizeObserver.disconnect();
+    };
+  }, [stickerPicker]);
+
+  const cols = Math.max(1, Math.floor((containerWidth + gap) / (itemWidth + gap)));
+  const totalRows = Math.ceil(items.length / cols);
+  
+  const startRow = Math.max(0, Math.floor(scrollTop / rowHeight) - 2);
+  const endRow = Math.min(totalRows, Math.ceil((scrollTop + containerHeight) / rowHeight) + 2);
+
+  const visibleItems = items.slice(startRow * cols, endRow * cols);
+
+  const topSpacerHeight = startRow * rowHeight;
+  const bottomSpacerHeight = Math.max(0, (totalRows - endRow) * rowHeight);
+
+  return (
+    <div ref={gridRef} className="skin-grid" style={{ position: "relative" }}>
+      {topSpacerHeight > 0 && (
+        <div style={{ height: `${topSpacerHeight}px`, gridColumn: "1 / -1" }} />
+      )}
+      {visibleItems.map(renderItem)}
+      {bottomSpacerHeight > 0 && (
+        <div style={{ height: `${bottomSpacerHeight}px`, gridColumn: "1 / -1" }} />
+      )}
+    </div>
+  );
+}
+
 export default function SkinchangerView() {
   const [params] = useSearchParams(),
     [me, setMe] = useState<Me | null>(null),
@@ -1179,57 +1272,64 @@ export default function SkinchangerView() {
             autoFocus
           />
         </div>
-        <div className="skin-grid">
-          {stickerPicker &&
+        {stickerPicker &&
             (() => {
               const q = stickerSearch.toLowerCase();
-              if (stickerPicker.kind === "keychain")
-                return keychainCatalog
-                  .filter((k) => k.name.toLowerCase().includes(q))
-                  .slice()
-                  .sort((a, b) => rarityRank(b.color) - rarityRank(a.color))
-                  .slice(0, 120)
-                  .map((k) => (
+              if (stickerPicker.kind === "keychain") {
+                const filtered = keychainCatalog.filter((k) => k.name.toLowerCase().includes(q));
+                const sorted = filtered.slice().sort((a, b) => rarityRank(b.color) - rarityRank(a.color));
+                return (
+                  <VirtualGrid
+                    items={sorted}
+                    stickerPicker={stickerPicker}
+                    renderItem={(k) => (
+                      <button
+                        key={k.id}
+                        type="button"
+                        className={`skin-card ${keychainDraft?.id === k.id ? "selected" : ""}`}
+                        style={{ "--rarity": k.color } as React.CSSProperties}
+                        onClick={() => {
+                          setKeychainDraft((kd) => ({
+                            id: k.id,
+                            seed: kd?.seed ?? 0,
+                          }));
+                          setStickerPicker(null);
+                          setStickerSearch("");
+                        }}
+                      >
+                        <LazyImage src={k.image} />
+                        <span>{k.name}</span>
+                      </button>
+                    )}
+                  />
+                );
+              }
+              const slot = stickerPicker.slot;
+              const filtered = stickerCatalog.filter((s) => s.name.toLowerCase().includes(q));
+              const sorted = filtered.slice().sort((a, b) => rarityRank(b.color) - rarityRank(a.color));
+              return (
+                <VirtualGrid
+                  items={sorted}
+                  stickerPicker={stickerPicker}
+                  renderItem={(s) => (
                     <button
-                      key={k.id}
+                      key={s.id}
                       type="button"
-                      className={`skin-card ${keychainDraft?.id === k.id ? "selected" : ""}`}
-                      style={{ "--rarity": k.color } as React.CSSProperties}
+                      className={`skin-card ${slotSticker(slot)?.stickerId === s.id ? "selected" : ""}`}
+                      style={{ "--rarity": s.color } as React.CSSProperties}
                       onClick={() => {
-                        setKeychainDraft((kd) => ({
-                          id: k.id,
-                          seed: kd?.seed ?? 0,
-                        }));
+                        applySticker(slot, s.id);
                         setStickerPicker(null);
                         setStickerSearch("");
                       }}
                     >
-                      <img src={k.image} />
-                      <span>{k.name}</span>
+                      <LazyImage src={s.image} />
+                      <span>{s.name}</span>
                     </button>
-                  ));
-              const slot = stickerPicker.slot;
-              return stickerCatalog
-                .filter((s) => s.name.toLowerCase().includes(q))
-                .slice(0, 120)
-                .map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    className={`skin-card ${slotSticker(slot)?.stickerId === s.id ? "selected" : ""}`}
-                    style={{ "--rarity": s.color } as React.CSSProperties}
-                    onClick={() => {
-                      applySticker(slot, s.id);
-                      setStickerPicker(null);
-                      setStickerSearch("");
-                    }}
-                  >
-                    <img src={s.image} />
-                    <span>{s.name}</span>
-                  </button>
-                ));
+                  )}
+                />
+              );
             })()}
-        </div>
       </Dialog>
       <Dialog
         open={!!cosmetic}

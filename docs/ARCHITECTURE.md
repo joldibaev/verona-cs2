@@ -1,4 +1,4 @@
-# Архитектура Verona
+# Архитектура Verona CS2
 
 ## Сервисы и trust boundaries
 
@@ -7,7 +7,7 @@ Browser (untrusted input)
   -> ASP.NET Core / React, 127.0.0.1:8080
        -> in-memory HttpOnly sessions
        -> PostgreSQL 18
-       -> Docker Engine socket -> verona-server lifecycle
+       -> Docker Engine socket -> verona-cs2-server lifecycle
 
 VeronaPlugin
   -> Admin plugin API + X-Verona-Key
@@ -29,7 +29,7 @@ Admin имеет Docker socket и потому считается высокоп
 кнопка «Запустить»
   -> backend валидирует launch form
   -> пишет /config/launch.env
-  -> Docker Engine API стартует существующий verona-server
+  -> Docker Engine API стартует существующий verona-cs2-server
   -> entrypoint читает launch.env
   -> SteamCMD обновляет CS2
   -> проверяются Metamod и CounterStrikeSharp
@@ -44,7 +44,7 @@ Docker не позволяет изменить environment остановлен
 
 ## Runtime CS2
 
-Установка хранится во внешнем volume `cs2_cs2-data`. Entrypoint стартует от root только для исправления владельцев mount points, затем немедленно переходит на пользователя `steam`.
+Установка хранится во внешнем volume `verona-cs2-data`. Entrypoint стартует от root только для исправления владельцев mount points, затем немедленно переходит на пользователя `steam`.
 
 Три runtime workaround нельзя удалять без проверки чистого volume:
 

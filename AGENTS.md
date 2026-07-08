@@ -8,8 +8,8 @@ Verona — переносимый CS2 dedicated server с собственным
 
 Текущее поведение:
 
-- `docker compose up -d --build` поднимает только `verona-admin` и `verona-postgres`;
-- контейнер `verona-server` находится в Compose profile `game` и запускается пользователем из панели;
+- `docker compose up -d --build` поднимает только `verona-cs2-admin` и `verona-cs2-postgres`;
+- контейнер `verona-cs2-server` находится в Compose profile `game` и запускается пользователем из панели;
 - перед стартом администратор выбирает режим, совместимую карту либо Workshop ID, число игроков, ботов, VAC, practice, infinite ammo и friendly fire;
 - Steam OpenID даёт обычному игроку доступ только к собственному Skinchanger;
 - роль `admin` в PostgreSQL открывает административные API;
@@ -61,7 +61,7 @@ Verona — переносимый CS2 dedicated server с собственным
 docker compose up -d --build
 ```
 
-Если `verona-server` ещё не создан или изменился его image/entrypoint:
+Если `verona-cs2-server` ещё не создан или изменился его image/entrypoint:
 
 ```powershell
 docker compose --profile game create --build cs2
@@ -71,7 +71,7 @@ docker compose --profile game create --build cs2
 
 Admin port остаётся привязанным к `127.0.0.1`, пока контейнер имеет `/var/run/docker.sock`. Компрометация backend с Docker socket фактически означает компрометацию Docker-хоста. Для публичной панели нужны отдельная модель доступа, HTTPS и ограниченный Docker proxy — простой bind на `0.0.0.0` запрещён.
 
-CS2 хранится во внешнем volume `cs2_cs2-data`. Не запускайте `docker compose down -v` и не удаляйте volume без явного согласия пользователя: повторная загрузка занимает десятки гигабайт.
+CS2 хранится во внешнем volume `verona-cs2-data`. Не запускайте `docker compose down -v` и не удаляйте volume без явного согласия пользователя: повторная загрузка занимает десятки гигабайт.
 
 ## Инварианты игрового плагина
 

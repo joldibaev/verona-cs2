@@ -54,7 +54,7 @@ foreach (var fixedTeam in new[] { "t", "ct" })
     }
 }
 
-const string sessionCookie = "verona_session";
+const string sessionCookie = "verona_cs2_session";
 var pluginKey = app.Configuration["PluginApiKey"] ?? throw new InvalidOperationException("PluginApiKey is required.");
 var adminSteamIds = (app.Configuration["AdminSteamIds"] ?? "")
     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet();
@@ -137,12 +137,14 @@ app.MapGet("/api/auth/me", async (HttpRequest request, SessionStore sessions, Np
             name = identity.Name, role = identity.Role, avatarUrl = identity.AvatarUrl, faceitElo = identity.FaceitElo, faceitNickname = identity.FaceitNickname });
 });
 
+
 // Steam sign-in uses OpenID 2.0: no API key, Steam just confirms account ownership.
 app.MapGet("/api/auth/steam", (HttpRequest request) =>
 {
     // Scheme/Host are safe in the direct loopback deployment. Behind a reverse proxy,
     // configure trusted forwarded headers before deriving realm and return_to here.
-    var host = $"{request.Scheme}://{request.Host}";
+    var publicUrl = app.Configuration["PublicUrl"]?.TrimEnd('/');
+    var host = !string.IsNullOrEmpty(publicUrl) ? publicUrl : $"{request.Scheme}://{request.Host}";
     var query = QueryString.Create(new Dictionary<string, string?>
     {
         ["openid.ns"] = "http://specs.openid.net/auth/2.0",
@@ -154,6 +156,7 @@ app.MapGet("/api/auth/steam", (HttpRequest request) =>
     });
     return Results.Redirect("https://steamcommunity.com/openid/login" + query);
 });
+
 app.MapGet("/api/auth/steam/return", async (HttpRequest request, HttpResponse response, SessionStore sessions,
     NpgsqlDataSource db, IHttpClientFactory httpFactory, PlayerProfileService profiles, CancellationToken ct) =>
 {
@@ -259,7 +262,7 @@ app.MapPost("/api/server/start", async (StartInput input, DockerControl docker, 
     }
     catch (Exception)
     {
-        return Results.Content("Не удалось запустить сервер: контейнер 'verona-server' не найден или Docker недоступен.", contentType: "text/plain", statusCode: 500);
+        return Results.Content("Не удалось запустить сервер: контейнер 'verona-cs2-server' не найден или Docker недоступен.", contentType: "text/plain", statusCode: 500);
     }
 });
 app.MapPost("/api/server/stop", async (DockerControl docker, PlayerRegistry registry, CancellationToken ct) =>
@@ -279,7 +282,7 @@ app.MapPost("/api/server/stop", async (DockerControl docker, PlayerRegistry regi
     }
     catch (Exception)
     {
-        return Results.Content("Не удалось остановить сервер: контейнер 'verona-server' не найден или Docker недоступен.", contentType: "text/plain", statusCode: 500);
+        return Results.Content("Не удалось остановить сервер: контейнер 'verona-cs2-server' не найден или Docker недоступен.", contentType: "text/plain", statusCode: 500);
     }
 });
 app.MapPost("/api/server/restart", async (DockerControl docker, PlayerRegistry registry, CancellationToken ct) =>
@@ -299,7 +302,7 @@ app.MapPost("/api/server/restart", async (DockerControl docker, PlayerRegistry r
     }
     catch (Exception)
     {
-        return Results.Content("Не удалось перезапустить сервер: контейнер 'verona-server' не найден или Docker недоступен.", contentType: "text/plain", statusCode: 500);
+        return Results.Content("Не удалось перезапустить сервер: контейнер 'verona-cs2-server' не найден или Docker недоступен.", contentType: "text/plain", statusCode: 500);
     }
 });
 app.MapGet("/api/players", async (PlayerRegistry registry, NpgsqlDataSource db) =>

@@ -228,7 +228,7 @@ export default function DashboardView() {
         <div className="server-top">
           <span className="server-number">01</span>
           <div>
-            <h2>VERONA #1</h2>
+            <h2>VERONA CS2 #1</h2>
             <p>
               {mode.label} · {names[display] ?? display}
             </p>
