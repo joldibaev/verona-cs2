@@ -25,6 +25,7 @@ Verona — переносимый CS2 dedicated server с собственным
 - `docker/entrypoint.sh` — SteamCMD, Metamod, CounterStrikeSharp, установка Verona и запуск CS2.
 - `src/ServerCore` — игровой плагин; историческое имя каталога не означает отдельный продукт ServerCore.
 - `admin/Verona.Admin` — ASP.NET Core control plane: auth, authorization, PostgreSQL, Docker Engine API, plugin API и SignalR.
+- EF Core владеет версионированными миграциями и обычным CRUD control plane; PostgreSQL-specific очередь команд, `jsonb` и массовые loadout-транзакции используют параметризованный Npgsql SQL.
 - `admin/ui` — React 19 + TypeScript + Vite + Tailwind CSS v4 SPA с официальными shadcn/ui-компонентами на Radix UI.
 - `admin/ui/public/skins-catalog.json` — статический каталог оружия/paint kits/rarity colors/изображений для выбора в UI; назначения игроков там не хранятся.
 - `config/launch.env` — генерируемый панелью snapshot параметров следующего старта CS2.
@@ -141,5 +142,5 @@ Skin collections — пользовательские snapshots loadout в `skin
 - Перчатки используют `EconGloves` и bodygroup refresh, агенты — allow-listed по формату model path и применяются к pawn на spawn. После обновлений CS2 ножи, перчатки и агенты требуют игрового smoke-теста моделей, анимаций и paint kit.
 - Сессии теряются при рестарте admin-контейнера и пока не имеют server-side revoke UI.
 - Изображения каталога зависят от доступности Steam CDN.
-- Admin API монолитно находится в `Program.cs`; при дальнейшем росте его следует делить по feature endpoints/services, сохраняя текущие authorization boundaries.
+- Admin API разделён по `Features/Auth`, `Features/Players`, `Features/ServerLifecycle`, `Features/Plugin` и `Features/Skinchanger`; `Program.cs` остаётся composition root. Новые endpoints добавляйте в соответствующий feature, сохраняя текущие authorization boundaries.
 - `gamedata/verona.json` может потребовать обновления после патча CS2.

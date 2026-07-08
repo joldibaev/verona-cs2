@@ -67,7 +67,7 @@ Steam user -> OpenID -> SessionIdentity(SteamId)
 
 ## Control plane и данные
 
-PostgreSQL хранит игроков, роли, профили, назначения скинов, баны, настройки и очередь команд. Heartbeat плагина обновляет online snapshot в памяти и persistent player record в БД. Команды помечаются delivered атомарным `UPDATE ... RETURNING` с `SKIP LOCKED`, чтобы два poll не получили одну pending-команду.
+PostgreSQL хранит игроков, роли, профили, назначения скинов, баны, настройки и очередь команд. EF Core выполняет версионированные миграции и обслуживает обычные сущности control plane (`players`, `bans`); Npgsql и явный SQL остаются для очереди, массового копирования loadout и PostgreSQL-специфичных транзакций. Heartbeat плагина обновляет online snapshot в памяти и persistent player record в БД. Poll атомарно арендует pending-команды через `UPDATE ... RETURNING` и `SKIP LOCKED`. Плагин подтверждает каждую команду отдельным ACK только после исполнения; потерянный ответ или рестарт возвращает команду в выдачу после 15-секундного lease. Ошибки повторяются с exponential backoff до пяти попыток, после чего строка сохраняется как failed с причиной. Повторно доставленный ID не исполняется второй раз в пределах жизни процесса плагина. Повторный активный `ban` для одного игрока схлопывается, чтобы heartbeat не раздувал очередь; `refresh_skins` не дедуплицируется, иначе изменение loadout в момент исполнения предыдущего refresh могло бы потеряться.
 
 Сессии и текущий online snapshot намеренно ephemeral; рестарт admin разлогинивает пользователей, а список online восстанавливается со следующим heartbeat.
 
@@ -105,6 +105,9 @@ Admin выбирает любого игрока из persistent списка `p
 - `SkinCatalog` — чистая JSON validation/fallback model.
 - `AdminApiClient` — heartbeat, polling и remote skin snapshots.
 - `Verona.Admin` — auth, authorization, persistence и orchestration.
+- `Verona.Admin/Features` — изолированные endpoint-модули Auth, Players, ServerLifecycle, Plugin и Skinchanger; `Program.cs` только собирает приложение.
+- `ServerLifecycle` также владеет runtime snapshot: readiness checks, этап запуска и ограниченный tail stdout/stderr фиксированного CS2-контейнера. React показывает snapshot на dashboard и отдельной странице диагностики.
+- `admin/ui/src/views/skinchanger` содержит доменную модель и переиспользуемые picker controls; `SkinchangerView.tsx` остаётся orchestration-слоем загрузки, сохранения и диалогов.
 - `admin/ui` — React presentation и client-side state; базовые controls принадлежат проекту и генерируются shadcn/ui поверх Tailwind CSS v4 и Radix UI.
 
 Игровой plugin не получает Npgsql или Docker client. Backend не знает CounterStrikeSharp entities. UI не является security boundary.

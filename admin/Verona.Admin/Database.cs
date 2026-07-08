@@ -1,12 +1,15 @@
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Verona.Admin.Persistence;
 
 namespace Verona.Admin;
 
 public static class Database
 {
-    public static async Task Initialize(NpgsqlDataSource dataSource)
-    {
-        const string sql = """
+    // Immutable baseline used only by 202607080001_InitialSchema. Never edit this SQL
+    // after release: every later schema change must be a new migration class.
+    // PostgreSQL-specific constraints and indexes stay explicit rather than hidden.
+    internal const string InitialSchemaSql = """
         CREATE TABLE IF NOT EXISTS players (
             steam_id numeric(20,0) PRIMARY KEY,
             name text NOT NULL,
@@ -87,6 +90,27 @@ public static class Database
             created_at timestamptz NOT NULL DEFAULT now(),
             delivered_at timestamptz NULL
         );
+        ALTER TABLE server_commands ADD COLUMN IF NOT EXISTS claim_token uuid NULL;
+        ALTER TABLE server_commands ADD COLUMN IF NOT EXISTS claimed_at timestamptz NULL;
+        ALTER TABLE server_commands ADD COLUMN IF NOT EXISTS attempt_count integer NOT NULL DEFAULT 0;
+        ALTER TABLE server_commands ADD COLUMN IF NOT EXISTS next_attempt_at timestamptz NOT NULL DEFAULT now();
+        ALTER TABLE server_commands ADD COLUMN IF NOT EXISTS completed_at timestamptz NULL;
+        ALTER TABLE server_commands ADD COLUMN IF NOT EXISTS failed_at timestamptz NULL;
+        ALTER TABLE server_commands ADD COLUMN IF NOT EXISTS last_error text NULL;
+        -- Rows handed out by the old no-ack protocol cannot safely be replayed.
+        UPDATE server_commands SET completed_at=delivered_at
+        WHERE delivered_at IS NOT NULL AND completed_at IS NULL;
+        DELETE FROM server_commands newer USING server_commands older
+        WHERE newer.id > older.id AND newer.type=older.type AND newer.steam_id=older.steam_id
+          AND newer.type='ban'
+          AND newer.completed_at IS NULL AND newer.failed_at IS NULL
+          AND older.completed_at IS NULL AND older.failed_at IS NULL;
+        CREATE UNIQUE INDEX IF NOT EXISTS server_commands_one_active_state_change
+            ON server_commands(type, steam_id)
+            WHERE type='ban' AND completed_at IS NULL AND failed_at IS NULL;
+        CREATE INDEX IF NOT EXISTS server_commands_ready_idx
+            ON server_commands(next_attempt_at, id)
+            WHERE completed_at IS NULL AND failed_at IS NULL;
         CREATE TABLE IF NOT EXISTS audit_log (
             id bigserial PRIMARY KEY,
             action varchar(64) NOT NULL,
@@ -144,48 +168,41 @@ public static class Database
         );
         INSERT INTO server_settings(key, value) VALUES ('map', 'de_dust2') ON CONFLICT DO NOTHING;
         """;
-        await using var command = dataSource.CreateCommand(sql);
-        await command.ExecuteNonQueryAsync();
-    }
 
-    public static async Task BootstrapAdmins(NpgsqlDataSource db, IEnumerable<string> steamIds)
+    public static async Task BootstrapAdmins(IDbContextFactory<VeronaDbContext> contexts, IEnumerable<string> steamIds)
     {
-        await using var count = db.CreateCommand("SELECT count(*) FROM players WHERE role='admin'");
-        if (Convert.ToInt64(await count.ExecuteScalarAsync()) > 0) return;
+        await using var db = await contexts.CreateDbContextAsync();
+        if (await db.Players.AnyAsync(player => player.Role == "admin")) return;
 
         // ADMIN_STEAM_IDS is migration/bootstrap input only. Once one admin exists,
         // changing the environment cannot silently grant or revoke database roles.
         foreach (var steamId in steamIds.Where(x => x.Length == 17 && x.All(char.IsAsciiDigit)))
         {
-            await using var command = db.CreateCommand("""
-                INSERT INTO players(steam_id,name,role) VALUES ($1,$2,'admin')
-                ON CONFLICT (steam_id) DO UPDATE SET role='admin'
-                """);
-            command.Parameters.AddWithValue(decimal.Parse(steamId));
-            command.Parameters.AddWithValue($"Player {steamId[^5..]}");
-            await command.ExecuteNonQueryAsync();
+            var id = decimal.Parse(steamId);
+            var player = await db.Players.FindAsync(id);
+            if (player is null)
+                db.Players.Add(new PlayerEntity { SteamId = id, Name = $"Player {steamId[^5..]}", Role = "admin" });
+            else
+                player.Role = "admin";
         }
+        await db.SaveChangesAsync();
     }
 
-    public static async Task<RequestIdentity?> GetIdentity(NpgsqlDataSource db, string steamId)
+    public static async Task<RequestIdentity?> GetIdentity(IDbContextFactory<VeronaDbContext> contexts, string steamId)
     {
-        await using var command = db.CreateCommand("""
-            SELECT steam_id::text,name,role,avatar_url,faceit_elo,faceit_nickname
-            FROM players WHERE steam_id=$1
-            """);
-        command.Parameters.AddWithValue(decimal.Parse(steamId));
-        await using var reader = await command.ExecuteReaderAsync();
-        if (!await reader.ReadAsync()) return null;
-        return new RequestIdentity(reader.GetString(0), reader.GetString(1), reader.GetString(2),
-            reader.IsDBNull(3) ? null : reader.GetString(3), reader.IsDBNull(4) ? null : reader.GetInt32(4),
-            reader.IsDBNull(5) ? null : reader.GetString(5));
+        await using var db = await contexts.CreateDbContextAsync();
+        return await db.Players.AsNoTracking()
+            .Where(player => player.SteamId == decimal.Parse(steamId))
+            .Select(player => new RequestIdentity(player.SteamId.ToString(), player.Name, player.Role,
+                player.AvatarUrl, player.FaceitElo, player.FaceitNickname))
+            .SingleOrDefaultAsync();
     }
 
     public static async Task Enqueue(NpgsqlDataSource db, CommandInput input)
     {
         // PostgreSQL is the durable hand-off between short browser requests and the
-        // plugin poll loop. v1 records delivery but intentionally has no retry/ack.
-        await using var command = db.CreateCommand("INSERT INTO server_commands(type, steam_id, value, reason) VALUES ($1, $2, $3, $4)");
+        // plugin poll loop. A command remains pending until the plugin acknowledges it.
+        await using var command = db.CreateCommand("INSERT INTO server_commands(type, steam_id, value, reason) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING");
         command.Parameters.AddWithValue(input.Type);
         command.Parameters.AddWithValue(input.SteamId is null ? DBNull.Value : decimal.Parse(input.SteamId));
         command.Parameters.AddWithValue((object?)input.Value ?? DBNull.Value);

@@ -1,13 +1,18 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Xml.Linq;
-using Npgsql;
+using Microsoft.EntityFrameworkCore;
+using Verona.Admin.Persistence;
 
 namespace Verona.Admin;
 
-public sealed class PlayerProfileService(IHttpClientFactory clients, IConfiguration configuration, ILogger<PlayerProfileService> logger)
+public sealed class PlayerProfileService(
+    IHttpClientFactory clients,
+    IConfiguration configuration,
+    ILogger<PlayerProfileService> logger,
+    IDbContextFactory<VeronaDbContext> contexts)
 {
-    public async Task Refresh(string steamId, NpgsqlDataSource db, CancellationToken ct)
+    public async Task Refresh(string steamId, CancellationToken ct)
     {
         var name = $"Player {steamId[^5..]}";
         string? avatar = null;
@@ -55,19 +60,19 @@ public sealed class PlayerProfileService(IHttpClientFactory clients, IConfigurat
             }
         }
 
-        await using var command = db.CreateCommand("""
-            INSERT INTO players(steam_id,name,avatar_url,profile_url,faceit_elo,faceit_nickname)
-            VALUES ($1,$2,$3,$4,$5,$6)
-            ON CONFLICT (steam_id) DO UPDATE SET
-                name=EXCLUDED.name, avatar_url=EXCLUDED.avatar_url, profile_url=EXCLUDED.profile_url,
-                faceit_elo=EXCLUDED.faceit_elo, faceit_nickname=EXCLUDED.faceit_nickname
-            """);
-        command.Parameters.AddWithValue(decimal.Parse(steamId));
-        command.Parameters.AddWithValue(name);
-        command.Parameters.AddWithValue((object?)avatar ?? DBNull.Value);
-        command.Parameters.AddWithValue((object?)profileUrl ?? DBNull.Value);
-        command.Parameters.AddWithValue((object?)faceitElo ?? DBNull.Value);
-        command.Parameters.AddWithValue((object?)faceitNickname ?? DBNull.Value);
-        await command.ExecuteNonQueryAsync(ct);
+        await using var db = await contexts.CreateDbContextAsync(ct);
+        var id = decimal.Parse(steamId);
+        var player = await db.Players.FindAsync([id], ct);
+        if (player is null)
+        {
+            player = new PlayerEntity { SteamId = id };
+            db.Players.Add(player);
+        }
+        player.Name = name;
+        player.AvatarUrl = avatar;
+        player.ProfileUrl = profileUrl;
+        player.FaceitElo = faceitElo;
+        player.FaceitNickname = faceitNickname;
+        await db.SaveChangesAsync(ct);
     }
 }

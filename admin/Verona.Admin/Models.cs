@@ -29,7 +29,8 @@ public sealed record GloveInput(string Team, int DefinitionIndex, int PaintKit, 
 public sealed record AgentInput(string Team, string Model);
 public sealed record PlayerLoadout(IReadOnlyList<SkinInput> Skins, IReadOnlyList<GloveInput> Gloves, IReadOnlyList<AgentInput> Agents);
 public sealed record CommandInput(string Type, string? SteamId = null, string? Value = null, string? Reason = null);
-public sealed record ServerCommand(long Id, string Type, string? SteamId, string? Value, string? Reason);
+public sealed record ServerCommand(long Id, string ClaimToken, int Attempt, string Type, string? SteamId, string? Value, string? Reason);
+public sealed record CommandAck(long Id, string ClaimToken, bool Success, string? Error = null);
 public sealed record MapInput(string Map);
 public sealed record StartInput(
     string? Map, string? WorkshopMapId, int GameType, int GameMode, int MaxPlayers,

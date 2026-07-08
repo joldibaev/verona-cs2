@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using System.Net;
 using System.Text.Json;
 
 namespace Verona.Admin;
@@ -46,6 +47,39 @@ public sealed class DockerControl : IDisposable
 
     public Task<HttpResponseMessage> Start(CancellationToken ct) => Post($"/containers/{ContainerName}/start", ct);
     public Task<HttpResponseMessage> Stop(CancellationToken ct) => Post($"/containers/{ContainerName}/stop?t=20", ct);
+
+    public async Task<IReadOnlyList<string>> GetLogs(int tail, DateTimeOffset? since, CancellationToken ct)
+    {
+        try
+        {
+            using var response = await _client.GetAsync(
+                $"/containers/{ContainerName}/logs?stdout=1&stderr=1&timestamps=1&tail={Math.Clamp(tail, 20, 500)}{(since is null ? "" : $"&since={since.Value.ToUnixTimeSeconds()}")}", ct);
+            if (!response.IsSuccessStatusCode) return [];
+            var bytes = await response.Content.ReadAsByteArrayAsync(ct);
+            return DecodeDockerLog(bytes).TakeLast(tail).ToArray();
+        }
+        catch { return []; }
+    }
+
+    private static IEnumerable<string> DecodeDockerLog(byte[] bytes)
+    {
+        // Docker multiplexes non-TTY stdout/stderr with an eight-byte frame header.
+        var offset = 0;
+        while (offset + 8 <= bytes.Length && bytes[offset] is 1 or 2)
+        {
+            var length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytes, offset + 4));
+            offset += 8;
+            if (length < 0 || offset + length > bytes.Length) yield break;
+            foreach (var line in System.Text.Encoding.UTF8.GetString(bytes, offset, length)
+                         .Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                yield return line.TrimEnd('\r');
+            offset += length;
+        }
+        if (offset == 0)
+            foreach (var line in System.Text.Encoding.UTF8.GetString(bytes)
+                         .Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                yield return line.TrimEnd('\r');
+    }
     public async Task Restart(CancellationToken ct)
     {
         using var response = await Post($"/containers/{ContainerName}/restart?t=20", ct);

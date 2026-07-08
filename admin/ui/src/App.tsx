@@ -12,6 +12,7 @@ import {
   UsersThree,
   GameController,
   PaintBrush,
+  Pulse,
 } from "@phosphor-icons/react";
 import { clearMe, getMe, type Me } from "./api";
 import { faceitLevel } from "./faceit";
@@ -20,6 +21,7 @@ const DashboardView = lazy(() => import("./views/DashboardView"));
 const PlayersView = lazy(() => import("./views/PlayersView"));
 const SkinchangerView = lazy(() => import("./views/SkinchangerView"));
 const LoginView = lazy(() => import("./views/LoginView"));
+const DiagnosticsView = lazy(() => import("./views/DiagnosticsView"));
 
 function Shell() {
   const [me, setMe] = useState<Me | null>(null),
@@ -45,6 +47,7 @@ function Shell() {
         ["/", "Серверы", GameController],
         ["/players", "Игроки", UsersThree],
         ["/skinchanger", "Skinchanger", PaintBrush],
+        ["/diagnostics", "Диагностика", Pulse],
       ] as const)
     : ([["/skinchanger", "Skinchanger", PaintBrush]] as const);
   async function logout() {
@@ -121,6 +124,7 @@ function Shell() {
             }
           />
           <Route path="skinchanger" element={<SkinchangerView />} />
+          <Route path="diagnostics" element={me.isAdmin ? <DiagnosticsView /> : <Navigate to="/skinchanger" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

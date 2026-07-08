@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { api } from "../api";
 import { Badge, Button, Input, Select, Slider, Switch } from "../components/ui";
 import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { ServerRuntimePanel } from "../components/ServerRuntimePanel";
 
 interface Status {
   container: { running: boolean; status: string };
@@ -283,6 +284,7 @@ export default function DashboardView() {
           ) : null}
         </div>
       </section>
+      {status?.container.running ? <ServerRuntimePanel /> : null}
       {!status?.container.running && (
         <section className="launch-console">
           <div className="section-head">
