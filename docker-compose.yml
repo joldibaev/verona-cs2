@@ -14,14 +14,13 @@ services:
     # until started from the admin panel.
     restart: "no"
     environment:
-      GSLT: "${GSLT:-}"
-      SERVER_HOSTNAME: "${SERVER_HOSTNAME:-Verona CS2 development server}"
+      SERVER_HOSTNAME: "${SERVER_HOSTNAME:-Verona CS2}"
       SERVER_PASSWORD: "${SERVER_PASSWORD:-}"
       RCON_PASSWORD: "${RCON_PASSWORD:-change-me}"
       START_MAP: "${START_MAP:-de_dust2}"
       GAME_TYPE: "${GAME_TYPE:-0}"
       GAME_MODE: "${GAME_MODE:-0}"
-      MAX_PLAYERS: "${MAX_PLAYERS:-10}"
+      MAX_PLAYERS: "${MAX_PLAYERS:-32}"
       STEAMCMD_VALIDATE: "${STEAMCMD_VALIDATE:-0}"
       SKINS_CONFIG_PATH: /config/skins.json
       VERONA_ADMIN_URL: http://admin:8080

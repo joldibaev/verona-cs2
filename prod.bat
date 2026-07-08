@@ -19,11 +19,22 @@ if errorlevel 1 (
 )
 
 echo [prod] Building and starting admin + postgres ...
-docker compose up -d --build
+docker compose up -d --build admin postgres
 if errorlevel 1 goto :error
 
-echo [prod] Building the cs2 game-server image (started later from the panel) ...
-docker compose --profile game create --build cs2
+echo [prod] Building the cs2 game-server image ...
+docker compose --profile game build cs2
+if errorlevel 1 goto :error
+
+echo [prod] Creating the cs2 game-server container (started later from the panel) ...
+docker compose --profile game create --no-recreate cs2
+if errorlevel 1 goto :error
+
+docker container inspect verona-cs2-server >nul 2>&1
+if errorlevel 1 goto :error
+
+echo [prod] Ensuring admin + postgres are running ...
+docker compose up -d admin postgres
 if errorlevel 1 goto :error
 
 echo.

@@ -31,6 +31,27 @@ export interface LaunchConfig {
   practice: boolean;
   infiniteAmmo: boolean;
   friendlyFire: boolean;
+  serverHostname: string;
+  passwordProtected: boolean;
+  steamcmdValidate: boolean;
+  hibernateWhenEmpty: boolean;
+  matchPreset: string;
+  customCheats: boolean;
+  customRoundTime: number;
+  customFreezeTime: number;
+  customWarmupTime: number;
+  customBuyTime: number;
+  customStartMoney: number;
+  customMaxMoney: number;
+  customBuyAnywhere: boolean;
+  customAutoBalance: boolean;
+  customLimitTeams: number;
+  customAllTalk: boolean;
+  customRespawn: boolean;
+  customDeathDropGun: boolean;
+  customShowImpacts: boolean;
+  customGrenadeTrajectory: boolean;
+  customGrenadeLimit: number;
 }
 
 export interface GameMode {
@@ -104,7 +125,7 @@ export function resolveServerMap(status: ServerStatus | null, launch: LaunchConf
 
 export const formatGb = (bytes: number) => (bytes / 1_073_741_824).toFixed(1);
 
-export function findGameMode(config: LaunchConfig) {
+export function findGameMode(config: { gameType: number; gameMode: number }) {
   return (
     gameModes.find(
       (mode) =>

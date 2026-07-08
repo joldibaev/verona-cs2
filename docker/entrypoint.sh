@@ -78,7 +78,7 @@ install_plugin() {
   cp /opt/verona-gamedata/verona.json "$gamedata_target/verona.json"
   cp /opt/verona-gamedata/verona.json "$gamedata_target/weaponpaints.json"
   # CounterStrikeSharp guards cosmetic entity changes by default. Disabling the
-  # guard is required for this feature and carries the public-GSLT risk in README.
+  # guard is required for the private skinchanger workflow.
   # We supply a complete core.json configuration so CSSharp doesn't overwrite it.
   cat > "$game_dir/addons/counterstrikesharp/configs/core.json" <<'JSON'
 {
@@ -100,16 +100,16 @@ JSON
 write_server_config() {
   mkdir -p "$game_dir/cfg"
   cat > "$game_dir/cfg/verona.cfg" <<CFG
-hostname "${SERVER_HOSTNAME:-Verona development server}"
+hostname "${SERVER_HOSTNAME:-Verona CS2}"
 sv_password "${SERVER_PASSWORD:-}"
 rcon_password "${RCON_PASSWORD:-change-me}"
-sv_lan $([[ -z "${GSLT:-}" ]] && echo 1 || echo 0)
-sv_hibernate_when_empty 0
+sv_lan 0
+sv_hibernate_when_empty ${HIBERNATE_WHEN_EMPTY:-0}
 log on
 CFG
 
   local cfg="$game_dir/cfg/verona.cfg"
-  if [[ "${BOTS_ENABLED:-1}" == "0" ]]; then
+  if [[ "${BOTS_ENABLED:-0}" == "0" ]]; then
     printf 'bot_quota 0\nbot_kick\n' >> "$cfg"
   else
     cat >> "$cfg" <<CFG
@@ -121,6 +121,84 @@ CFG
 
   # Only pin friendly fire when the panel chose it; otherwise mode defaults apply.
   [[ -n "${FRIENDLY_FIRE:-}" ]] && printf 'mp_friendlyfire %s\n' "$FRIENDLY_FIRE" >> "$cfg"
+
+  case "${MATCH_PRESET:-competitive}" in
+    competitive)
+      cat >> "$cfg" <<'CFG'
+mp_freezetime 10
+mp_warmuptime 0
+mp_autoteambalance 0
+mp_limitteams 0
+mp_restartgame 1
+CFG
+      ;;
+    wingman)
+      cat >> "$cfg" <<'CFG'
+mp_freezetime 5
+mp_warmuptime 0
+mp_autoteambalance 0
+mp_limitteams 0
+mp_restartgame 1
+CFG
+      ;;
+    duel)
+      cat >> "$cfg" <<'CFG'
+mp_freezetime 3
+mp_warmuptime 0
+mp_autoteambalance 0
+mp_limitteams 0
+mp_restartgame 1
+CFG
+      ;;
+    grenades)
+      cat >> "$cfg" <<'CFG'
+sv_cheats 1
+mp_freezetime 0
+mp_warmuptime 0
+mp_roundtime 60
+mp_roundtime_defuse 60
+mp_roundtime_hostage 60
+mp_autoteambalance 0
+mp_limitteams 0
+mp_respawn_on_death_ct 1
+mp_respawn_on_death_t 1
+mp_death_drop_gun 0
+mp_buytime 9999
+mp_buy_anywhere 1
+mp_maxmoney 60000
+mp_startmoney 60000
+ammo_grenade_limit_total 5
+sv_showimpacts 1
+sv_grenade_trajectory_prediction 1
+sv_infinite_ammo 1
+mp_restartgame 1
+CFG
+      ;;
+    custom)
+      cat >> "$cfg" <<CFG
+sv_cheats ${CUSTOM_CHEATS:-0}
+mp_roundtime ${CUSTOM_ROUNDTIME:-2}
+mp_roundtime_defuse ${CUSTOM_ROUNDTIME:-2}
+mp_roundtime_hostage ${CUSTOM_ROUNDTIME:-2}
+mp_freezetime ${CUSTOM_FREEZETIME:-10}
+mp_warmuptime ${CUSTOM_WARMUPTIME:-0}
+mp_buytime ${CUSTOM_BUYTIME:-90}
+mp_startmoney ${CUSTOM_STARTMONEY:-800}
+mp_maxmoney ${CUSTOM_MAXMONEY:-16000}
+mp_buy_anywhere ${CUSTOM_BUY_ANYWHERE:-0}
+mp_autoteambalance ${CUSTOM_AUTOBALANCE:-0}
+mp_limitteams ${CUSTOM_LIMITTEAMS:-0}
+sv_alltalk ${CUSTOM_ALLTALK:-0}
+mp_respawn_on_death_ct ${CUSTOM_RESPAWN:-0}
+mp_respawn_on_death_t ${CUSTOM_RESPAWN:-0}
+mp_death_drop_gun ${CUSTOM_DEATH_DROP_GUN:-1}
+sv_showimpacts ${CUSTOM_SHOW_IMPACTS:-0}
+sv_grenade_trajectory_prediction ${CUSTOM_GRENADE_TRAJECTORY:-0}
+ammo_grenade_limit_total ${CUSTOM_GRENADE_LIMIT:-4}
+mp_restartgame 1
+CFG
+      ;;
+  esac
 
   if [[ "${PRACTICE:-0}" == "1" ]]; then
     cat >> "$cfg" <<'CFG'
@@ -149,6 +227,18 @@ CFG
   if [[ "${INFINITE_AMMO:-0}" == "1" ]]; then
     printf 'sv_cheats 1\nsv_infinite_ammo 1\n' >> "$cfg"
   fi
+
+  if [[ "${BOTS_ENABLED:-0}" == "0" ]]; then
+    printf 'bot_quota 0\nbot_quota_mode normal\nbot_kick\n' >> "$cfg"
+  fi
+
+  for mode_cfg in \
+    gamemode_competitive_server.cfg \
+    gamemode_casual_server.cfg \
+    gamemode_deathmatch_server.cfg \
+    gamemode_custom_server.cfg; do
+    printf 'exec verona.cfg\n' > "$game_dir/cfg/$mode_cfg"
+  done
 }
 
 # The admin panel writes the launch selection (map, mode, bots, limits, RUN_GAME) here
@@ -175,7 +265,7 @@ install_plugin
 
 write_server_config
 
-launch=("$server_dir/game/bin/linuxsteamrt64/cs2" -dedicated -usercon -console -port 27015 -maxplayers "${MAX_PLAYERS:-10}" +game_type "${GAME_TYPE:-0}" +game_mode "${GAME_MODE:-0}")
+launch=("$server_dir/game/bin/linuxsteamrt64/cs2" -dedicated -usercon -console -port 27015 -maxplayers "${MAX_PLAYERS:-32}" +game_type "${GAME_TYPE:-0}" +game_mode "${GAME_MODE:-0}")
 # -insecure detaches the server from VAC; required for cheats-based practice.
 [[ "${VAC_INSECURE:-0}" == "1" ]] && launch+=(-insecure)
 if [[ -n "${WORKSHOP_MAP_ID:-}" ]]; then
@@ -184,12 +274,6 @@ else
   launch+=(+map "${START_MAP:-de_dust2}")
 fi
 launch+=(+exec verona.cfg)
-if [[ -n "${GSLT:-}" ]]; then
-  launch+=(+sv_setsteamaccount "$GSLT")
-else
-  log "GSLT is empty: starting in LAN mode."
-fi
-
 log "Starting CS2"
 # Valve's cs2.sh normally exports this; libserver.so needs libv8.so from here.
 export LD_LIBRARY_PATH="$server_dir/game/bin/linuxsteamrt64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"

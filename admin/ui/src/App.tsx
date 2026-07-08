@@ -1,17 +1,14 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { SignOut, UsersThree, GameController, PaintBrush, Pulse } from "@phosphor-icons/react";
+import { SignOut, UsersThree, GameController, PaintBrush } from "@phosphor-icons/react";
 import { clearMe, getMe, type Me } from "./api";
 import { faceitLevel } from "./faceit";
 import { Button } from "./components/ui";
 
-const DashboardView = lazy(() => import("./views/DashboardView"));
-const CreateServerView = lazy(() => import("./views/CreateServerView"));
 const ServerDetailView = lazy(() => import("./views/ServerDetailView"));
 const PlayersView = lazy(() => import("./views/PlayersView"));
 const SkinchangerView = lazy(() => import("./views/SkinchangerView"));
 const LoginView = lazy(() => import("./views/LoginView"));
-const DiagnosticsView = lazy(() => import("./views/DiagnosticsView"));
 
 function Shell() {
   const [me, setMe] = useState<Me | null>(null);
@@ -35,12 +32,11 @@ function Shell() {
 
   const links = me.isAdmin
     ? ([
-        ["/servers", "Серверы", GameController],
+        ["/server", "Сервер", GameController],
         ["/players", "Игроки", UsersThree],
         ["/skinchanger", "Skinchanger", PaintBrush],
-        ["/diagnostics", "Диагностика", Pulse],
       ] as const)
-    : ([["/skinchanger", "Skinchanger", PaintBrush]] as const);
+    : ([["//skinchanger", "Skinchanger", PaintBrush]] as const);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -52,12 +48,12 @@ function Shell() {
     <div className="app-shell">
       <header className="topbar">
         <div className="topbar-inner">
-          <NavLink to={me.isAdmin ? "/servers" : "/skinchanger"} className="wordmark">
+          <NavLink to={me.isAdmin ? "/server" : "/skinchanger"} className="wordmark">
             <b>V</b><span>VERONA CS2</span><i />
           </NavLink>
           <nav>
             {links.map(([to, label, Icon]) => (
-              <NavLink key={to} to={to} end={to !== "/servers"}>
+              <NavLink key={to} to={to} end>
                 <Icon size={16} />{label}
               </NavLink>
             ))}
@@ -84,14 +80,15 @@ function Shell() {
       </div>
       <main className="content">
         <Routes>
-          <Route index element={<Navigate to={me.isAdmin ? "/servers" : "/skinchanger"} replace />} />
-          <Route path="servers" element={me.isAdmin ? <DashboardView /> : <Navigate to="/skinchanger" replace />} />
-          <Route path="servers/new" element={me.isAdmin ? <CreateServerView /> : <Navigate to="/skinchanger" replace />} />
-          <Route path="servers/:id" element={me.isAdmin ? <ServerDetailView /> : <Navigate to="/skinchanger" replace />} />
+          <Route index element={<Navigate to={me.isAdmin ? "/server" : "/skinchanger"} replace />} />
+          <Route path="server" element={me.isAdmin ? <ServerDetailView /> : <Navigate to="/skinchanger" replace />} />
           <Route path="players" element={me.isAdmin ? <PlayersView /> : <Navigate to="/skinchanger" replace />} />
           <Route path="skinchanger" element={<SkinchangerView />} />
-          <Route path="diagnostics" element={me.isAdmin ? <DiagnosticsView /> : <Navigate to="/skinchanger" replace />} />
-          <Route path="*" element={<Navigate to={me.isAdmin ? "/servers" : "/skinchanger"} replace />} />
+          {/* Legacy redirects */}
+          <Route path="servers" element={<Navigate to="/server" replace />} />
+          <Route path="servers/*" element={<Navigate to="/server" replace />} />
+          <Route path="diagnostics" element={<Navigate to="/server" replace />} />
+          <Route path="*" element={<Navigate to={me.isAdmin ? "/server" : "/skinchanger"} replace />} />
         </Routes>
       </main>
     </div>

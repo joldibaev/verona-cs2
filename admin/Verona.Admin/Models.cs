@@ -30,13 +30,23 @@ public sealed record GloveInput(string Team, int DefinitionIndex, int PaintKit, 
 public sealed record AgentInput(string Team, string Model);
 public sealed record PlayerLoadout(IReadOnlyList<SkinInput> Skins, IReadOnlyList<GloveInput> Gloves, IReadOnlyList<AgentInput> Agents);
 public sealed record CommandInput(string Type, string? SteamId = null, string? Value = null, string? Reason = null);
+public sealed record ConsoleCommandInput(string Command);
 public sealed record ServerCommand(long Id, string ClaimToken, int Attempt, string Type, string? SteamId, string? Value, string? Reason);
 public sealed record CommandAck(long Id, string ClaimToken, bool Success, string? Error = null);
 public sealed record MapInput(string Map);
 public sealed record StartInput(
-    string? Map, string? WorkshopMapId, int GameType, int GameMode, int MaxPlayers,
+    string? Map, string? WorkshopMapId, int GameType, int GameMode,
     bool Insecure, bool BotsEnabled, int BotQuota, int BotDifficulty,
-    bool Practice, bool InfiniteAmmo, bool FriendlyFire);
+    bool Practice, bool InfiniteAmmo, bool FriendlyFire,
+    string? ServerHostname = null, string? ServerPassword = null,
+    bool SteamcmdValidate = false, bool HibernateWhenEmpty = false, string? MatchPreset = null,
+    bool CustomCheats = false, int CustomRoundTime = 2, int CustomFreezeTime = 10,
+    int CustomWarmupTime = 0, int CustomBuyTime = 90, int CustomStartMoney = 800,
+    int CustomMaxMoney = 16000, bool CustomBuyAnywhere = false,
+    bool CustomAutoBalance = false, int CustomLimitTeams = 0, bool CustomAllTalk = false,
+    bool CustomRespawn = false, bool CustomDeathDropGun = true,
+    bool CustomShowImpacts = false, bool CustomGrenadeTrajectory = false,
+    int CustomGrenadeLimit = 4);
 public sealed record BanInput(string? Reason, int? DurationMinutes);
 public sealed record RoleInput(string Role);
 public sealed record CollectionInput(

@@ -7,7 +7,11 @@ using Npgsql;
 public static class ServerLifecycleEndpoints
 {
     private const string LaunchFile = "/config/launch.env";
+    private const string DefaultHostname = "Verona CS2";
+    private static readonly Regex ConsoleCommandRegex = new(@"^[A-Za-z][A-Za-z0-9_]*(?:\s+[^\r\n;]{1,180})?$", RegexOptions.Compiled);
+    private static readonly HashSet<string> BlockedConsoleCommands = ["quit", "exit", "_restart", "rcon_password", "sv_password"];
     private static readonly HashSet<(int Type, int Mode)> AllowedModes = [(0, 0), (0, 1), (0, 2), (1, 2)];
+    private static readonly HashSet<string> AllowedPresets = ["competitive", "wingman", "duel", "grenades", "custom"];
 
     public static void MapServerLifecycleEndpoints(this WebApplication app)
     {
@@ -18,6 +22,15 @@ public static class ServerLifecycleEndpoints
         app.MapPost("/api/server/stop", Stop);
         app.MapPost("/api/server/restart", Restart);
         app.MapPost("/api/server/delete", Delete);
+        app.MapPost("/api/server/console", Console);
+    }
+
+    private static async Task<IResult> Console(ConsoleCommandInput input, NpgsqlDataSource db)
+    {
+        var command = input.Command.Trim();
+        if (!IsSafeConsoleCommand(command)) return Results.BadRequest();
+        await Database.Enqueue(db, new CommandInput("console", Value: command));
+        return Results.Accepted();
     }
 
     private static async Task<IResult> GetRuntime(
@@ -150,32 +163,90 @@ public static class ServerLifecycleEndpoints
         bool Flag(string key, bool fallback = false) => values.TryGetValue(key, out var value) ? value == "1" : fallback;
         return Results.Ok(new { map = values.GetValueOrDefault("START_MAP", "de_dust2"),
             workshopMapId = values.GetValueOrDefault("WORKSHOP_MAP_ID", ""), gameType = Number("GAME_TYPE", 0),
-            gameMode = Number("GAME_MODE", 0), maxPlayers = Number("MAX_PLAYERS", 10), insecure = Flag("VAC_INSECURE"),
-            botsEnabled = Flag("BOTS_ENABLED", true), botQuota = Number("BOT_QUOTA", 5),
+            gameMode = Number("GAME_MODE", 0), maxPlayers = Number("MAX_PLAYERS", 32), insecure = Flag("VAC_INSECURE", true),
+            botsEnabled = Flag("BOTS_ENABLED"), botQuota = Number("BOT_QUOTA", 0),
             botDifficulty = Number("BOT_DIFFICULTY", 1), practice = Flag("PRACTICE"),
-            infiniteAmmo = Flag("INFINITE_AMMO"), friendlyFire = Flag("FRIENDLY_FIRE") });
+            infiniteAmmo = Flag("INFINITE_AMMO"), friendlyFire = Flag("FRIENDLY_FIRE"),
+            serverHostname = values.GetValueOrDefault("SERVER_HOSTNAME", DefaultHostname),
+            passwordProtected = !string.IsNullOrEmpty(values.GetValueOrDefault("SERVER_PASSWORD")),
+            steamcmdValidate = Flag("STEAMCMD_VALIDATE"),
+            hibernateWhenEmpty = Flag("HIBERNATE_WHEN_EMPTY"),
+            matchPreset = values.GetValueOrDefault("MATCH_PRESET", "competitive"),
+            customCheats = Flag("CUSTOM_CHEATS"),
+            customRoundTime = Number("CUSTOM_ROUNDTIME", 2),
+            customFreezeTime = Number("CUSTOM_FREEZETIME", 10),
+            customWarmupTime = Number("CUSTOM_WARMUPTIME", 0),
+            customBuyTime = Number("CUSTOM_BUYTIME", 90),
+            customStartMoney = Number("CUSTOM_STARTMONEY", 800),
+            customMaxMoney = Number("CUSTOM_MAXMONEY", 16000),
+            customBuyAnywhere = Flag("CUSTOM_BUY_ANYWHERE"),
+            customAutoBalance = Flag("CUSTOM_AUTOBALANCE"),
+            customLimitTeams = Number("CUSTOM_LIMITTEAMS", 0),
+            customAllTalk = Flag("CUSTOM_ALLTALK"),
+            customRespawn = Flag("CUSTOM_RESPAWN"),
+            customDeathDropGun = Flag("CUSTOM_DEATH_DROP_GUN", true),
+            customShowImpacts = Flag("CUSTOM_SHOW_IMPACTS"),
+            customGrenadeTrajectory = Flag("CUSTOM_GRENADE_TRAJECTORY"),
+            customGrenadeLimit = Number("CUSTOM_GRENADE_LIMIT", 4) });
     }
 
     private static async Task<IResult> Start(StartInput input, DockerControl docker, PlayerRegistry registry, CancellationToken ct)
     {
-        var workshop = input.WorkshopMapId?.Trim() ?? "";
-        var mapValid = workshop.Length > 0 ? System.Text.RegularExpressions.Regex.IsMatch(workshop, "^[0-9]{1,20}$")
+        var current = ReadValues();
+        var workshopInput = input.WorkshopMapId?.Trim() ?? "";
+        var workshop = NormalizeWorkshopId(workshopInput);
+        var hostname = string.IsNullOrWhiteSpace(input.ServerHostname) ? DefaultHostname : input.ServerHostname.Trim();
+        var serverPassword = input.ServerPassword is null ? current.GetValueOrDefault("SERVER_PASSWORD", "") : input.ServerPassword.Trim();
+        var preset = string.IsNullOrWhiteSpace(input.MatchPreset) ? "competitive" : input.MatchPreset.Trim().ToLowerInvariant();
+        var mapValid = workshopInput.Length > 0 ? workshop is not null
             : System.Text.RegularExpressions.Regex.IsMatch(input.Map ?? "", "^[a-z0-9_]{1,64}$");
-        if (!mapValid || !AllowedModes.Contains((input.GameType, input.GameMode)) || input.MaxPlayers is < 2 or > 32
-            || input.BotQuota is < 0 or > 12 || input.BotDifficulty is < 0 or > 3) return Results.BadRequest();
+        if (!mapValid || !AllowedModes.Contains((input.GameType, input.GameMode))
+            || !AllowedPresets.Contains(preset)
+            || input.CustomRoundTime is < 1 or > 60
+            || input.CustomFreezeTime is < 0 or > 30
+            || input.CustomWarmupTime is < 0 or > 600
+            || input.CustomBuyTime is < 0 or > 9999
+            || input.CustomStartMoney is < 0 or > 60000
+            || input.CustomMaxMoney is < 800 or > 60000
+            || input.CustomStartMoney > input.CustomMaxMoney
+            || input.CustomLimitTeams is < 0 or > 20
+            || input.CustomGrenadeLimit is < 0 or > 10
+            || !IsCfgValue(hostname, 80) || !IsCfgValue(serverPassword, 64))
+            return Results.BadRequest();
         await File.WriteAllTextAsync(LaunchFile, $"""
             START_MAP={input.Map}
-            WORKSHOP_MAP_ID={workshop}
+            WORKSHOP_MAP_ID={workshop ?? ""}
             GAME_TYPE={input.GameType}
             GAME_MODE={input.GameMode}
-            MAX_PLAYERS={input.MaxPlayers}
+            MAX_PLAYERS=32
+            SERVER_HOSTNAME={hostname}
+            SERVER_PASSWORD={serverPassword}
+            MATCH_PRESET={preset}
+            STEAMCMD_VALIDATE={(input.SteamcmdValidate ? 1 : 0)}
+            HIBERNATE_WHEN_EMPTY={(input.HibernateWhenEmpty ? 1 : 0)}
             VAC_INSECURE={(input.Insecure ? 1 : 0)}
-            BOTS_ENABLED={(input.BotsEnabled ? 1 : 0)}
-            BOT_QUOTA={input.BotQuota}
-            BOT_DIFFICULTY={input.BotDifficulty}
+            BOTS_ENABLED=0
+            BOT_QUOTA=0
+            BOT_DIFFICULTY=1
             PRACTICE={(input.Practice ? 1 : 0)}
             INFINITE_AMMO={(input.InfiniteAmmo ? 1 : 0)}
             FRIENDLY_FIRE={(input.FriendlyFire ? 1 : 0)}
+            CUSTOM_CHEATS={(input.CustomCheats ? 1 : 0)}
+            CUSTOM_ROUNDTIME={input.CustomRoundTime}
+            CUSTOM_FREEZETIME={input.CustomFreezeTime}
+            CUSTOM_WARMUPTIME={input.CustomWarmupTime}
+            CUSTOM_BUYTIME={input.CustomBuyTime}
+            CUSTOM_STARTMONEY={input.CustomStartMoney}
+            CUSTOM_MAXMONEY={input.CustomMaxMoney}
+            CUSTOM_BUY_ANYWHERE={(input.CustomBuyAnywhere ? 1 : 0)}
+            CUSTOM_AUTOBALANCE={(input.CustomAutoBalance ? 1 : 0)}
+            CUSTOM_LIMITTEAMS={input.CustomLimitTeams}
+            CUSTOM_ALLTALK={(input.CustomAllTalk ? 1 : 0)}
+            CUSTOM_RESPAWN={(input.CustomRespawn ? 1 : 0)}
+            CUSTOM_DEATH_DROP_GUN={(input.CustomDeathDropGun ? 1 : 0)}
+            CUSTOM_SHOW_IMPACTS={(input.CustomShowImpacts ? 1 : 0)}
+            CUSTOM_GRENADE_TRAJECTORY={(input.CustomGrenadeTrajectory ? 1 : 0)}
+            CUSTOM_GRENADE_LIMIT={input.CustomGrenadeLimit}
             RUN_GAME=1
             """, ct);
         registry.Reset();
@@ -216,6 +287,31 @@ public static class ServerLifecycleEndpoints
         if (File.Exists(LaunchFile)) foreach (var line in File.ReadAllLines(LaunchFile))
             if (line.Split('=', 2) is [var key, var value]) values[key] = value;
         return values;
+    }
+
+    private static bool IsCfgValue(string value, int maxLength)
+    {
+        if (value.Length > maxLength) return false;
+        foreach (var ch in value)
+            if (char.IsControl(ch) || ch is '"' or '\\') return false;
+        return true;
+    }
+
+    private static bool IsSafeConsoleCommand(string command)
+    {
+        if (command.Length is 0 or > 200 || !ConsoleCommandRegex.IsMatch(command)) return false;
+        var verb = command.Split(' ', 2)[0].ToLowerInvariant();
+        return !BlockedConsoleCommands.Contains(verb);
+    }
+
+    private static string? NormalizeWorkshopId(string? value)
+    {
+        var text = value?.Trim() ?? "";
+        if (text.Length == 0) return null;
+        var direct = Regex.Match(text, @"^\d{1,20}$");
+        if (direct.Success) return direct.Value;
+        var query = Regex.Match(text, @"(?:[?&]id=|/filedetails/\?id=)(\d{1,20})(?:[&#]|$)", RegexOptions.IgnoreCase);
+        return query.Success ? query.Groups[1].Value : null;
     }
 
     private static async Task SetRunGame(bool enabled, CancellationToken ct)

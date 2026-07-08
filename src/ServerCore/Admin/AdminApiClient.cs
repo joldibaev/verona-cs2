@@ -13,6 +13,8 @@ namespace Verona.Admin;
 public sealed class AdminApiClient : IDisposable
 {
     private static readonly Regex SafeMap = new("^[a-z0-9_]+$", RegexOptions.Compiled);
+    private static readonly Regex SafeConsoleCommand = new(@"^[A-Za-z][A-Za-z0-9_]*(?:\s+[^\r\n;]{1,180})?$", RegexOptions.Compiled);
+    private static readonly HashSet<string> BlockedConsoleCommands = ["quit", "exit", "_restart", "rcon_password", "sv_password"];
     private readonly BasePlugin _plugin;
     private readonly WeaponSkinsModule _skins;
     private readonly ILogger _logger;
@@ -50,6 +52,25 @@ public sealed class AdminApiClient : IDisposable
         if (player is not { IsValid: true, IsBot: false }) return;
         var steamId = player.SteamID;
         _ = RefreshPlayerSkinsAsync(steamId, () => _skins.ApplyAll(player));
+    }
+
+    public void ExecutePlayerConsoleCommand(CCSPlayerController? player, string command, Action<string> reply)
+    {
+        if (player is not { IsValid: true, IsBot: false })
+        {
+            reply("Only an in-game admin can use css_rcon.");
+            return;
+        }
+
+        command = command.Trim();
+        if (!IsSafeConsoleCommand(command))
+        {
+            reply("Command rejected.");
+            return;
+        }
+
+        var steamId = player.SteamID;
+        _ = ExecutePlayerConsoleCommandAsync(steamId, command, reply);
     }
 
     private Heartbeat CaptureHeartbeat()
@@ -112,6 +133,10 @@ public sealed class AdminApiClient : IDisposable
                         break;
                     case "ban":
                         WithPlayer(command.SteamId, player => Server.ExecuteCommand($"banid {ParseMinutes(command.Value)} {player.UserId} kick"));
+                        break;
+                    case "console" when command.Value is not null && IsSafeConsoleCommand(command.Value):
+                        _logger.LogInformation("Executing admin console command from panel: {Command}", command.Value);
+                        Server.ExecuteCommand(command.Value);
                         break;
                     default:
                         throw new InvalidOperationException($"Unsupported command type '{command.Type}'");
@@ -207,6 +232,32 @@ public sealed class AdminApiClient : IDisposable
         }
     }
 
+    private async Task ExecutePlayerConsoleCommandAsync(ulong steamId, string command, Action<string> reply)
+    {
+        try
+        {
+            var status = await _http.GetFromJsonAsync<AdminStatusDto>($"/api/plugin/players/{steamId}/admin")
+                ?? new(false);
+            if (!status.IsAdmin)
+            {
+                Server.NextFrame(() => reply("You are not a Verona admin."));
+                return;
+            }
+
+            Server.NextFrame(() =>
+            {
+                _logger.LogInformation("Executing admin console command from {SteamId}: {Command}", steamId, command);
+                Server.ExecuteCommand(command);
+                reply($"Executed: {command}");
+            });
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning("Could not execute player console command from {SteamId}: {Message}", steamId, exception.Message);
+            Server.NextFrame(() => reply("Admin check failed. Try again in a moment."));
+        }
+    }
+
     private static void WithPlayer(string? steamId, Action<CCSPlayerController> action)
     {
         if (!ulong.TryParse(steamId, out var value)) return;
@@ -216,12 +267,19 @@ public sealed class AdminApiClient : IDisposable
 
     private static string Sanitize(string? value) => Regex.Replace(value ?? "Removed by admin", "[^a-zA-Z0-9 _.-]", string.Empty);
     private static int ParseMinutes(string? value) => int.TryParse(value, out var minutes) && minutes > 0 ? minutes : 0;
+    private static bool IsSafeConsoleCommand(string command)
+    {
+        if (command.Length is 0 or > 200 || !SafeConsoleCommand.IsMatch(command)) return false;
+        var verb = command.Split(' ', 2)[0].ToLowerInvariant();
+        return !BlockedConsoleCommands.Contains(verb);
+    }
     public void Dispose() => _http.Dispose();
 
     private sealed record Heartbeat(string ServerId, string Map, IReadOnlyList<PlayerDto> Players);
     private sealed record PlayerDto(string SteamId, string Name, int Slot, string Team, string IpAddress);
     private sealed record ServerCommandDto(long Id, string ClaimToken, int Attempt, string Type, string? SteamId, string? Value, string? Reason);
     private sealed record CommandAckDto(long Id, string ClaimToken, bool Success, string? Error);
+    private sealed record AdminStatusDto(bool IsAdmin);
     private sealed record StickerDto(int Slot, int StickerId, float Wear = 0);
     private sealed record SkinDto(
         string Weapon, string Team, int PaintKit, float Wear, int Seed,

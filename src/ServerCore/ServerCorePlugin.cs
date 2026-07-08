@@ -2,6 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Commands;
 using Microsoft.Extensions.Logging;
 using Verona.WeaponSkins;
 using Verona.Admin;
@@ -35,7 +36,24 @@ public sealed class VeronaPlugin : BasePlugin
         _weaponSkins.Reload();
         _adminApi = new AdminApiClient(this, _weaponSkins, Logger);
         _adminApi.Start();
+        AddCommand("css_rcon", "Execute a server console command as a Verona admin.", OnRconCommand);
         Logger.LogInformation("Verona loaded (hot reload: {HotReload})", hotReload);
+    }
+
+    private void OnRconCommand(CCSPlayerController? player, CommandInfo command)
+    {
+        if (command.ArgCount < 2)
+        {
+            command.ReplyToCommand("Usage: css_rcon mp_restartgame 1");
+            return;
+        }
+
+        var serverCommand = string.Join(' ', Enumerable.Range(1, command.ArgCount - 1).Select(command.GetArg)).Trim();
+        _adminApi?.ExecutePlayerConsoleCommand(player, serverCommand, message =>
+        {
+            if (player is { IsValid: true }) player.PrintToChat($"[Verona] {message}");
+            else Server.PrintToConsole($"[Verona] {message}");
+        });
     }
 
     [ListenerHandler<Listeners.OnClientPutInServer>]
