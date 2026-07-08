@@ -20,10 +20,17 @@ services:
     volumes:
       # Mount the whole admin tree so Program.cs can reach ../ui/public catalogs.
       - ./admin:/src/admin
-      # Anonymous volumes keep Linux build output out of the host's Windows bin/obj.
-      - /src/admin/Verona.Admin/bin
-      - /src/admin/Verona.Admin/obj
+      # Named volumes keep Linux build output out of the host's Windows bin/obj
+      # and avoid creating anonymous volumes with random hashes.
+      - admin-bin:/src/admin/Verona.Admin/bin
+      - admin-obj:/src/admin/Verona.Admin/obj
 
   postgres:
     ports:
       - "127.0.0.1:5432:5432"
+
+volumes:
+  admin-bin:
+    name: verona-cs2-admin-bin
+  admin-obj:
+    name: verona-cs2-admin-obj

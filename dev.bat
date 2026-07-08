@@ -24,8 +24,13 @@ if not exist node_modules (
     if errorlevel 1 goto :error
 )
 
-echo [dev] Starting Vite dev server (Ctrl+C to stop) ...
+echo [dev] Starting Vite dev server (press q + Enter to quit cleanly) ...
 call npm run dev
+
+echo.
+echo [dev] Stopping dev containers ...
+cd /d "%~dp0"
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 goto :eof
 
 :error
