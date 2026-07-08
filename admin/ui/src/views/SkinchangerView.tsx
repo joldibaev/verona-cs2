@@ -5,6 +5,7 @@ import {
   Key,
   MagnifyingGlass,
   MouseSimple,
+  PencilSimple,
   Plus,
   ShareNetwork,
   Trash,
@@ -49,6 +50,7 @@ import {
   type Weapon, emptyGloveDraft, loadoutGroups, newSticker, rarityRank, teamIcon, wearName,
 } from "./skinchanger/model";
 import { FloatBar, LazyImage, TeamSelect, VirtualGrid, WeaponLoadoutCard } from "./skinchanger/controls";
+import { decodePreset, skinPresets, type SkinPreset } from "./skinchanger/presets";
 /* Domain types and reusable picker controls live in ./skinchanger. */
 const standardStickerSlots = [0, 1, 2, 3] as const;
 
@@ -109,9 +111,14 @@ export default function SkinchangerView() {
     ),
     [savingSelection, setSavingSelection] = useState(false),
     [confirmation, setConfirmation] = useState<
-      { kind: "reset" } | { kind: "delete"; collection: Collection } | null
+      | { kind: "reset" }
+      | { kind: "delete"; collection: Collection }
+      | { kind: "preset"; preset: SkinPreset }
+      | null
     >(null),
-    [confirming, setConfirming] = useState(false);
+    [confirming, setConfirming] = useState(false),
+    // Collection name dialog serves both create (null) and rename (the collection).
+    [collectionEdit, setCollectionEdit] = useState<Collection | null>(null);
   const target = players.find((p) => p.steamId === targetId) ?? null,
     self = !me?.isAdmin || !target || target.steamId === me.steamId,
     root = self ? "/api/me" : `/api/players/${target!.steamId}`,
@@ -143,6 +150,11 @@ export default function SkinchangerView() {
     keychainById = useMemo(
       () => new Map(keychainCatalog.map((k) => [k.id, k])),
       [keychainCatalog],
+    ),
+    // Presets are static base64 codes; decode once to show skin counts on the chips.
+    presetSkinCounts = useMemo(
+      () => new Map(skinPresets.map((p) => [p.id, decodePreset(p.code)?.skins.length ?? 0])),
+      [],
     );
   const cosmeticDisplayTeam: "ct" | "t" = cosmeticTeam === "both" ? activeTeam : cosmeticTeam;
   const getSkin = (w: string, team: "ct" | "t" = activeTeam) => {
@@ -293,7 +305,9 @@ export default function SkinchangerView() {
           keychainSeed: keychainDraft?.seed ?? 0,
         }),
       });
-      await load();
+      // Refresh collections too: adding/updating a skin changes the active
+      // collection's count, which is otherwise stale until a page reload.
+      await Promise.all([load(), loadCollections()]);
       setPicker(null);
       toast.success("Скин сохранён");
     } finally {
@@ -322,7 +336,7 @@ export default function SkinchangerView() {
   async function resetSkin() {
     if (!picker) return;
     await api(`${root}/skins/${picker.weapon}/${scope}`, { method: "DELETE" });
-    await load();
+    await Promise.all([load(), loadCollections()]);
     setPicker(null);
     toast.success("Скин сброшен");
   }
@@ -330,11 +344,38 @@ export default function SkinchangerView() {
     if (!collectionName.trim()) return;
     await api("/api/me/collections", {
       method: "POST",
-      body: JSON.stringify({ name: collectionName.trim() }),
+      // Empty skins array = start a blank collection (no snapshot of current loadout).
+      body: JSON.stringify({ name: collectionName.trim(), skins: [] }),
     });
     setCollectionName("");
     setCollectionOpen(false);
     await loadCollections();
+  }
+  // Copy a preset into a brand-new collection instead of touching the active one, so
+  // the user keeps their current loadout and gets the preset as a separate collection.
+  // The preset is a base64 collection code (see presets.ts) already carrying full,
+  // per-team skin rows, so it is posted straight through without catalog lookups.
+  async function copyPreset(preset: SkinPreset) {
+    const payload = decodePreset(preset.code);
+    if (!payload?.skins.length) return;
+    await api("/api/me/collections", {
+      method: "POST",
+      body: JSON.stringify({ name: preset.name, skins: payload.skins }),
+    });
+    await loadCollections();
+    toast.success(`Пресет «${preset.name}» скопирован в коллекции`);
+  }
+  async function renameCollection() {
+    if (!collectionEdit || !collectionName.trim()) return;
+    await api(`/api/me/collections/${collectionEdit.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ name: collectionName.trim() }),
+    });
+    setCollectionName("");
+    setCollectionEdit(null);
+    setCollectionOpen(false);
+    await loadCollections();
+    toast.success("Коллекция переименована");
   }
   async function activate(c: Collection) {
     if (c.active) return;
@@ -356,13 +397,16 @@ export default function SkinchangerView() {
     setConfirming(true);
     try {
       if (confirmation.kind === "reset") await resetAllSkins();
-      else await remove(confirmation.collection);
+      else if (confirmation.kind === "delete") await remove(confirmation.collection);
+      else await copyPreset(confirmation.preset);
       setConfirmation(null);
     } catch {
       toast.error(
         confirmation.kind === "reset"
           ? "Не удалось сбросить экипировку"
-          : "Не удалось удалить коллекцию",
+          : confirmation.kind === "delete"
+            ? "Не удалось удалить коллекцию"
+            : "Не удалось скопировать пресет",
       );
     } finally {
       setConfirming(false);
@@ -553,6 +597,19 @@ export default function SkinchangerView() {
                   <Button
                     variant="ghost"
                     size="icon-xs"
+                    aria-label={`Переименовать коллекцию ${c.name}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCollectionEdit(c);
+                      setCollectionName(c.name);
+                      setCollectionOpen(true);
+                    }}
+                  >
+                    <PencilSimple />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
                     aria-label={`Поделиться коллекцией ${c.name}`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -580,7 +637,11 @@ export default function SkinchangerView() {
             <div className="aside-buttons">
               <Button
                 variant="secondary"
-                onClick={() => setCollectionOpen(true)}
+                onClick={() => {
+                  setCollectionEdit(null);
+                  setCollectionName("");
+                  setCollectionOpen(true);
+                }}
               >
                 <Plus /> Создать
               </Button>
@@ -600,6 +661,37 @@ export default function SkinchangerView() {
             >
               <Eraser /> Сбросить
             </Button>
+            <div className="aside-head preset-head">
+              <span>ПРЕСЕТЫ</span>
+              <b>{skinPresets.length}</b>
+            </div>
+            <div className="preset-list">
+              {skinPresets.map((preset) => {
+                const count = presetSkinCounts.get(preset.id) ?? 0;
+                const empty = count === 0;
+                return (
+                  <button
+                    type="button"
+                    className="preset"
+                    style={
+                      { "--preset": preset.color } as React.CSSProperties
+                    }
+                    key={preset.id}
+                    disabled={empty}
+                    title={
+                      empty
+                        ? "Пресет пока пуст"
+                        : `Скопировать пресет «${preset.name}» в коллекции`
+                    }
+                    onClick={() => setConfirmation({ kind: "preset", preset })}
+                  >
+                    <i className="preset-dot" />
+                    <b>{preset.name}</b>
+                    <small>{empty ? "Скоро" : `${count} скинов`}</small>
+                  </button>
+                );
+              })}
+            </div>
           </aside>
         )}
         <section className="loadout-main">
@@ -690,14 +782,19 @@ export default function SkinchangerView() {
       </div>
       <Dialog
         open={collectionOpen}
-        onOpenChange={setCollectionOpen}
-        title="Новая коллекция"
+        onOpenChange={(v) => {
+          setCollectionOpen(v);
+          if (!v) setCollectionEdit(null);
+        }}
+        title={collectionEdit ? "Переименовать коллекцию" : "Новая коллекция"}
         footer={
           <>
             <Button variant="ghost" onClick={() => setCollectionOpen(false)}>
               Отмена
             </Button>
-            <Button onClick={createCollection}>Создать</Button>
+            <Button onClick={collectionEdit ? renameCollection : createCollection}>
+              {collectionEdit ? "Сохранить" : "Создать"}
+            </Button>
           </>
         }
       >
@@ -1073,15 +1170,15 @@ export default function SkinchangerView() {
       >
         <div className="skin-config">
           <div className="cfg-head">
+            <span className="cfg-side-hint">
+              Настраивается{" "}
+              <b>{cosmeticTeam === "both" ? "ОБЕ КОМАНДЫ" : cosmeticTeam === "ct" ? "COUNTER-TERRORIST" : "TERRORIST"}</b>
+            </span>
             <TeamSelect
               options={cosmetic?.kind === "gloves" ? ["t", "both", "ct"] : ["t", "ct"]}
               value={cosmeticTeam}
               onChange={setCosmeticTeam}
             />
-            <span className="cfg-side-hint">
-              Настраивается{" "}
-              <b>{cosmeticTeam === "both" ? "ОБЕ КОМАНДЫ" : cosmeticTeam === "ct" ? "COUNTER-TERRORIST" : "TERRORIST"}</b>
-            </span>
           </div>
           {cosmetic?.kind === "gloves" && (
             <>
@@ -1204,24 +1301,40 @@ export default function SkinchangerView() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogMedia className="bg-destructive/10 text-destructive">
-              {confirmation?.kind === "delete" ? <Trash /> : <Eraser />}
+            <AlertDialogMedia
+              className={
+                confirmation?.kind === "preset"
+                  ? "bg-primary/10 text-primary"
+                  : "bg-destructive/10 text-destructive"
+              }
+            >
+              {confirmation?.kind === "delete" ? (
+                <Trash />
+              ) : confirmation?.kind === "preset" ? (
+                <DownloadSimple />
+              ) : (
+                <Eraser />
+              )}
             </AlertDialogMedia>
             <AlertDialogTitle>
               {confirmation?.kind === "delete"
                 ? "Удалить коллекцию?"
-                : "Сбросить экипировку?"}
+                : confirmation?.kind === "preset"
+                  ? "Скопировать пресет?"
+                  : "Сбросить экипировку?"}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {confirmation?.kind === "delete"
                 ? `Коллекция «${confirmation.collection.name}» будет удалена без возможности восстановления.`
-                : "Будут удалены все скины, перчатки и агенты из текущего loadout и активной коллекции."}
+                : confirmation?.kind === "preset"
+                  ? `Пресет «${confirmation.preset.name}» (${presetSkinCounts.get(confirmation.preset.id) ?? 0} скинов) будет скопирован как отдельная коллекция. Текущий loadout не изменится.`
+                  : "Будут удалены все скины, перчатки и агенты из текущего loadout и активной коллекции."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={confirming}>Отмена</AlertDialogCancel>
             <AlertDialogAction
-              variant="destructive"
+              variant={confirmation?.kind === "preset" ? "default" : "destructive"}
               disabled={confirming}
               onClick={(event) => {
                 event.preventDefault();
@@ -1232,7 +1345,9 @@ export default function SkinchangerView() {
                 ? "Подождите..."
                 : confirmation?.kind === "delete"
                   ? "Удалить"
-                  : "Сбросить"}
+                  : confirmation?.kind === "preset"
+                    ? "Скопировать"
+                    : "Сбросить"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

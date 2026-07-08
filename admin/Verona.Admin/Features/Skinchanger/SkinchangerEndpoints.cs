@@ -63,7 +63,9 @@ public static class SkinchangerEndpoints
                 command.Parameters.AddWithValue(input.Name.Trim());
                 id = (long)(await command.ExecuteScalarAsync())!;
             }
-            if (input.Skins != null && input.Skins.Count > 0)
+            // A provided skins array (even empty) creates the collection with exactly
+            // those skins; a null array means "snapshot the player's current loadout".
+            if (input.Skins != null)
             {
                 foreach (var skin in input.Skins)
                 {
@@ -105,6 +107,15 @@ public static class SkinchangerEndpoints
             }
             await tx.CommitAsync();
             return Results.Ok(new { id });
+        });
+        app.MapPatch("/api/me/collections/{id:long}", async (HttpContext context, long id, CollectionInput input, NpgsqlDataSource db) =>
+        {
+            if (context.Items["identity"] is not RequestIdentity identity || string.IsNullOrWhiteSpace(input.Name) || input.Name.Trim().Length > 48) return Results.BadRequest();
+            await using var command = db.CreateCommand("UPDATE skin_collections SET name=$1 WHERE id=$2 AND steam_id=$3");
+            command.Parameters.AddWithValue(input.Name.Trim());
+            command.Parameters.AddWithValue(id);
+            command.Parameters.AddWithValue(decimal.Parse(identity.SteamId));
+            return await command.ExecuteNonQueryAsync() == 0 ? Results.NotFound() : Results.NoContent();
         });
         app.MapGet("/api/me/collections/{id:long}/skins", async (HttpContext context, long id, NpgsqlDataSource db) =>
         {

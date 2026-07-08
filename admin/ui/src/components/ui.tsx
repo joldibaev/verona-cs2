@@ -84,7 +84,9 @@ export function Dialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div className="min-h-0 overflow-auto">{children}</div>
+        {/* Pull the scroll container into the dialog's right padding so the
+            scrollbar hugs the edge, then re-pad the content on the inside. */}
+        <div className="-mr-4 min-h-0 overflow-auto pr-4">{children}</div>
         {footer ? <DialogFooter>{footer}</DialogFooter> : null}
       </DialogContent>
     </ShadcnDialog>
