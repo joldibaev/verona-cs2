@@ -494,16 +494,12 @@ public static class SkinchangerEndpoints
         static bool ValidStickers(IReadOnlyList<StickerInput>? stickers)
         {
             if (stickers is null) return true;
-            if (stickers.Count > 5) return false;
+            if (stickers.Count > 4) return false;
             var slots = new HashSet<int>();
             foreach (var s in stickers)
             {
-                if (s.Slot is < 0 or > 4 || !slots.Add(s.Slot) || s.StickerId <= 0
-                    || !float.IsFinite(s.Wear) || s.Wear is < 0 or > 1
-                    || !float.IsFinite(s.Scale) || s.Scale is <= 0 or > 5
-                    || !float.IsFinite(s.Rotation) || s.Rotation is < -360 or > 360
-                    || !float.IsFinite(s.OffsetX) || s.OffsetX is < -1 or > 1
-                    || !float.IsFinite(s.OffsetY) || s.OffsetY is < -1 or > 1) return false;
+                if (s.Slot is < 0 or > 3 || !slots.Add(s.Slot) || s.StickerId <= 0
+                    || !float.IsFinite(s.Wear) || s.Wear is < 0 or > 1) return false;
             }
             return true;
         }

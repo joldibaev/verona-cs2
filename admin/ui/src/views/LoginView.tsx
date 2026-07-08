@@ -41,7 +41,7 @@ export default function LoginView() {
         </p>
         <Button
           type="button"
-          className="steam-button"
+          className="steam-button w-full"
           disabled={checking}
           onClick={() => void login()}
         >

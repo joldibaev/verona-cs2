@@ -4,6 +4,11 @@
 artifacts/
 TestResults/
 
+# Runtime server state written by the admin panel / plugin (mounted at ./config).
+# launch.env presence marks a server as "configured"; skins.json holds user loadouts.
+config/launch.env
+config/skins.json
+
 # .NET SDK
 [Bb]in/
 [Oo]bj/

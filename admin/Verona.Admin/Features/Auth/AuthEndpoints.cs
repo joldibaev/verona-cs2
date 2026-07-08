@@ -103,7 +103,8 @@ public static class AuthEndpoints
             var steamId = claimed.Groups[1].Value;
             await profiles.Refresh(steamId, ct);
             response.Cookies.Append(SessionCookie, sessions.Create(new SessionIdentity(steamId)), CookieOptions);
-            return Results.Redirect("/skinchanger");
+            // Land on the app root; the SPA routes admins to /servers and players to /skinchanger by role.
+            return Results.Redirect("/");
         });
     }
 }

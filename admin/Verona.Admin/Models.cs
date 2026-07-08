@@ -5,7 +5,7 @@ namespace Verona.Admin;
 // SteamID64 must cross JSON as text: JavaScript numbers cannot safely represent all 64-bit IDs.
 public sealed record PlayerSnapshot(string SteamId, string Name, int Slot, string Team, string IpAddress);
 public sealed record HeartbeatRequest(string ServerId, string Map, IReadOnlyList<PlayerSnapshot> Players);
-public sealed record StickerInput(int Slot, int StickerId, float Wear = 0, float Scale = 1, float Rotation = 0, float OffsetX = 0, float OffsetY = 0);
+public sealed record StickerInput(int Slot, int StickerId, float Wear = 0);
 
 // Stickers ride along in a jsonb column on the skin row so every collection copy,
 // team migration and delete carries them automatically without extra tables.
@@ -16,7 +16,8 @@ public static class SkinJson
     {
         if (string.IsNullOrWhiteSpace(json)) return null;
         var list = JsonSerializer.Deserialize<List<StickerInput>>(json, Options);
-        return list is { Count: > 0 } ? list : null;
+        var standardSlots = list?.Where(sticker => sticker.Slot is >= 0 and <= 3).ToArray();
+        return standardSlots is { Length: > 0 } ? standardSlots : null;
     }
     public static string SerializeStickers(IReadOnlyList<StickerInput>? stickers) =>
         JsonSerializer.Serialize(stickers ?? [], Options);

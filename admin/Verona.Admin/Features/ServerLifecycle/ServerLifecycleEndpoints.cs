@@ -1,5 +1,7 @@
 namespace Verona.Admin.Features.ServerLifecycle;
 
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Npgsql;
 
 public static class ServerLifecycleEndpoints
@@ -15,6 +17,7 @@ public static class ServerLifecycleEndpoints
         app.MapPost("/api/server/start", Start);
         app.MapPost("/api/server/stop", Stop);
         app.MapPost("/api/server/restart", Restart);
+        app.MapPost("/api/server/delete", Delete);
     }
 
     private static async Task<IResult> GetRuntime(
@@ -40,7 +43,12 @@ public static class ServerLifecycleEndpoints
         var catalogsReady = CatalogExists("skins-catalog.json") && CatalogExists("cosmetics-catalog.json");
         var configReady = File.Exists(LaunchFile);
         var phase = !running ? "stopped" : heartbeatFresh ? "ready" : "starting";
-        var (step, progress) = LaunchProgress(phase, logs);
+        var install = phase switch
+        {
+            "ready" => new InstallState("Сервер готов", 100, false, null, null, null),
+            "stopped" => new InstallState("Сервер остановлен", 0, false, null, null, null),
+            _ => Analyze(logs),
+        };
         var checks = new[]
         {
             new { id = "docker", label = "Docker Engine", ready = container.Exists && container.Error is null,
@@ -54,32 +62,85 @@ public static class ServerLifecycleEndpoints
             new { id = "plugin", label = "Плагин Verona", ready = heartbeatFresh,
                 detail = heartbeatFresh ? $"Heartbeat {registry.LastHeartbeat:O}" : running ? "Ожидание heartbeat" : "Сервер остановлен" }
         };
-        return Results.Ok(new { phase, step, progress, checks, logs, checkedAt = DateTimeOffset.UtcNow });
+        return Results.Ok(new { phase, step = install.Step, progress = install.Progress,
+            downloading = install.Downloading, downloadPercent = install.DownloadPercent,
+            downloadedBytes = install.DownloadedBytes, totalBytes = install.TotalBytes,
+            checks, logs, checkedAt = DateTimeOffset.UtcNow });
     }
 
-    private static (string Step, int Progress) LaunchProgress(string phase, IReadOnlyList<string> logs)
+    // SteamCMD reports install progress as "progress: 42.11 (31359369216 / 74473259008)".
+    // The first two capture groups are the percentage and bytes transferred/total.
+    private static readonly Regex ProgressRegex = new(
+        @"progress:\s*([0-9]+(?:\.[0-9]+)?)\s*\((\d+)\s*/\s*(\d+)\)",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    private readonly record struct InstallState(
+        string Step, int Progress, bool Downloading,
+        double? DownloadPercent, long? DownloadedBytes, long? TotalBytes);
+
+    // Derives a human phase and 0-100 progress from the container's log tail so the
+    // panel can show the long first-time CS2 download (~70 GB) rather than a static badge.
+    private static InstallState Analyze(IReadOnlyList<string> logs)
     {
-        if (phase == "ready") return ("Сервер готов", 100);
-        if (phase == "stopped") return ("Сервер остановлен", 0);
-        var text = string.Join('\n', logs.TakeLast(80));
-        if (text.Contains("Verona", StringComparison.OrdinalIgnoreCase)) return ("Загрузка плагина Verona", 90);
-        if (text.Contains("CounterStrikeSharp", StringComparison.OrdinalIgnoreCase)) return ("Загрузка CounterStrikeSharp", 78);
-        if (text.Contains("Metamod", StringComparison.OrdinalIgnoreCase)) return ("Загрузка Metamod", 65);
+        var recent = logs.Count > 140 ? logs.Skip(logs.Count - 140).ToArray() : logs.ToArray();
+
+        // Prefer the most recent real SteamCMD progress line: it carries an exact percentage.
+        for (var i = recent.Length - 1; i >= 0; i--)
+        {
+            var match = ProgressRegex.Match(recent[i]);
+            if (!match.Success) continue;
+            var percent = double.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+            var done = long.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+            var total = long.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture);
+            if (total <= 0) break;
+            var verifying = recent[i].Contains("verif", StringComparison.OrdinalIgnoreCase)
+                || recent[i].Contains("validat", StringComparison.OrdinalIgnoreCase);
+            var step = verifying ? "Проверка игровых файлов" : "Скачивание игровых данных CS2";
+            // The Steam install dominates a cold start, so it spans most of the bar (8-60%).
+            var overall = (int)Math.Clamp(8 + percent * 0.52, 8, 60);
+            return new(step, overall, !verifying, Math.Round(percent, 1), done, total);
+        }
+
+        var text = string.Join('\n', recent);
+        if (text.Contains("Verona", StringComparison.OrdinalIgnoreCase))
+            return new("Загрузка плагина Verona", 90, false, null, null, null);
+        if (text.Contains("CounterStrikeSharp", StringComparison.OrdinalIgnoreCase))
+            return new("Установка CounterStrikeSharp", 78, false, null, null, null);
+        if (text.Contains("Metamod", StringComparison.OrdinalIgnoreCase))
+            return new("Установка Metamod:Source", 66, false, null, null, null);
+        if (text.Contains("Starting CS2", StringComparison.OrdinalIgnoreCase))
+            return new("Запуск игрового процесса", 94, false, null, null, null);
         if (text.Contains("SteamCMD", StringComparison.OrdinalIgnoreCase)
-            || text.Contains("update", StringComparison.OrdinalIgnoreCase)) return ("Проверка файлов через SteamCMD", 28);
-        if (text.Contains("Starting CS2", StringComparison.OrdinalIgnoreCase)
-            || text.Contains("cs2", StringComparison.OrdinalIgnoreCase)) return ("Запуск игрового процесса", 52);
-        return ("Подготовка контейнера", 12);
+            || text.Contains("app_update", StringComparison.OrdinalIgnoreCase)
+            || text.Contains("Installing/updating", StringComparison.OrdinalIgnoreCase))
+            return new("Проверка файлов через SteamCMD", 6, false, null, null, null);
+        return new("Подготовка контейнера", 4, false, null, null, null);
     }
 
     private static async Task<IResult> GetStatus(DockerControl docker, PlayerRegistry registry, CancellationToken ct)
     {
+        // A server "exists" only once the panel has written a real launch selection
+        // (START_MAP is present). A bare RUN_GAME idle file does not count, so the
+        // dashboard shows an empty state instead of a phantom card on a cold start.
+        var values = ReadValues();
+        var configured = values.ContainsKey("START_MAP");
         var container = await docker.GetStatus(ct);
-        var running = container.Running && ReadValues().GetValueOrDefault("RUN_GAME") == "1";
+        var running = container.Running && values.GetValueOrDefault("RUN_GAME") == "1";
         container = container with { Running = running, Status = running ? container.Status : "stopped" };
         var ready = running && registry.LastHeartbeat > DateTimeOffset.UtcNow.AddSeconds(-10);
-        return Results.Ok(new { container, phase = !running ? "stopped" : ready ? "ready" : "starting",
-            ready, registry.CurrentMap, registry.LastHeartbeat, online = registry.GetPlayers().Count });
+        var phase = !configured ? "empty" : !running ? "stopped" : ready ? "ready" : "starting";
+
+        object? install = null;
+        if (phase == "starting")
+        {
+            var startedAt = DateTimeOffset.TryParse(container.StartedAt, out var parsed) ? parsed : (DateTimeOffset?)null;
+            var state = Analyze(await docker.GetLogs(200, startedAt, ct));
+            install = new { step = state.Step, progress = state.Progress, downloading = state.Downloading,
+                downloadPercent = state.DownloadPercent, downloadedBytes = state.DownloadedBytes, totalBytes = state.TotalBytes };
+        }
+
+        return Results.Ok(new { container, configured, phase, ready,
+            registry.CurrentMap, registry.LastHeartbeat, online = registry.GetPlayers().Count, install });
     }
 
     private static IResult GetLaunch()
@@ -132,6 +193,21 @@ public static class ServerLifecycleEndpoints
     {
         try { await SetRunGame(true, ct); registry.Reset(); await docker.Restart(ct); return Results.NoContent(); }
         catch { return DockerFailure("перезапустить"); }
+    }
+
+    private static async Task<IResult> Delete(DockerControl docker, PlayerRegistry registry, CancellationToken ct)
+    {
+        // Removing a server discards its launch config so the panel returns to the empty
+        // state. The named cs2-data volume is intentionally left intact, so re-creating a
+        // server later reuses the already-downloaded game files instead of fetching ~70 GB again.
+        try
+        {
+            try { using var _ = await docker.Stop(ct); } catch { /* container may be idle or absent */ }
+            if (File.Exists(LaunchFile)) File.Delete(LaunchFile);
+            registry.Reset();
+            return Results.NoContent();
+        }
+        catch { return DockerFailure("удалить"); }
     }
 
     private static Dictionary<string, string> ReadValues()

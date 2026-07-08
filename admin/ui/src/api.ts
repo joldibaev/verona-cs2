@@ -43,10 +43,6 @@ export interface StickerPlacement {
   slot: number
   stickerId: number
   wear: number
-  scale: number
-  rotation: number
-  offsetX: number
-  offsetY: number
 }
 export interface Skin {
   weapon: string

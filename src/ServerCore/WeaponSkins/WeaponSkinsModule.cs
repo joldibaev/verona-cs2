@@ -315,17 +315,17 @@ public sealed class WeaponSkinsModule
 
     private void SetStickerAttributes(nint attributeList, SkinDefinition skin)
     {
-        // Slots 0-4 map to the five sticker positions CS2 exposes. Each slot is always
-        // written: unused slots stay at id 0 so a removed sticker does not persist.
+        // Slots 0-3 are the legacy model-defined positions. Slot 4 belongs to flexible
+        // placement and is always cleared because Verona deliberately exposes no custom editor.
         for (var slot = 0; slot < 5; slot++)
         {
-            var sticker = skin.Stickers?.FirstOrDefault(s => s.Slot == slot);
+            var sticker = slot < 4 ? skin.Stickers?.FirstOrDefault(s => s.Slot == slot) : null;
             _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} id", sticker?.StickerId ?? 0);
             _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} wear", sticker?.Wear ?? 0f);
-            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} scale", sticker?.Scale ?? 1f);
-            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} rotation", sticker?.Rotation ?? 0f);
-            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} offset x", sticker?.OffsetX ?? 0f);
-            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} offset y", sticker?.OffsetY ?? 0f);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} scale", 1f);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} rotation", 0f);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} offset x", 0f);
+            _setOrAddAttribute.Invoke(attributeList, $"sticker slot {slot} offset y", 0f);
         }
     }
 

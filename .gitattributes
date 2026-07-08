@@ -1,0 +1,7 @@
+# Windows batch files must use CRLF or cmd.exe misparses them (the window
+# closes instantly on double-click). Force it regardless of core.autocrlf.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell scripts must stay LF so they run under bash/Linux containers.
+*.sh text eol=lf

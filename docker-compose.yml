@@ -2,6 +2,7 @@ name: verona-cs2
 
 services:
   cs2:
+    profiles: ["game"]
     image: verona-cs2-server:latest
     build:
       context: .

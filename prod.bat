@@ -10,6 +10,14 @@ REM ==========================================================================
 setlocal
 cd /d "%~dp0"
 
+echo [prod] Checking the persistent CS2 volume ...
+docker volume inspect verona-cs2-data >nul 2>&1
+if errorlevel 1 (
+    echo [prod] Creating persistent volume verona-cs2-data ...
+    docker volume create verona-cs2-data >nul
+    if errorlevel 1 goto :error
+)
+
 echo [prod] Building and starting admin + postgres ...
 docker compose up -d --build
 if errorlevel 1 goto :error

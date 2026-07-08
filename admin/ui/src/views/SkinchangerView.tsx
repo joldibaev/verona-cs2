@@ -48,8 +48,10 @@ import {
   type CatalogSticker, type Collection, type GloveDraft, type Known, type TeamScope,
   type Weapon, emptyGloveDraft, loadoutGroups, newSticker, rarityRank, teamIcon, wearName,
 } from "./skinchanger/model";
-import { FloatBar, LazyImage, RotationDial, StickerPad, TeamSelect, VirtualGrid, WeaponLoadoutCard } from "./skinchanger/controls";
+import { FloatBar, LazyImage, TeamSelect, VirtualGrid, WeaponLoadoutCard } from "./skinchanger/controls";
 /* Domain types and reusable picker controls live in ./skinchanger. */
+const standardStickerSlots = [0, 1, 2, 3] as const;
+
 export default function SkinchangerView() {
   const [params] = useSearchParams(),
     [me, setMe] = useState<Me | null>(null),
@@ -76,7 +78,7 @@ export default function SkinchangerView() {
     [seed, setSeed] = useState(0),
     [statTrak, setStatTrak] = useState(false),
     [nameTag, setNameTag] = useState(""),
-    // The open weapon's stickers (up to 5, keyed by slot) and keychain are edited as a
+    // The open weapon's four legacy sticker slots and keychain are edited as a
     // draft and persisted together with the skin in saveSkin.
     [stickerDraft, setStickerDraft] = useState<StickerPlacement[]>([]),
     [keychainDraft, setKeychainDraft] = useState<{ id: number; seed: number } | null>(
@@ -810,7 +812,7 @@ export default function SkinchangerView() {
               <span className="cfg-title">Стикеры и брелок</span>
             </div>
             <div className="sticker-slots">
-              {[0, 1, 2, 3, 4].map((slot) => {
+              {standardStickerSlots.map((slot) => {
                 const s = slotSticker(slot);
                 const cat = s ? stickerById.get(s.stickerId) : null;
                 return (
@@ -881,26 +883,8 @@ export default function SkinchangerView() {
               slotSticker(activeSlot) &&
               (() => {
                 const s = slotSticker(activeSlot)!;
-                const cat = stickerById.get(s.stickerId);
                 return (
                   <div className="sticker-editor">
-                    <div className="sticker-editor-main">
-                      <StickerPad
-                        x={s.offsetX}
-                        y={s.offsetY}
-                        rotation={s.rotation}
-                        image={cat?.image}
-                        onChange={(x, y) =>
-                          patchSlot(activeSlot, { offsetX: x, offsetY: y })
-                        }
-                      />
-                      <RotationDial
-                        value={s.rotation}
-                        onChange={(deg) =>
-                          patchSlot(activeSlot, { rotation: deg })
-                        }
-                      />
-                    </div>
                     <div className="sticker-editor-sliders">
                       <div className="cfg-slider">
                         <div className="cfg-slider-head">
@@ -916,23 +900,6 @@ export default function SkinchangerView() {
                           value={s.wear}
                           onChange={(e) =>
                             patchSlot(activeSlot, { wear: +e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="cfg-slider">
-                        <div className="cfg-slider-head">
-                          <span className="cfg-title">Масштаб</span>
-                          <span className="cfg-value">{s.scale.toFixed(2)}</span>
-                        </div>
-                        <input
-                          className="range-slider pattern-slider"
-                          type="range"
-                          min={0.2}
-                          max={3}
-                          step={0.05}
-                          value={s.scale}
-                          onChange={(e) =>
-                            patchSlot(activeSlot, { scale: +e.target.value })
                           }
                         />
                       </div>

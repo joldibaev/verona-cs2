@@ -11,7 +11,7 @@ export interface CatalogKeychain { id: number; name: string; color: string; imag
 export interface GloveDraft { glove: CatalogGlove | null; wear: number; seed: number; }
 export type TeamScope = "both" | "ct" | "t";
 
-export const newSticker = (slot: number, stickerId: number): StickerPlacement => ({ slot, stickerId, wear: 0, scale: 1, rotation: 0, offsetX: 0, offsetY: 0 });
+export const newSticker = (slot: number, stickerId: number): StickerPlacement => ({ slot, stickerId, wear: 0 });
 export const emptyGloveDraft: Record<"ct" | "t", GloveDraft> = { ct: { glove: null, wear: 0.01, seed: 0 }, t: { glove: null, wear: 0.01, seed: 0 } };
 export const loadoutGroups = [
   { id: "pistols", label: "Пистолеты", categories: ["csgo_inventory_weapon_category_pistols"] },

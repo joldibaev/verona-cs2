@@ -5,7 +5,10 @@ import { api } from "./api";
 export interface ReadinessCheck { id: string; label: string; ready: boolean; detail: string; }
 export interface ServerRuntime {
   phase: "stopped" | "starting" | "ready";
-  step: string; progress: number; checks: ReadinessCheck[]; logs: string[]; checkedAt: string;
+  step: string; progress: number;
+  downloading?: boolean; downloadPercent?: number | null;
+  downloadedBytes?: number | null; totalBytes?: number | null;
+  checks: ReadinessCheck[]; logs: string[]; checkedAt: string;
 }
 
 export function useServerRuntime() {

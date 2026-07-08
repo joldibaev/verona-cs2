@@ -90,7 +90,10 @@ var adminSteamIds = (app.Configuration["AdminSteamIds"] ?? "")
     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet();
 await Database.BootstrapAdmins(dbContexts, adminSteamIds);
 
-// Ensure the game server boots into idle mode on compose stack startup
+// Force any previously configured server back to idle on stack startup so restarting
+// the compose stack never auto-launches the game. When launch.env is absent no server
+// has been created yet: the entrypoint already defaults RUN_GAME to 0, so we must NOT
+// create the file here — its presence is what marks a server as "configured" in the panel.
 if (File.Exists(launchFile))
 {
     try
@@ -101,10 +104,6 @@ if (File.Exists(launchFile))
         File.WriteAllLines(launchFile, updated);
     }
     catch { }
-}
-else
-{
-    try { File.WriteAllText(launchFile, "RUN_GAME=0\n"); } catch { }
 }
 
 app.UseVeronaAuthorization(pluginKey);
